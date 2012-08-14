@@ -488,3 +488,5 @@
 65.190.0.87 - - [13/Aug/2012:17:02:12 -0500] "GET /favicon.ico HTTP/1.1" 200 1159 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.75 Safari/537.1"
 65.190.0.87 - - [13/Aug/2012:19:49:49 -0500] "GET /home/default/foo/bar HTTP/1.1" 200 34185 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.75 Safari/537.1"
 65.190.0.87 - - [13/Aug/2012:19:49:54 -0500] "GET /favicon.ico HTTP/1.1" 200 1156 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.75 Safari/537.1"
+65.190.0.87 - - [13/Aug/2012:22:50:42 -0500] "GET /home/default/foo/bar HTTP/1.1" 200 35722 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.75 Safari/537.1"
+65.190.0.87 - - [13/Aug/2012:22:50:46 -0500] "GET /favicon.ico HTTP/1.1" 200 1345 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.75 Safari/537.1"

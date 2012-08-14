@@ -183,26 +183,6 @@ class Bootstrap {
 			return;
 		}
 		
-		// Next we check in the service path, so set the filename
-		$sFilename = (string) SERVICE_PATH."/{$sClassName}.php";
-		// Check for the file
-		if (file_exists($sFilename)) {
-			// Load the file
-			require_once($sFilename);
-			// We're done
-			return;
-		}
-		
-		// Next we check in the utility path, so set the filename
-		$sFilename = (string) UTILITY_PATH."/{$sClassName}.php";
-		// Check for the file
-		if (file_exists($sFilename)) {
-			// Load the file
-			require_once($sFilename);
-			// We're done
-			return;
-		}
-		
 		// Next we check the Framesie framework path
 		$sFilename = (string) FRAMSIE_PATH."/{$sClassName}.php";
 		// Check for the file

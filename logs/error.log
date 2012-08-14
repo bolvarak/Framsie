@@ -2937,3 +2937,158 @@
 [Mon Aug 13 19:49:54 2012] [error] [client 65.190.0.87] #6 /var/vhosts/v2.clubsuperfit.com/public/index.php(7): Bootstrap->dispatch()
 [Mon Aug 13 19:49:54 2012] [error] [client 65.190.0.87] #7 {main}
 [Mon Aug 13 19:49:54 2012] [error] [client 65.190.0.87]   thrown in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 252
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant SERVICE_PATH - assumed 'SERVICE_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 187
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant UTILITY_PATH - assumed 'UTILITY_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 197
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant SERVICE_PATH - assumed 'SERVICE_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 187
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processController() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:384
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   6. class_exists() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:216
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   7. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant UTILITY_PATH - assumed 'UTILITY_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 197
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processController() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:384
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   6. class_exists() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:216
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   7. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant SERVICE_PATH - assumed 'SERVICE_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 187
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processController() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:384
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   6. class_exists() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:216
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   7. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   8. require_once() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:241
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   9. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant UTILITY_PATH - assumed 'UTILITY_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 197
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processController() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:384
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   6. class_exists() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:216
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   7. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   8. require_once() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:241
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   9. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant SERVICE_PATH - assumed 'SERVICE_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 187
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processBlock() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:386
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   6. HomeController->defaultView() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:198
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   7. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant UTILITY_PATH - assumed 'UTILITY_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 197
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processBlock() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:386
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   6. HomeController->defaultView() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:198
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   7. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant SERVICE_PATH - assumed 'SERVICE_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 187
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processBlock() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:386
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   6. HomeController->defaultView() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:198
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   7. FramsieAssets->getJavascript() /var/vhosts/v2.clubsuperfit.com/application/controllers/HomeController.php:18
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   8. FramsieAssets->minifyAsset() /var/vhosts/v2.clubsuperfit.com/lib/framsie/Assets.php:164
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   9. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant UTILITY_PATH - assumed 'UTILITY_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 197
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processBlock() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:386
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   6. HomeController->defaultView() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:198
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   7. FramsieAssets->getJavascript() /var/vhosts/v2.clubsuperfit.com/application/controllers/HomeController.php:18
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   8. FramsieAssets->minifyAsset() /var/vhosts/v2.clubsuperfit.com/lib/framsie/Assets.php:164
+[Mon Aug 13 22:50:42 2012] [error] [client 65.190.0.87] PHP   9. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant SERVICE_PATH - assumed 'SERVICE_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 187
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   4. Framsie->dispatchLayout() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:175
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   5. Framsie->renderBlock() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:142
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   6. require_once() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:203
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   7. Framsie->getScripts() /var/vhosts/v2.clubsuperfit.com/application/blocks/templates/layout.phtml:5
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   8. FramsieController->getScripts() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:256
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   9. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant UTILITY_PATH - assumed 'UTILITY_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 197
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   4. Framsie->dispatchLayout() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:175
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   5. Framsie->renderBlock() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:142
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   6. require_once() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:203
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   7. Framsie->getScripts() /var/vhosts/v2.clubsuperfit.com/application/blocks/templates/layout.phtml:5
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   8. FramsieController->getScripts() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:256
+[Mon Aug 13 22:50:45 2012] [error] [client 65.190.0.87] PHP   9. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant SERVICE_PATH - assumed 'SERVICE_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 187
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   4. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant UTILITY_PATH - assumed 'UTILITY_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 197
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   4. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant SERVICE_PATH - assumed 'SERVICE_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 187
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processController() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:384
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   6. class_exists() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:216
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   7. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP Notice:  Use of undefined constant UTILITY_PATH - assumed 'UTILITY_PATH' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 197
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP Stack trace:
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   1. {main}() /var/vhosts/v2.clubsuperfit.com/public/index.php:0
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   2. Bootstrap->dispatch() /var/vhosts/v2.clubsuperfit.com/public/index.php:7
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   3. Framsie->dispatch() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:260
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   4. FramsieRequestObject->process() /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php:173
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   5. FramsieRequestObject->processController() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:384
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   6. class_exists() /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php:216
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP   7. Bootstrap->autoLoader() /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:0
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] PHP Fatal error:  Uncaught exception 'Exception' with message 'The class "Favicon.icoController" could not be found.' in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php:248
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] Stack trace:
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] #0 [internal function]: Bootstrap->autoLoader('Favicon.icoCont...')
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] #1 [internal function]: spl_autoload_call('Favicon.icoCont...')
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] #2 /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php(216): class_exists('Favicon.icoCont...')
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] #3 /var/vhosts/v2.clubsuperfit.com/lib/framsie/RequestObject.php(384): FramsieRequestObject->processController()
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] #4 /var/vhosts/v2.clubsuperfit.com/lib/Framsie.php(173): FramsieRequestObject->process()
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] #5 /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php(260): Framsie->dispatch('www.v2.clubsupe...', '/favicon.ico')
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] #6 /var/vhosts/v2.clubsuperfit.com/public/index.php(7): Bootstrap->dispatch()
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87] #7 {main}
+[Mon Aug 13 22:50:47 2012] [error] [client 65.190.0.87]   thrown in /var/vhosts/v2.clubsuperfit.com/lib/Bootstrap.php on line 248
