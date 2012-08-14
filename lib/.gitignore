@@ -3,4 +3,12 @@
 !Framsie.php
 !Bootstrap.php
 !JSMin.php
-!framsie/*.php
+!framsie/Assets.php
+!framsie/Cache.php
+!framsie/Configuration.php
+!framsie/DatabaseInterface.php
+!framsie/DynamicPage.php
+!framsie/Encryption.php
+!framsie/Html.php
+!framsie/RequestObject.php
+!framsie/View.php
