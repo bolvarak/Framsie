@@ -4,12 +4,12 @@
  */
 session_start();
 /**
- * This class sets up the framework and application to be executed and run smoothly
- * @package ClubSuperFit
+ * This class handles the execution of the application
+ * @package Framsie
  * @version 1.0
- * @copyright 2012 Eleven Concepts <www.elevenconcepts.com>
- * @licences Private
- * @author Travis Brown <travis@elevenconcepts.com>
+ * @copyright 2012 Travis Brown <tmbrown6@gmail.com>
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
+ * @author Travis Brown <tmbrown6@gmail.com>
  */
 class Bootstrap {
 	
@@ -94,18 +94,8 @@ class Bootstrap {
 		}
 		// Define the static file path
 		define('STATIC_FILE_PATH',        dirname(__FILE__).'/../public');
-		// Define the JS assets path
-		define('JAVASCRIPT_ASSETS_PATH',  STATIC_FILE_PATH.'/js');
-		// Define the CSS assets path
-		define('CSS_ASSETS_PATH',         STATIC_FILE_PATH.'/css');
-		// Define the Image assets path
-		define('IMG_ASSETS_PATH',         STATIC_FILE_PATH.'/img');
 		// Define the library path
 		define('LIBRARY_PATH',            dirname(__FILE__));
-		// Define the service path
-		define('SERVICE_PATH',            LIBRARY_PATH.'/service');
-		// Define the utility path
-		define('UTILITY_PATH',            LIBRARY_PATH.'/utility');
 		// Define the Frames path
 		define('FRAMSIE_PATH',            LIBRARY_PATH.'/framsie');
 		// Define the application path
@@ -116,6 +106,12 @@ class Bootstrap {
 		define('CONTROLLER_PATH',         APPLICATION_PATH.'/controllers');
 		// Define the block path
 		define('BLOCK_PATH',              APPLICATION_PATH.'/blocks');
+		// Define the JS assets path
+		define('JAVASCRIPT_ASSETS_PATH',  BLOCK_PATH.'/assets/js');
+		// Define the CSS assets path
+		define('CSS_ASSETS_PATH',         BLOCK_PATH.'/assets//css');
+		// Define the Image assets path
+		define('IMG_ASSETS_PATH',         BLOCK_PATH.'/assets/img');
 		// Define the include path
 		define('INCLUDE_PATH',            dirname(__FILE__).'/../includes');
 		// Define the cache path
