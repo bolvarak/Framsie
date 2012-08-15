@@ -1,11 +1,26 @@
 <?php
+/**
+ * This class provides the structure for providing static assets
+ * @package Framsie
+ * @subpackage AssetsController
+ * @version 1.0
+ * @copyright 2012 Travis Brown <tmbrown6@gmail.com>
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
+ * @author Travis Brown <tmbrown6@gmail.com>
+ */
 class AssetsController extends FramsieController {
 	
 	///////////////////////////////////////////////////////////////////////////
 	/// View Methods /////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 	
-	
+	/**
+	 * This method renders an encoded image url
+	 * @package Framsie
+	 * @subpackage AssetsController
+	 * @access public
+	 * @return void
+	 */
 	public function imageView() {
 		// Disable the layout
 		$this->setDisableLayout();
