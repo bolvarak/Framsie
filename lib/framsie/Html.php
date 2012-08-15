@@ -35,7 +35,7 @@ class FramsieHtml {
 	 */
 	public static function getInstance($bReset = false) {
 		// Check for an existing instance or a reset notification
-		if (empty(self::$mInstance) || ($bReset === false)) {
+		if (empty(self::$mInstance) || ($bReset === true)) {
 			// Create a new instance
 			self::$mInstance = new self();
 		}
@@ -431,14 +431,24 @@ class FramsieHtml {
 	 * @package Framsie
 	 * @subpackage FramsieHtml
 	 * @access public
-	 * @param string $sName
-	 * @param string $sContent
+	 * @param string [$sName]
+	 * @param string [$sContent]
 	 * @param array [$aAttributes]
 	 * @return string
 	 */
-	public function getMetaTag($sName, $sContent, array $aAttributes = array()) {	
+	public function getMetaTag($sName = null, $sContent = null, array $aAttributes = array()) {	
 		// Start the element
-		$sHtml = (string) "<meta name=\"{$sName}\" content=\"{$sContent}\" ";
+		$sHtml = (string) "<meta ";
+		// Check for a name
+		if (!empty($sName)) {
+			// Set the name
+			$sHtml .= (string) "name=\"{$sName}\" ";
+		}
+		// Check for content
+		if (!empty($sContent)) {
+			// Set the content
+			$sHtml .= (string) "content=\"{$sContent}\" ";
+		}
 		// Check for extra attributes
 		if (!empty($aAttributes)) {
 			// Load the attributes
@@ -482,6 +492,34 @@ class FramsieHtml {
 		}
 		// Finish the element
 		$sHtml .= (string) "</script>\n";
+		// Return the HTML
+		return $sHtml;
+	}
+	
+	/**
+	 * This method generates an HTML style tag
+	 * @package Framsie
+	 * @subpackage FramsieHtml
+	 * @access public
+	 * @param string $sType
+	 * @param string $sSource
+	 * @param array [$aAttributes]
+	 * @return string
+	 */
+	public function getStyle($sType, $sSource, $aAttributes = array()) {
+		// Start the element
+		$sHtml = (string) "<style type=\"{$sType}\" ";
+		// Check for attributes
+		if (!empty($aAttributes)) {
+			// Load the attributes
+			$sHtml .= (string) $this->processAttributes($aAttributes);
+		}
+		// Close the opening tag
+		$sHtml .= (string) ">";
+		// Set the style source
+		$sHtml .= (string) $sSource;
+		// Finish the element
+		$sHtml .= (string) "</style>\n";
 		// Return the HTML
 		return $sHtml;
 	}

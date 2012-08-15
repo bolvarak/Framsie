@@ -7,40 +7,123 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
  * @author Travis Brown <tmbrown6@gmail.com>
  */
-class FramsieController {
+abstract class FramsieController {
 	
 	///////////////////////////////////////////////////////////////////////////
 	/// Constants ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 	
 	/**
+	 * This constant contains the EOT font header content-type
+	 * @var string
+	 */
+	const FONT_EOT          = 'application/vnd.ms-fontobject';
+	
+	/**
+	 * This constant contains the TTF font header content-type
+	 * @var string
+	 */
+	const FONT_TTF          = 'application/octet-stream';
+	
+	/**
+	 * This constant contains the WOFF font header content-type
+	 * @var string
+	 */
+	const FONT_WOFF         = 'application/font-woff';
+	
+	/**
+	 * This constant contains the CSS header content-type
+	 * @var string
+	 */
+	const HEADER_CSS        = 'text/css';
+	
+	/**
+	 * This constant contains the HTML header content-type
+	 * @var string
+	 */
+	const HEADER_HTML       = 'text/html';
+	
+	/**
+	 * This constant contains the Javascript header content-type
+	 * @var string
+	 */
+	const HEADER_JAVASCRIPT = 'text/javascript';
+	
+	/**
+	 * This constant contains the JSON header content-type
+	 * @var string
+	 */
+	const HEADER_JSON       = 'application/json';
+	
+	/**
+	 * This constant contains the TXT header content-type
+	 * @var string
+	 */
+	const HEADER_TEXT       = 'text/plain';
+	
+	/**
+	 * This constant contains the XML header content-type
+	 * @var string
+	 */
+	const HEADER_XML        = 'text/xml';
+	
+	/**
+	 * This constant contains the gif header content-type
+	 * @var string
+	 */
+	const IMG_GIF           = 'image/gif';
+	
+	/**
+	 * This constant contains the jpeg header content-type
+	 * @var string
+	 */
+	const IMG_JPEG          = 'image/jpeg';
+	
+	/**
+	 * This constant contains the jpg header content-type
+	 * @var string
+	 */
+	const IMG_JPG           = 'image/jpg';
+	
+	/**
+	 * This constant contains the png header content-type
+	 * @var string
+	 */
+	const IMG_PNG           = 'image/png';
+	
+	/**
+	 * This constant contains the svg header content-type
+	 * @var string
+	 */
+	const IMG_SVG           = 'image/svg+xml';
+	
+	/**
+	 * This constant contains the tif header content-type
+	 * @var string
+	 */
+	const IMG_TIF           = 'image/tiff';
+	
+	/**
 	 * This constant contains the ecmascript script type constant
 	 * @var string
 	 */
-	const SCRIPT_TYPE_ECMA = 'text/ecmascript';
+	const SCRIPT_TYPE_ECMA  = 'text/ecmascript';
 	
 	/**
 	 * This constant contains the javascript script type constant
 	 * @var string
 	 */
-	const SCRIPT_TYPE_JS   = 'text/javascript';
+	const SCRIPT_TYPE_JS    = 'text/javascript';
 	
 	/**
 	 * This constant contains the vbscript script type constant
 	 * @var string
 	 */
-	const SCRIPT_TYPE_VB   = 'text/vbscript';
+	const SCRIPT_TYPE_VB    = 'text/vbscript';
 	
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
-	/**
-	 * This property contains the singleton instance of this controller
-	 * @access protected
-	 * @staticvar FramsieController
-	 */
-	protected static $mInstance = null;
 	
 	/**
 	 * This property holds the current block file path to the view
@@ -50,11 +133,18 @@ class FramsieController {
 	protected $mBlockFile       = null;
 	
 	/**
-	 * This tells the system whether or not to disable the layout
+	 * This property tells the system whether or not to disable the layout rendering
 	 * @access protected
 	 * @var boolean
 	 */
 	protected $mDisableLayout   = false;
+	
+	/**
+	 * This property tells the system whether or not to disable the view rendering
+	 * @access protected
+	 * @var boolean
+	 */
+	protected $mDisableView     = false;
 	
 	/**
 	 * This property contains the page layout block name
@@ -80,9 +170,9 @@ class FramsieController {
 	/**
 	 * This property contains the page variables for the view
 	 * @access protected
-	 * @var array
+	 * @var stdClass
 	 */
-	protected $mPageValues      = array();
+	protected $mPageValues      = null;
 	
 	/**
 	 * This property contains the FramsieRequestObject 
@@ -105,42 +195,6 @@ class FramsieController {
 	protected $mStylesheets     = array();
 	
 	///////////////////////////////////////////////////////////////////////////
-	/// Singleton ////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-	
-	/**
-	 * This method provides access to the singleton instance of this class
-	 * @package Framsie
-	 * @subpackage FramsieController
-	 * @access public
-	 * @static
-	 * @param boolean [$bReset]
-	 * @return FramsieController self::$mInstance
-	 */
-	public static function getInstance($bReset = false) {
-		// Check for an existing instance or a reset notification
-		if (empty(self::$mInstance) || ($bReset === true)) {
-			// Create a new instance
-			self::$mInstance = new self();
-		}
-		// Return the instance
-		return self::$mInstance;
-	}
-	
-	/**
-	 * This method sets an external instance into the class, this is generally
-	 * only ever used in testing, primarily with phpUnit
-	 * @param FramsieController $oInstance
-	 * @return FramsieController self::$mInstance
-	 */
-	public static function setInstance(FramsieController $oInstance) {
-		// Set the external instance into the class
-		self::$mInstance = $oInstance;
-		// Return the instance
-		return self::$mInstance;
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 	
@@ -149,9 +203,14 @@ class FramsieController {
 	 * @package Framsie
 	 * @subpackage FramsieController
 	 * @access public
+	 * @param FramsieRequestObject $oRequest
 	 * @return FramsieController $this
 	 */
-	public function __construct() {
+	public final function __construct(FramsieRequestObject $oRequest) {
+		// Set the request object
+		$this->mRequest    = $oRequest;
+		// Reset the page values
+		$this->mPageValues = new stdClass();
 		// Return the instance
 		return $this;
 	}
@@ -261,6 +320,18 @@ class FramsieController {
 	}
 	
 	/**
+	 * This method returns the current view active status
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @return boolean
+	 */
+	public function getDisableView() {
+		// Return the current view status
+		return $this->mDisableView;
+	}
+	
+	/**
 	 * This method returns the Framsie parent instance
 	 * @package Framsie
 	 * @subpackage FramsieController
@@ -273,6 +344,19 @@ class FramsieController {
 	}
 	
 	/**
+	 * This method generates an image URL for the system
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param string $sImage
+	 * @return string
+	 */
+	public function getImageUrl($sImage) {
+		// Return the URL
+		return $this->getUrl('assets', 'image', 'file', base64_encode($sImage));
+	}
+	
+	/**
 	 * This method returns the current layout block
 	 * @package Framsie
 	 * @subpackage FramsieController
@@ -282,6 +366,39 @@ class FramsieController {
 	public function getLayout() {
 		// Return the current layout block
 		return $this->mLayout;
+	}
+	
+	/**
+	 * This method returns the meta tags stored in this controller
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param boolean $bAsHtml
+	 * @return multitype
+	 */
+	public function getMetaTags($bAsHtml = true) {
+		// Check to see if we neet to generate the HTML
+		if ($bAsHtml === true) {
+			// Create a styles placeholder
+			$sMetaTags = (string) null;
+			// Loop through the meta tags
+			foreach ($this->mMetaTags as $oMetaTag) {
+				// Check for an htt-equiv
+				if (!empty($oMetaTag->sHttpEquiv)) {
+					// Generate the meta tag
+					$sMetaTags .= (string) FramsieHtml::getInstance()->getMetaTag(null, $oMetaTag->sContent, array(
+						'http-equiv' => (string) $oMetaTag->sHttpEquiv
+					));
+				} else {
+					// Generate the meta tag
+					$sMetaTags .- (string) FramsieHtml::getInstance()->getMetaTag($oMetaTag->sName, $oMetaTag->sContent);
+				}
+			}
+			// Return the meta tags
+			return $sMetaTags;
+		}
+		// Return the meta tags
+		return $this->mMetaTags;
 	}
 	
 	/**
@@ -307,12 +424,12 @@ class FramsieController {
 	 */
 	public function getPageValue($sName) {
 		// Make sure the page value exists
-		if (empty($this->mPageValues[$sName])) {
+		if (property_exists($this->mPageValues, $sName) === false) {
 			// Throw an exception as this works just like a standard variable
 			throw new Exception("No page value with the name of \"{$sName}\" has been set.");
 		}
 		// Return the page value
-		return $this->mPageValues[$sName];
+		return $this->mPageValues->{$sName};
 	}
 	
 	/**
@@ -358,6 +475,91 @@ class FramsieController {
 		return $this->mScripts;
 	}
 	
+	/**
+	 * This method returns the URL for a script
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param string $sScript
+	 * @return string
+	 */
+	public function getScriptUrl($sScript) {
+		// Return the script URL
+		return $this->getUrl('assets', 'script', 'file', base64_encode($sScript));
+	}
+	
+	/**
+	 * This method returns the styles that are stored in this controller
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param boolean $bAsHtml
+	 * @return multitype
+	 */
+	public function getStyles($bAsHtml = true) {
+		// Check to see if we neet to generate the HTML
+		if ($bAsHtml === true) {
+			// Create a styles placeholder
+			$sStyles = (string) null;
+			// Loop through the styles
+			foreach ($this->mStylesheets as $oStylesheet) {
+				// Check for a source link
+				if ($oStylesheet->bSourceIsLink === true) {
+					// Generate the link tag
+					$sStyles .= (string) FramsieHtml::getInstance()->getLink('stylesheet', 'text/css', $oScript->sSource);
+				} else {
+					// Generate the style tag
+					$sStyles .= (string) FramsieHtml::getInstance()->getStyle('text/css', $oStylesheet->sSource);
+				}
+			}
+			// Return the stylesheets
+			return $sStyles;
+		}
+		// Return the styles
+		return $this->mStylesheets;
+	}
+	
+	/**
+	 * This method returns a style URL
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param string $sStyle
+	 * @return string
+	 */
+	public function getStyleUrl($sStyle) {
+		// Return the URL
+		return $this->getUrl('assets', 'style', 'file', base64_encode($sStyle));
+	}
+	
+	/**
+	 * This method builds a URL and returns it or returns the current URL
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param string controller
+	 * @param string view
+	 * @param string query string
+	 * @return string
+	 */
+	public function getUrl() {
+		// Check for arguments
+		if (func_num_args() > 0) {
+			// URL placeholder
+			$sUrl = (string) '/';
+			// Loop through the arguments
+			foreach (func_get_args() as $sArgument) {
+				// Append to the URL
+				$sUrl .= (string) str_replace('/', '%2f', urlencode($sArgument)).'/';
+			}
+			// Return the URL
+			return $sUrl;
+		}
+		// Return the REQUEST_URI
+		return $_SERVER['REQUEST_URI'];
+		
+	}
+	
 	///////////////////////////////////////////////////////////////////////////
 	/// Setters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
@@ -388,6 +590,34 @@ class FramsieController {
 	public function setDisableLayout($bDisable = true) {
 		// Tell the system whether or not to disable the layout
 		$this->mDisableLayout = (boolean) $bDisable;
+		// Return the instance
+		return $this;
+	}
+	
+	/**
+	 * This method tells the system whether or not to disable the view
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param boolean $bDisable
+	 * @return FramsieController $this
+	 */
+	public function setDisableView($bDisable = true) {
+		// Tell the system wheter or not to disable the view
+		$this->mDisableView = (boolean) $bDisable;
+		// Return the instance
+		return $this;
+	}
+	
+	/**
+	 * This method sets the header content type for when we are not simply 
+	 * displaying pretty HTML
+	 * @param string $sContentType
+	 * @return FramsieController $this
+	 */
+	public function setHeaderContentType($sContentType = self::HEADER_HTML) {
+		// Set the header content-type
+		header("Content-Type:  {$sContentType}");
 		// Return the instance
 		return $this;
 	}
@@ -433,7 +663,7 @@ class FramsieController {
 	 */
 	public function setPageValue($sName, $sValue) {
 		// Set the page value into the system
-		$this->mPageValues[$sName] = $sValue;
+		$this->mPageValues->{$sName} = $this->mRequest->convertToTrueType($sValue);
 		// Return the instance
 		return $this;
 	}
@@ -447,7 +677,7 @@ class FramsieController {
 	 * @param FramsieRequestObject $oRequest
 	 * @return FramsieController $this
 	 */
-	public function setRequest(FramsieRequestObject $oRequest) {
+	public function setRequest($oRequest) {
 		// Set the request object into the instance
 		$this->mRequest = $oRequest;
 		// Return the instance

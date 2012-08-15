@@ -144,12 +144,38 @@ class Framsie {
 			// Load the custom layout
 			echo $this->renderBlock($this->getController()->getLayout(), true);
 		} else {
-			// Simply render the view
-			echo $this->renderBlock($this->getController()->getBlockFile());
+			if ($this->getController()->getDisableView() === false) {
+				// Simply render the view
+				echo $this->renderBlock($this->getController()->getBlockFile());
+			}
 		}
 		// Return the instance
 		return $this;
 	}
+	
+	/**
+	 * This method checks the request against a list of known invalid requests
+	 * @package Framsie
+	 * @access protected
+	 * @param string $sRequest
+	 * @return boolean
+	 */
+	protected function isInvalidRequest($sRequest) {
+		// Setup the invalids array
+		$aInvalids = array(
+			'favicon.ico'
+		);
+		// Loop through the invalids
+		foreach ($aInvalids as $sInvalidRequest) {
+			// Check the request
+			if (strpos($sRequest, $sInvalidRequest) !== false) {
+				// An invalid request exists, return
+				return true;
+			}
+		}
+		// All requests are valid, return
+		return false;
+	} 
 	
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
@@ -166,11 +192,13 @@ class Framsie {
 	 * @return Framsie $this
 	 */
 	public function dispatch($sHostName, $sRequest, $sStaticBase = null) {
-		// Create a new request object
-		$this->mRequest = FramsieRequestObject::getInstance()
-			->setRequest  ($sRequest)    // Set the REQUEST_URI
-			->setStaticUri($sStaticBase) // Set the static base URI
-			->process();                 // Process the request
+		// Check for an invalid request
+		if ($this->isInvalidRequest($sRequest)) {
+			// Return as there is nothign we can do
+			return $this;
+		}
+		// Process the request
+		FramsieRequestObject::getInstance()->process($sRequest, $sStaticBase);
 		// Process the layout
 		$this->dispatchLayout();
 		// Return the instance
@@ -187,7 +215,7 @@ class Framsie {
 	 */
 	public function renderBlock($sFilename) {
 		// Check for an extension
-		if (!preg_match('/\.css|js|php|phtml/', $sFilename)) {
+		if (!preg_match('/\.css|js|php|phtml$/i', $sFilename)) {
 			// Append the file extension to the filename
 			$sFilename .= (string) "{$sFilename}.phtml";
 		}
@@ -200,7 +228,7 @@ class Framsie {
 		// Start the capture of the output buffer stream
 		ob_start();
 		// Load the block
-		require_once(BLOCK_PATH.'/'.$sFilename);
+		require_once(BLOCK_PATH."/{$sFilename}");
 		// Depending on the print notification either return the buffer
 		// or simply print the buffer directly to the screen
 		return ob_get_clean();
@@ -218,7 +246,42 @@ class Framsie {
 	 */
 	public function getController() {
 		// Return the current controller from the request object
-		return $this->mRequest->getController();
+		return FramsieRequestObject::getInstance()->getController();
+	}
+	
+	/**
+	 * This is just a helper method that calls the same method in the controller
+	 * @package Framsie
+	 * @access public
+	 * @param string $sImage
+	 * @return string
+	 */
+	public function getImageUrl($sImage) {
+		// Make the call to the controller
+		return $this->getController()->getImageUrl($sImage);
+	}
+	
+	/**
+	 * This method returns the current meta tags from the current controller
+	 * @package Framsie
+	 * @access public
+	 * @param boolean $bAsHtml
+	 * @return multitype
+	 */
+	public function getMetaTags($bAsHtml = true) {
+		// Return the current meta tags from the controller
+		return $this->getController()->getMetaTags($bAsHtml);
+	}
+	
+	/**
+	 * This method returns the current page title from the current controller
+	 * @package Framsie
+	 * @access public
+	 * @return string
+	 */
+	public function getPageTitle() {
+		// Return the page title
+		return $this->getController()->getPageTitle();
 	}
 	
 	/**
@@ -241,7 +304,7 @@ class Framsie {
 	 */
 	public function getRequest() {
 		// Return the current request in the system
-		return $this->mRequest;
+		return FramsieRequestObject::getInstance();
 	}
 	
 	/**
@@ -257,13 +320,54 @@ class Framsie {
 	}
 	
 	/**
+	 * This is just a helper method that calls the same method in the controller
+	 * @package Framsie
+	 * @access public
+	 * @param string $sScript
+	 * @return string
+	 */
+	public function getScriptUrl($sScript) {
+		// Make the call to the controller
+		return $this->getController()->getScriptUrl($sScript);
+	}
+	
+	/**
+	 * This method returns the scripts from the current controller
+	 * @package Framsie
+	 * @access public
+	 * @param boolean $bAsHtml
+	 * @return multitype
+	 */
+	public function getStyles($bAsHtml = true) {
+		// REturn the styles from the controller
+		return $this->getController()->getStyles($bAsHtml);
+	}
+	
+	/**
+	 * This is just a helper method that calls the same method in the controller
+	 * @package Framsie
+	 * @access public
+	 * @param string $sStyle
+	 * @return string
+	 */
+	public function getStyleUrl($sStyle) {
+		// Make the call to the controller
+		return $this->getController()->getStyleUrl($sStyle);
+	}
+	
+	/**
 	 * This method is a layout helper to render the view file
 	 * @package Framsie
 	 * @access public
 	 * @return string
 	 */
 	public function getViewContent() {
-		// Return the rendered view
-		return $this->renderBlock($this->mRequest->getController()->getBlockFile(), true);
+		// Check to see if the view has been disabled
+		if ($this->getController()->getDisableView() === false) {
+			// Return the rendered view
+			return $this->renderBlock($this->getController()->getBlockFile(), true);
+		}
+		// Return empty
+		return null;
 	}
 }

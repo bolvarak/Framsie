@@ -56,7 +56,7 @@ class FramsieEncryption {
 	 */
 	public static function getInstance($bReset = false) {
 		// Check for an existing instance or a reset notification
-		if (empty(self::$mInstance) || ($bReset === false)) {
+		if (empty(self::$mInstance) || ($bReset === true)) {
 			// Create a new instance
 			self::$mInstance = new self();
 		}

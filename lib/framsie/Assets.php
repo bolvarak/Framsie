@@ -81,6 +81,30 @@ class FramsieAssets {
 	/////////////////////////////////////////////////////////////////////////
 	
 	/**
+	 * This method simply loads the cache and caches the source if it isn't 
+	 * already cached or the the cache has expired, no minification is involved
+	 * @package Framsie
+	 * @subpackage FramsieAssets
+	 * @access protected
+	 * @param string $sSource
+	 * @param string $sName
+	 * @return string
+	 */
+	protected function loadAsset($sSource, $sName) {
+		// Check the cache for the source
+		$sCachedSource = (string) FramsieCache::getInstance()->loadFromCache($sName);
+		// Check for the source code
+		if (empty($sCachedSource)) {
+			// Cache the source
+			FramsieCache::getInstance()->saveToCache($sName, $sSource);
+			// Return the source
+			return $sSource;
+		}
+		// Return the cached source
+		return $sCachedSource;
+	}
+	
+	/**
 	 * This method minifies a javascript or CSS source set
 	 * @package Framsie
 	 * @subpackage FramsieAssets
@@ -117,9 +141,10 @@ class FramsieAssets {
 	 * @access public
 	 * @param multitype $sStylesheet
 	 * @param string $sName
+	 * @param boolean $bMinify
 	 * @return string
 	 */
-	public function getCss($sStylesheet, $sName) {
+	public function getCss($sStylesheet, $sName, $bMinify = true) {
 		// Create a CSS placeholder
 		$sCss = (string) null;
 		// Check to see if we are loading one stylesheet or batching them
@@ -127,14 +152,32 @@ class FramsieAssets {
 			// Loop through the stylesheets
 			foreach ($sStylesheet as $sSheet) {
 				// Append the stylesheet
-				$sCss .= (string) Framsie::getInstance()->renderBlock($sStylesheet);
+				$sCss .= (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH."/{$sSheet}");
 			}
 		} else {
 			// Set the stylesheet
-			$sCss = (string) Framsie::getInstance()->renderBlock($sStylesheet);
+			$sCss = (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH."/{$sStylesheet}");
 		}
 		// Return the CSS
-		return $this->minifyAsset($sCss, $sName);
+		return (($bMinify === true) ? $this->minifyAsset($sCss, $sName) : $this->loadAsset($sCss, $sName));
+	}
+	
+	/**
+	 * This method  returns an image
+	 * @package Framsie
+	 * @subpackage FramsieAssets
+	 * @access public
+	 * @param string $sImage
+	 * @param string $sName
+	 * @return string
+	 */
+	public function getImage($sImage, $sName) {
+		// Start the output buffer
+		ob_start();
+		// Load the image file
+		readfile(BLOCK_PATH.'/'.IMG_ASSETS_PATH."/{$sImage}");
+		// Return the cached asset
+		return ob_get_clean(); // $this->loadAsset($sImage, $sName);
 	}
 	
 	/**
@@ -144,9 +187,10 @@ class FramsieAssets {
 	 * @access public
 	 * @param multitype $sJavascript
 	 * @param string $sName
+	 * @param boolean $bMinify
 	 * @return string
 	 */
-	public function getJavascript($sJavascript, $sName) {
+	public function getJavascript($sJavascript, $sName, $bMinify = true) {
 		// Create a javascript placeholder
 		$sJs = (string) null;
 		// Check to see if we are loading one script or batching them
@@ -154,13 +198,13 @@ class FramsieAssets {
 			// Loop through the javascript
 			foreach ($sJavascript as $sScript) {
 				// Append the script
-				$sJs .= (string) Framsie::getInstance()->renderBlock($sScript);
+				$sJs .= (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH."/{$sScript}");
 			}
 		} else {                      // Only one script
 			// Set the JS
-			$sJs = (string) Framsie::getInstance()->renderBlock($sJavascript);
+			$sJs = (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH."/{$sJavascript}");
 		}
 		// Return the JS
-		return $this->minifyAsset($sJs, $sName);
+		return (($bMinify === true) ? $this->minifyAsset($sJs, $sName) : $this->loadAsset($sJs, $sName));
 	}
 }

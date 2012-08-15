@@ -126,7 +126,7 @@ class FramsieRequestObject {
 	 * @param FramsieRequestObject $oIsntance
 	 * @return FramsieRequestObject self::$mInstance
 	 */
-	public static function setInstance(FramsieRequestObject $oIsntance) {
+	public static function setInstance(FramsieRequestObject $oInstance) {
 		// Set the external instance into the class
 		self::$mInstance = $oInstance;
 		// Return the instance
@@ -138,28 +138,13 @@ class FramsieRequestObject {
 	/////////////////////////////////////////////////////////////////////////
 	
 	/**
-	 * The constructor processes the HTTP request into the object, it is
-	 * protected to ensure the use of the singleton patter
+	 * The constructor simply returns the instance
 	 * @package Framsie
 	 * @subpackage FramsieRequestObject
 	 * @access protected
 	 * @return FramsieRequestObject $this
 	 */
-	protected function __construct() {
-		// Setup the globals
-		$this->mCookies     = new stdClass();
-		$this->mGetRequest  = new stdClass();
-		$this->mPostRequest = new stdClass();
-		$this->mQuery       = new stdClass();
-		$this->mSessions    = new stdClass();
-		// First we process the POST request (if any)
-		$this->processPostRequest();
-		// Next we proccess the GET request (if any)
-		$this->processGetRequest();
-		// Then we process the cookies
-		$this->processCookies();
-		// Finally we process the sessions
-		$this->processSessions();
+	public function __construct() {
 		// Now we simply return the instance
 		return $this;
 	}
@@ -178,7 +163,7 @@ class FramsieRequestObject {
 	 */
 	protected function processBlock() {
 		// Set the temporary block
-		$sBlock = (string) strtolower($this->mQueryInProcessing[0]).'View';
+		$sBlock = (string) ((empty($this->mQueryInProcessing[0]))) ? 'defaultView' : strtolower($this->mQueryInProcessing[0]).'View';
 		// Check for the method
 		if (!method_exists($this->mController, $sBlock)) {
 			// Set the default block
@@ -186,16 +171,14 @@ class FramsieRequestObject {
 			// Check for the view method in the controller
 			if (!method_exists($this->mController, $sBlock)) {
 				// Throw an exception because a block view is needed
-				throw new Exception("The block view action \"{$sBlock}\" does not exist in the controller \"".get_class($this->mController)."\".");
+				throw new Exception("The block view action \"{$sBlock}\" does not exist in the controller \"{$this->mController}\".");
 			}
 		} else {
 			// Shift the block from the query in processing
 			array_shift($this->mQueryInProcessing);
 		}
-		// Set the block file into the controller view
-		$this->mController->setBlockFile(strtolower(str_replace('Controller', null, get_class($this->mController))).'/'.strtolower(str_replace('View', null, $sBlock)).'.phtml');
 		// Set the block into the system
-		$this->mBlock = $this->mController->{$sBlock}();
+		$this->mBlock = $sBlock;
 		// Return the instance
 		return $this;
 	}
@@ -211,7 +194,7 @@ class FramsieRequestObject {
 	 */
 	protected function processController() {
 		// Set the temporary controller
-		$sController = (string) ucwords(strtolower($this->mQueryInProcessing[0])).'Controller';
+		$sController = (string) ((empty($this->mQueryInProcessing[0])) ? 'HomeController' : ucwords(strtolower($this->mQueryInProcessing[0])).'Controller');
 		// Check for the class
 		if (!class_exists($sController)) {
 			// Set the default controller
@@ -226,7 +209,7 @@ class FramsieRequestObject {
 			array_shift($this->mQueryInProcessing);
 		}
 		// Set the controller into the system
-		$this->mController = Framsie::Instantiate($sController);
+		$this->mController = (string) $sController;
 		// Return the instance
 		return $this;
 	}
@@ -239,6 +222,8 @@ class FramsieRequestObject {
 	 * @return FramsieRequestObject $this
 	 */
 	protected function processCookies() {
+		// Reset the cookie object
+		$this->mCookies = new stdClass();
 		// Loop through the cookies
 		foreach ($_COOKIE as $sName => $sValue) {
 			// Set the cookie into the system
@@ -256,6 +241,8 @@ class FramsieRequestObject {
 	 * @return FramsieRequestObject $this
 	 */
 	protected function processGetRequest() {
+		// Reset the get request object
+		$this->mGetRequest = new stdClass();
 		// Loop through the GET request
 		foreach ($_GET as $sName => $sValue) {
 			// Set the request variable into the system
@@ -273,6 +260,8 @@ class FramsieRequestObject {
 	 * @return FramsieRequestObject $this
 	 */
 	protected function processPostRequest() {
+		// Reset the post request object
+		$this->mPostRequest = new stdClass();
 		// Loop through the POST request
 		foreach ($_POST as $sName => $sValue) {
 			// Set the request variable into the system
@@ -291,15 +280,23 @@ class FramsieRequestObject {
 	 */
 	protected function processQuery() {
 		// Check for request variables
-		if (empty($this->mQueryInProcessing) === false) {
+		if (!empty($this->mQueryInProcessing)) {
+			// Create a query object placeholder
+			$oQuery = new stdClass();
 			// Loop through the parameters
-			for ($iParameter = 0; $iParameter < count($this->mQueryInProcessing); $iParameter++) {
+			for ($iParameter = 0; $iParameter < count($this->mQueryInProcessing); ($iParameter += 2)) {
 				// Make sure a valid key exists
-				if (empty($this->mQueryInProcessing[$iParameter]) === false) {
+				if (!empty($this->mQueryInProcessing[$iParameter])) {
+					// Set the parameter name
+					$sName  = (string) urldecode($this->mQueryInProcessing[$iParameter]);
+					// Set the parameter value
+					$sValue = (empty($this->mQueryInProcessing[($iParameter + 1)]) ? null : $this->convertToTrueType($this->mQueryInProcessing[($iParameter + 1)]));
 					// Set the parameter
-					$this->mQuery->{$this->mQueryInProcessing[$iParameter]} = (empty($this->mQueryInProcessing[($iParameter + 1)]) ? null : urldecode($this->mQueryInProcessing[($iParameter + 1)]));
+					$oQuery->{$sName} = $sValue;
 				}
 			}
+			// Set the query into the system
+			$this->mQuery = $oQuery;
 		}
 		// Return the instance
 		return $this;
@@ -339,6 +336,8 @@ class FramsieRequestObject {
 	 * @return FramsieRequestObject $this
 	 */
 	protected function processSessions() {
+		// Reset the session object
+		$this->mSessions = new stdClass();
 		// Loop through the sessions
 		foreach ($_SESSION as $sName => $sValue) {
 			// Set the session variable into the system
@@ -351,6 +350,35 @@ class FramsieRequestObject {
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * This method decodes and checks the true type of the variable and
+	 * returns it as its true type
+	 * @package Framsie
+	 * @subpackage FramsieRequestObject
+	 * @access public
+	 * @param string $sVariable
+	 * @return boolean|number|string
+	 */
+	public function convertToTrueType($sVariable) {
+		// First off we need to decode the variable
+		$sVariable = urldecode($sVariable);
+		// Check the variable type
+		if (is_bool($sVariable) || preg_match('/^false|true$/', $sVariable)) { // Boolean
+			// Return the variable as a boolean
+			return (boolean) (($sVariable === 'true') ? true : false);
+		}
+		if (is_float($sVariable) || preg_match('/^\d+\.\d+$/', $sVariable)) {  // Floating point
+			// Return the variable as a floating point
+			return (float) $sVariable;
+		}
+		if (is_int($sVariable) || preg_match('/^\d+$/', $sVariable)) {         // Integer
+			// Return the variable as an integer
+			return (integer) $sVariable;
+		}
+		// Return the variable as a string
+		return (string) $sVariable;
+	}
 	
 	/**
 	 * This method checks to see if a form has been submitted or an AJAX call
@@ -375,19 +403,38 @@ class FramsieRequestObject {
 	 * @package Framsie
 	 * @subpackage FramsieRequestObject
 	 * @access public
+	 * @param string $sRequest
+	 * @param string $sStaticBasePath
 	 * @return FramsieRequestObject $this
 	 */
-	public function process() {
+	public function process($sRequest, $sStaticBasePath = null) {
+		// Set the request
+		$this->mRequest       = (string) $sRequest;
+		// Set the static base path
+		$this->mStaticBaseUri = (string) $sStaticBasePath;
+		// First we process the POST request (if any)
+		$this->processPostRequest();
+		// Next we proccess the GET request (if any)
+		$this->processGetRequest();
+		// Then we process the cookies
+		$this->processCookies();
+		// Finally we process the sessions
+		$this->processSessions();
 		// Process the request string
 		$this->processRequest();
 		// Process the controller
 		$this->processController();
 		// Process the block view action
 		$this->processBlock();
-		// Process the query string
+		// Process the query string and return
 		$this->processQuery();
-		// Set the request object into the class
-		$this->mController->setRequest($this);
+		// Execute the controller
+		$this->mController = new $this->mController($this);
+		// Set the block file in the controller
+		// Set the block file into the controller view
+		$this->mController->setBlockFile(strtolower(str_replace('Controller', null, get_class($this->mController))).'/'.strtolower(str_replace('View', null, $this->mBlock)).'.phtml');
+		// Execute the view
+		$this->mBlock      = $this->mController->{$this->mBlock}();
 		// Return the instance
 		return $this;
 	}

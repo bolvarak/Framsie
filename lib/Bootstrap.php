@@ -107,11 +107,11 @@ class Bootstrap {
 		// Define the block path
 		define('BLOCK_PATH',              APPLICATION_PATH.'/blocks');
 		// Define the JS assets path
-		define('JAVASCRIPT_ASSETS_PATH',  BLOCK_PATH.'/assets/js');
+		define('JAVASCRIPT_ASSETS_PATH',  'assets/js');
 		// Define the CSS assets path
-		define('CSS_ASSETS_PATH',         BLOCK_PATH.'/assets//css');
+		define('CSS_ASSETS_PATH',         'assets/css');
 		// Define the Image assets path
-		define('IMG_ASSETS_PATH',         BLOCK_PATH.'/assets/img');
+		define('IMG_ASSETS_PATH',         'assets/img');
 		// Define the include path
 		define('INCLUDE_PATH',            dirname(__FILE__).'/../includes');
 		// Define the cache path
