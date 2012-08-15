@@ -1,0 +1,112 @@
+<?php
+class AssetsController extends FramsieController {
+	
+	///////////////////////////////////////////////////////////////////////////
+	/// View Methods /////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+	
+	
+	public function imageView() {
+		// Disable the layout
+		$this->setDisableLayout();
+		// Disable the view
+		$this->setDisableView();
+		// Decode the file
+		$sImage = base64_decode($this->getRequest()->getParam('file'));
+		// Determine the header type
+		switch (preg_replace('/^.*\.([^.]+)$/D', '$1', $sImage)) {
+			// EOT Font
+			case 'eot'  : $this->setHeaderContentType(self::FONT_EOT);  break;
+			// GIF
+			case 'gif'  : $this->setHeaderContentType(self::IMG_GIF);   break;
+			// JPEG
+			case 'jpeg' : $this->setHeaderContentType(self::IMG_JPEG);  break;
+			// JPG
+			case 'jpg'  : $this->setHeaderContentType(self::IMG_JPEG);  break;
+			// OTF Font
+			case 'otf'  : $this->setHeaderContentType(self::FONT_TTF);  break;
+			// PNG
+			case 'png'  : $this->setHeaderContentType(self::IMG_PNG);   break;
+			// SVG
+			case 'svg'  : $this->setHeaderContentType(self::IMG_SVG);   break;
+			// SVGZ
+			case 'svgc' : $this->setHeaderContentType(self::IMG_SVG);   break;
+			// TIFF
+			case 'tif'  : $this->setHeaderContentType(self::IMG_TIF);   break;
+			// TTF Font
+			case 'ttf'  : $this->setHeaderContentType(self::FONT_TTF);  break;
+			// WOFF Font
+			case 'woff' : $this->setHeaderContentType(self::FONT_WOFF); break;
+		}
+		// Print the image
+		readfile(BLOCK_PATH.'/'.IMG_ASSETS_PATH."/{$sImage}");
+		// Terminate
+		exit;
+	}
+	
+	/**
+	 * This view method renders a script and has the capability to minify it as well
+	 * @package Framsie
+	 * @subpackage AssetsController
+	 * @access public
+	 * @return void
+	 */
+	public function scriptView() {
+		// Set the header content
+		$this->setHeaderContentType(self::HEADER_JAVASCRIPT);
+		// Disable the layout
+		$this->setDisableLayout();
+		// Decode the file
+		$sScript = (string) base64_decode($this->getRequest()->getParam('file'));
+		// Check to see if we need to minify the source
+		if ($this->getRequest()->getParam('minify') !== false) { // The source should be minified
+			// Get the source
+			$sSource = (string) FramsieAssets::getInstance()->getJavascript( // Instantiate the assets manager
+				$sScript,                                                    // Send the block file
+				"assets.script.{$this->getRequest()->getParam('file')}"      // Send the cache file name
+			);
+		} else {                                                  // The source should not be minified
+			// Get the source
+			$sSource = (string) FramsieAssets::getInstance()->getJavascript( // Instantiate the assets manager
+					$sScript,                                                // Send the block file
+					"assets.script.{$this->getRequest()->getParam('file')}", // Send the cache file name
+					false                                                    // Do not minify the source
+			);
+		}
+		// Set the script source
+		$this->setPageValue('sScriptSource', $sSource);
+	}
+	
+	/**
+	 * This view method renders a stylesheet and has the capability to minify it as well
+	 * @package Framsie
+	 * @subpackage AssetsController
+	 * @access public
+	 * @return void
+	 */
+	public function styleView() {
+		// Set the header content
+		$this->setHeaderContentType(FramsieController::HEADER_CSS);
+		// Disable the layout 
+		$this->setDisableLayout();
+		// Decode the file
+		$sStyle = (string) base64_decode($this->getRequest()->getParam('file'));
+		// Check to see if we need to minify the source
+		if ($this->getRequest()->getParam('minify') !== false) { // The source should be minified
+			// Get the source
+			$sSource = (string) self::getInstance()->getCss(  // Instantiate the assets manager
+				$sStyle,                                               // Send the block file
+				"assets.style.{$this->getRequest()->getParam('file')}" // Send the cache name
+			);
+		} else {                                       // The source should not be minified
+			// Get the source
+			$sSource = (string) FramsieAssets::getInstance()->getCss(       // Instantiate the assets manager
+					$sStyle,                                                // Send the block file
+					"assets.style.{$this->getRequest()->getParam('file')}", // Send the cache name
+					false                                                   // Do not minify the source
+			);
+		}
+		// Set the style source
+		$this->setPageValue('sStyleSource', $sSource);
+	}
+}
