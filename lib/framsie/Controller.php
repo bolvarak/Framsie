@@ -8,196 +8,189 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 abstract class FramsieController {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Constants ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This constant contains the EOT font header content-type
 	 * @var string
 	 */
 	const FONT_EOT          = 'application/vnd.ms-fontobject';
-	
+
 	/**
 	 * This constant contains the TTF font header content-type
 	 * @var string
 	 */
 	const FONT_TTF          = 'application/octet-stream';
-	
+
 	/**
 	 * This constant contains the WOFF font header content-type
 	 * @var string
 	 */
 	const FONT_WOFF         = 'application/font-woff';
-	
+
 	/**
 	 * This constant contains the CSS header content-type
 	 * @var string
 	 */
 	const HEADER_CSS        = 'text/css';
-	
+
 	/**
 	 * This constant contains the HTML header content-type
 	 * @var string
 	 */
 	const HEADER_HTML       = 'text/html';
-	
+
 	/**
 	 * This constant contains the Javascript header content-type
 	 * @var string
 	 */
 	const HEADER_JAVASCRIPT = 'text/javascript';
-	
+
 	/**
 	 * This constant contains the JSON header content-type
 	 * @var string
 	 */
 	const HEADER_JSON       = 'application/json';
-	
+
 	/**
 	 * This constant contains the TXT header content-type
 	 * @var string
 	 */
 	const HEADER_TEXT       = 'text/plain';
-	
+
 	/**
 	 * This constant contains the XML header content-type
 	 * @var string
 	 */
 	const HEADER_XML        = 'text/xml';
-	
+
 	/**
 	 * This constant contains the gif header content-type
 	 * @var string
 	 */
 	const IMG_GIF           = 'image/gif';
-	
+
 	/**
 	 * This constant contains the jpeg header content-type
 	 * @var string
 	 */
 	const IMG_JPEG          = 'image/jpeg';
-	
+
 	/**
 	 * This constant contains the jpg header content-type
 	 * @var string
 	 */
 	const IMG_JPG           = 'image/jpg';
-	
+
 	/**
 	 * This constant contains the png header content-type
 	 * @var string
 	 */
 	const IMG_PNG           = 'image/png';
-	
+
 	/**
 	 * This constant contains the svg header content-type
 	 * @var string
 	 */
 	const IMG_SVG           = 'image/svg+xml';
-	
+
 	/**
 	 * This constant contains the tif header content-type
 	 * @var string
 	 */
 	const IMG_TIF           = 'image/tiff';
-	
+
 	/**
 	 * This constant contains the ecmascript script type constant
 	 * @var string
 	 */
 	const SCRIPT_TYPE_ECMA  = 'text/ecmascript';
-	
+
 	/**
 	 * This constant contains the javascript script type constant
 	 * @var string
 	 */
 	const SCRIPT_TYPE_JS    = 'text/javascript';
-	
+
 	/**
 	 * This constant contains the vbscript script type constant
 	 * @var string
 	 */
 	const SCRIPT_TYPE_VB    = 'text/vbscript';
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
-	/**
-	 * This property holds the current block file path to the view
-	 * @access protected
-	 * @var string
-	 */
-	protected $mBlockFile       = null;
-	
+
 	/**
 	 * This property tells the system whether or not to disable the layout rendering
 	 * @access protected
 	 * @var boolean
 	 */
 	protected $mDisableLayout   = false;
-	
-	/**
-	 * This property tells the system whether or not to disable the view rendering
-	 * @access protected
-	 * @var boolean
-	 */
-	protected $mDisableView     = false;
-	
+
 	/**
 	 * This property contains the page layout block name
 	 * @access protected
 	 * @var string
 	 */
 	protected $mLayout          = null;
-	
+
 	/**
 	 * This property contains the page's meta tags
 	 * @access protected
 	 * @var array
 	 */
 	protected $mMetaTags        = array();
-	
+
 	/**
 	 * This property contains the page title value
 	 * @access protected
 	 * @var string
 	 */
 	protected $mPageTitle       = null;
-	
+
 	/**
 	 * This property contains the page variables for the view
 	 * @access protected
 	 * @var stdClass
 	 */
 	protected $mPageValues      = null;
-	
+
 	/**
-	 * This property contains the FramsieRequestObject 
+	 * This property contains the FramsieRequestObject
 	 * associated with this controller
 	 * @access protected
 	 * @var FramsieRequestObject
 	 */
 	protected $mRequest         = null;
-	
+
 	/**
 	 * This property contains the page's scripts to load
 	 * @var array
 	 */
 	protected $mScripts         = array();
-	
+
 	/**
 	 * This property contains the page's styleshets to load
 	 * @var array
 	 */
 	protected $mStylesheets     = array();
-	
+
+	/**
+	 * This property contains the view object
+	 * @access protected
+	 * @var FramsieView
+	 */
+	protected $mView            = null;
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * The constructor simply returns the instance
 	 * @package Framsie
@@ -214,13 +207,13 @@ abstract class FramsieController {
 		// Return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * This method adds a meta tag for the current page to the instance of 
+	 * This method adds a meta tag for the current page to the instance of
 	 * the current controller
 	 * @package Framsie
 	 * @subpackage FramsieController
@@ -234,15 +227,15 @@ abstract class FramsieController {
 	public function addMetaTag($sName, $sContent, $sHttpEquiv = null, $sScheme = null) {
 		// Add the meta tag to the instance
 		array_push($this->mMetaTags, array(
-			'sContent'   => (string) $sContent, 
-			'sHttpEquiv' => (string) $sHttpEquiv, 
-			'sName'      => (string) $sName, 
+			'sContent'   => (string) $sContent,
+			'sHttpEquiv' => (string) $sHttpEquiv,
+			'sName'      => (string) $sName,
 			'sScheme'    => (string) $sScheme
 		));
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method adds a script to the page into the instance of the current
 	 * controller class
@@ -268,7 +261,7 @@ abstract class FramsieController {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method adds a stylesheet into the instance of the current controller
 	 * @package Framsie
@@ -290,23 +283,44 @@ abstract class FramsieController {
 		// Return the instance
 		return $this;
 	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	/// Getters //////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * This method returns the currently set block file for the associated view
+	 * This method renders the layout set into the controller or the default layout
 	 * @package Framsie
 	 * @subpackage FramsieController
 	 * @access public
-	 * @return string
+	 * @return FramsieController $this
 	 */
-	public function getBlockFile() {
-		// Return the current block file into the system
-		return $this->mBlockFile;
+	public function renderLayout() {
+		// Make sure a layout should be rendered
+		if ($this->mDisableLayout === false) {
+			// Set the filename
+			$sFilename = (string) (empty($this->mLayout) ? 'templates/layout.phtml' : $this->mLayout);
+			// Check for an extension
+			if (!preg_match('/\.css|js|php|phtml$/i', $sFilename)) {
+				// Append the file extension to the filename
+				$sFilename .= (string) "{$sFilename}.phtml";
+			}
+			// Make sure the file exists
+			if (!file_exists(BLOCK_PATH."/{$sFilename}")) {
+				// Throw an exception because if this method is called, obviously
+				// the block is needed to continue
+				throw new Exception("The block file \"{$sFilename}\" does not exist as it was called, nor does it exist in the blocks directory");
+			}
+			// Start the capture of the output buffer stream
+			ob_start();
+			// Load the block
+			require_once(BLOCK_PATH."/{$sFilename}");
+			// Depending on the print notification either return the buffer
+			// or simply print the buffer directly to the screen
+			return ob_get_clean();
+		}
 	}
-	
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Getters //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
 	/**
 	 * This method returns the current layout active status
 	 * @package Framsie
@@ -318,19 +332,7 @@ abstract class FramsieController {
 		// Return the current layout status
 		return $this->mDisableLayout;
 	}
-	
-	/**
-	 * This method returns the current view active status
-	 * @package Framsie
-	 * @subpackage FramsieController
-	 * @access public
-	 * @return boolean
-	 */
-	public function getDisableView() {
-		// Return the current view status
-		return $this->mDisableView;
-	}
-	
+
 	/**
 	 * This method returns the Framsie parent instance
 	 * @package Framsie
@@ -342,7 +344,7 @@ abstract class FramsieController {
 		// Return the latest instance of Framsie
 		return Framsie::getInstance();
 	}
-	
+
 	/**
 	 * This method generates an image URL for the system
 	 * @package Framsie
@@ -355,7 +357,7 @@ abstract class FramsieController {
 		// Return the URL
 		return $this->getUrl('assets', 'image', 'file', base64_encode($sImage));
 	}
-	
+
 	/**
 	 * This method returns the current layout block
 	 * @package Framsie
@@ -367,7 +369,7 @@ abstract class FramsieController {
 		// Return the current layout block
 		return $this->mLayout;
 	}
-	
+
 	/**
 	 * This method returns the meta tags stored in this controller
 	 * @package Framsie
@@ -400,7 +402,7 @@ abstract class FramsieController {
 		// Return the meta tags
 		return $this->mMetaTags;
 	}
-	
+
 	/**
 	 * This method returns the currently set page title in the instance
 	 * @package Framsie
@@ -412,26 +414,7 @@ abstract class FramsieController {
 		// Return the page title currently set in the instance
 		return $this->mPageTitle;
 	}
-	
-	/**
-	 * This method returns a set page variable if it exists
-	 * @package Framsie
-	 * @subpackage FramsieController
-	 * @access public
-	 * @throws Exception
-	 * @param string $sName
-	 * @return multitype
-	 */
-	public function getPageValue($sName) {
-		// Make sure the page value exists
-		if (property_exists($this->mPageValues, $sName) === false) {
-			// Throw an exception as this works just like a standard variable
-			throw new Exception("No page value with the name of \"{$sName}\" has been set.");
-		}
-		// Return the page value
-		return $this->mPageValues->{$sName};
-	}
-	
+
 	/**
 	 * This method returns the request object associated with this controller
 	 * @package Framsie
@@ -443,7 +426,7 @@ abstract class FramsieController {
 		// Return the request object
 		return $this->mRequest;
 	}
-	
+
 	/**
 	 * This method returns the scripts that are stored in this controller
 	 * @package Framsie
@@ -474,7 +457,7 @@ abstract class FramsieController {
 		// Return the scripts
 		return $this->mScripts;
 	}
-	
+
 	/**
 	 * This method returns the URL for a script
 	 * @package Framsie
@@ -487,7 +470,7 @@ abstract class FramsieController {
 		// Return the script URL
 		return $this->getUrl('assets', 'script', 'file', base64_encode($sScript));
 	}
-	
+
 	/**
 	 * This method returns the styles that are stored in this controller
 	 * @package Framsie
@@ -518,7 +501,7 @@ abstract class FramsieController {
 		// Return the styles
 		return $this->mStylesheets;
 	}
-	
+
 	/**
 	 * This method returns a style URL
 	 * @package Framsie
@@ -531,7 +514,7 @@ abstract class FramsieController {
 		// Return the URL
 		return $this->getUrl('assets', 'style', 'file', base64_encode($sStyle));
 	}
-	
+
 	/**
 	 * This method builds a URL and returns it or returns the current URL
 	 * @package Framsie
@@ -557,28 +540,24 @@ abstract class FramsieController {
 		}
 		// Return the REQUEST_URI
 		return $_SERVER['REQUEST_URI'];
-		
 	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	/// Setters //////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * This method sets the block file into the current instance
+	 * This method returns the current view object set into the system
 	 * @package Framsie
 	 * @subpackage FramsieController
 	 * @access public
-	 * @param string $sFilename
-	 * @return FramsieView $this
+	 * @return FramsieView
 	 */
-	public function setBlockFile($sFilename) {
-		// Set the block file into the system
-		$this->mBlockFile = (string) $sFilename;
-		// Return the instance
-		return $this;
+	public function getView() {
+		// Return the current view object
+		return $this->mView;
 	}
-	
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Setters //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
 	/**
 	 * This method tells the system whether or not to disable the layout view
 	 * @package Framsie
@@ -593,24 +572,9 @@ abstract class FramsieController {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
-	 * This method tells the system whether or not to disable the view
-	 * @package Framsie
-	 * @subpackage FramsieController
-	 * @access public
-	 * @param boolean $bDisable
-	 * @return FramsieController $this
-	 */
-	public function setDisableView($bDisable = true) {
-		// Tell the system wheter or not to disable the view
-		$this->mDisableView = (boolean) $bDisable;
-		// Return the instance
-		return $this;
-	}
-	
-	/**
-	 * This method sets the header content type for when we are not simply 
+	 * This method sets the header content type for when we are not simply
 	 * displaying pretty HTML
 	 * @param string $sContentType
 	 * @return FramsieController $this
@@ -621,7 +585,7 @@ abstract class FramsieController {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets the layout block into the instance
 	 * @package Framsie
@@ -636,7 +600,7 @@ abstract class FramsieController {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets the page title into the instance
 	 * @package Framsie
@@ -651,25 +615,9 @@ abstract class FramsieController {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
-	 * This method adds a page variable into the instance
-	 * @package Framsie
-	 * @subpackage FramsieController
-	 * @access public
-	 * @param string $sName
-	 * @param multitype $sValue
-	 * @return FramsieController $this
-	 */
-	public function setPageValue($sName, $sValue) {
-		// Set the page value into the system
-		$this->mPageValues->{$sName} = $this->mRequest->convertToTrueType($sValue);
-		// Return the instance
-		return $this;
-	}
-	
-	/**
-	 * This method is mainly for the request object to set itself into 
+	 * This method is mainly for the request object to set itself into
 	 * the controller instance
 	 * @package Framsie
 	 * @subpackage FramsieController
@@ -680,6 +628,21 @@ abstract class FramsieController {
 	public function setRequest($oRequest) {
 		// Set the request object into the instance
 		$this->mRequest = $oRequest;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets a view ovbject into the controller
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param FramsieView $oView
+	 * @return FramsieController $this
+	 */
+	public function setView(FramsieView $oView) {
+		// Set the view object into the system
+		$this->mView = $oView;
 		// Return the instance
 		return $this;
 	}

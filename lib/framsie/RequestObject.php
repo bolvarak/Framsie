@@ -9,94 +9,94 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 class FramsieRequestObject {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This property holds the singleton instance of the request object
 	 * @access protected
 	 * @staticvar FramsieRequestObject
 	 */
 	protected static $mInstance   = null;
-	
+
 	/**
-	 * This property holds the name of the block file to be loaded 
+	 * This property holds the name of the block file to be loaded
 	 * for the view rendering
 	 * @access protected
 	 * @var sring
 	 */
 	protected $mBlock             = null;
-	
+
 	/**
 	 * This property holds the name of the class to be loaded for the controller
 	 * @access protected
 	 * @var FramsieController
 	 */
 	protected $mController        = null;
-	
+
 	/**
 	 * This property contains the cookies that came with the request
 	 * @access protected
 	 * @var stdClass
 	 */
 	protected $mCookies           = null;
-	
+
 	/**
 	 * This property holds an objective instance of the $_GET variable
 	 * @access protected
 	 * @var stdClass
 	 */
 	protected $mGetRequest        = null;
-	
+
 	/**
 	 * This property holds an objective instance of the $_POST variable
 	 * @access protected
 	 * @var stdClass
 	 */
 	protected $mPostRequest       = null;
-	
+
 	/**
 	 * This property holds the SEO friendly GET request variables as well as the
 	 * $_GET and $_POST global request variables
 	 * @var stdClass
 	 */
 	protected $mQuery             = null;
-	
+
 	/**
-	 * This property holds the parts of the request query that is currently 
+	 * This property holds the parts of the request query that is currently
 	 * being processed through the system
 	 * @access protected
 	 * @var array
 	 */
 	protected $mQueryInProcessing = array();
-	
+
 	/**
 	 * This property contains the sessions that came with the request
 	 * @access protected
 	 * @var stdClass
 	 */
 	protected $mSessions          = null;
-	
+
 	/**
 	 * This property holds the request URI
 	 * @access protected
 	 * @var string
 	 */
 	protected $mRequest           = null;
-	
+
 	/**
 	 * This property holds the static base uri
 	 * @access protected
 	 * @var string
 	 */
 	protected $mStaticBaseUri     = null;
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method grants access to the single instance of the request object
 	 * @package Framsie
@@ -115,7 +115,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	/**
 	 * This method sets an external instance into the class, this is primarily
 	 * used in testing and generally with phpUnit
@@ -132,11 +132,11 @@ class FramsieRequestObject {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * The constructor simply returns the instance
 	 * @package Framsie
@@ -148,11 +148,11 @@ class FramsieRequestObject {
 		// Now we simply return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Processors ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method loads and validates the block view in the controller
 	 * @package Framsie
@@ -182,7 +182,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method grabs the controller from the processing request and sets it
 	 * into this instance
@@ -213,7 +213,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method processes the $_COOKIE variable into the system
 	 * @package Framsie
@@ -232,7 +232,7 @@ class FramsieRequestObject {
 		// We're done, return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method process the $_GET variable into the system
 	 * @package Framsie
@@ -251,7 +251,7 @@ class FramsieRequestObject {
 		// We're done, return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method processes the $_POST variable into the system
 	 * @package Framsie
@@ -270,7 +270,7 @@ class FramsieRequestObject {
 		// We're done, return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method processes the remaining query in process into query parameters
 	 * @package Framsie
@@ -301,7 +301,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method processes the request URI into the instance
 	 * @package Framsie
@@ -327,7 +327,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method processes the $_SESSION variable into the system
 	 * @package Framsie
@@ -346,11 +346,11 @@ class FramsieRequestObject {
 		// We're done, return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method decodes and checks the true type of the variable and
 	 * returns it as its true type
@@ -379,7 +379,7 @@ class FramsieRequestObject {
 		// Return the variable as a string
 		return (string) $sVariable;
 	}
-	
+
 	/**
 	 * This method checks to see if a form has been submitted or an AJAX call
 	 * has been placed to the application
@@ -397,7 +397,7 @@ class FramsieRequestObject {
 		// Not a POST request
 		return false;
 	}
-	
+
 	/**
 	 * This method processes the entire request object
 	 * @package Framsie
@@ -430,19 +430,21 @@ class FramsieRequestObject {
 		$this->processQuery();
 		// Execute the controller
 		$this->mController = new $this->mController($this);
+		// Set the view object into the controller
+		$this->mController->setView(new FramsieView());
 		// Set the block file in the controller
 		// Set the block file into the controller view
-		$this->mController->setBlockFile(strtolower(str_replace('Controller', null, get_class($this->mController))).'/'.strtolower(str_replace('View', null, $this->mBlock)).'.phtml');
+		$this->mController->getView()->setBlockFile(strtolower(str_replace('Controller', null, get_class($this->mController))).'/'.strtolower(str_replace('View', null, $this->mBlock)).'.phtml');
 		// Execute the view
 		$this->mBlock      = $this->mController->{$this->mBlock}();
 		// Return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Getters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method returns the current block set in this instance
 	 * @package Framsie
@@ -454,7 +456,7 @@ class FramsieRequestObject {
 		// Return the current block
 		return $this->mBlock;
 	}
-	
+
 	/**
 	 * This method returns the current controller set in this instance
 	 * @package Framsie
@@ -466,7 +468,7 @@ class FramsieRequestObject {
 		// Return the current controller
 		return $this->mController;
 	}
-	
+
 	/**
 	 * This method looks for a specific cookie in the system and returns
 	 * its value if it exists, false otherwise
@@ -485,7 +487,7 @@ class FramsieRequestObject {
 		// Return the cookie variable
 		return $this->mCookies->{$sName};
 	}
-	
+
 	/**
 	 * This method returns all of the cookies set in this instance
 	 * @package Framsie
@@ -497,7 +499,7 @@ class FramsieRequestObject {
 		// Return the cookie object
 		return $this->mCookies;
 	}
-	
+
 	/**
 	 * This method gets the current GET request object set in this instance
 	 * @package Framsie
@@ -509,9 +511,9 @@ class FramsieRequestObject {
 		// Return the GET request
 		return $this->mGetRequest;
 	}
-	
+
 	/**
-	 * This method looks for a parameter in the query objec, GET object and 
+	 * This method looks for a parameter in the query objec, GET object and
 	 * POST object, if none is found it returns false
 	 * @package Framsie
 	 * @subpackage FramsieRequestObject
@@ -538,7 +540,7 @@ class FramsieRequestObject {
 		// The parameter does not exist
 		return false;
 	}
-	
+
 	/**
 	 * This method returns the current POST request object set in this instance
 	 * @package Framsie
@@ -550,7 +552,7 @@ class FramsieRequestObject {
 		// Return the POST request object
 		return $this->mPostRequest;
 	}
-	
+
 	/**
 	 * This method returns the current query object set in this instance
 	 * @package Framsie
@@ -562,7 +564,7 @@ class FramsieRequestObject {
 		// Return the query object
 		return $this->mQuery;
 	}
-	
+
 	/**
 	 * This method returns the current REQUEST_URI set in this instance
 	 * @package Framsie
@@ -574,9 +576,9 @@ class FramsieRequestObject {
 		// Return the current request URI
 		return $this->mRequest;
 	}
-	
+
 	/**
-	 * This method looks for a session variable in the current session object, 
+	 * This method looks for a session variable in the current session object,
 	 * if none is found, false is returned
 	 * @package Framsie
 	 * @subpackage FramsieRequestObject
@@ -585,7 +587,7 @@ class FramsieRequestObject {
 	 * @return multitype
 	 */
 	public function getSession($sName) {
-		// Check for the session 
+		// Check for the session
 		if (empty($this->mSessions->{$sName})) {
 			// Return false
 			return false;
@@ -593,7 +595,7 @@ class FramsieRequestObject {
 		// Return the session
 		return $this->mSession->{$sName};
 	}
-	
+
 	/**
 	 * This method returns the current session object set in this instance
 	 * @package Framsie
@@ -605,10 +607,10 @@ class FramsieRequestObject {
 		// Return the session object
 		return $this->mSessions;
 	}
-	
+
 	/**
 	 * This method returns the current static base path which will be used to
-	 * determine the path to where the framework should start processing the 
+	 * determine the path to where the framework should start processing the
 	 * applications
 	 * @package Framsie
 	 * @subpackage FramsieRequestObject
@@ -619,11 +621,11 @@ class FramsieRequestObject {
 		// Return the static URI
 		return $this->mStaticBaseUri;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Setters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method sets a custom block file into the instance
 	 * @package Framsie
@@ -638,7 +640,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets a custom controller into the instance
 	 * @package Framsie
@@ -653,7 +655,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets a cookie into the instance
 	 * @package Framsie
@@ -672,7 +674,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets a parameter into the request object in the instance
 	 * @package Framsie
@@ -688,7 +690,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets the REQUEST_URI into the instance
 	 * @package Framsie
@@ -703,7 +705,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets a session variable into the instance
 	 * @package Framsie
@@ -721,7 +723,7 @@ class FramsieRequestObject {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets the static URI into the instance
 	 * @package Framsie

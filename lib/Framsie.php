@@ -9,29 +9,29 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 class Framsie {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This property contains the singleton instance of Frames
 	 * @access protected
 	 * @staticvar Framsie
 	 */
 	protected static $mInstance = null;
-	
+
 	/**
 	 * This property contains a globally accesssible instance of the request object
 	 * @access protected
 	 * @var FramsieRequestObject
 	 */
 	protected $mRequest         = null;
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method sets and maintains a single instance of Framsie at all times
 	 * @package Framsie
@@ -49,9 +49,9 @@ class Framsie {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	/**
-	 * This method sets an external instance of Framsie into the class, 
+	 * This method sets an external instance of Framsie into the class,
 	 * this is generally only used in testing, primarily with phpUnit
 	 * @package Framsie
 	 * @access public
@@ -65,11 +65,11 @@ class Framsie {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This is our constructor, it simply returns an instance and is protected
 	 * to ensure the use of the singleton pattern
@@ -81,11 +81,11 @@ class Framsie {
 		// Simply return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Static Methods ////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method is simply a helper to the objects of Framsie to dynamically
 	 * load the singleton patterns of controllers and models
@@ -105,7 +105,7 @@ class Framsie {
 		// Throw a new exception
 		throw new Exception("The class \"{$sClassName}\" does not exist.");
 	}
-	
+
 	/**
 	 * This method creates a new instance of a class
 	 * @package Framsie
@@ -124,11 +124,11 @@ class Framsie {
 		// Throw a new exception
 		throw new Exception('The class \"{$sClassName}\" does not exist.');
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Protected Methods ////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method handles the displaying of the layout and view currently set in the system
 	 * @package Framsie
@@ -136,23 +136,18 @@ class Framsie {
 	 * @return Framsie $this
 	 */
 	protected function dispatchLayout() {
-		// Check the controller for a layout
-		if (is_null($this->getController()->getLayout()) && ($this->getController()->getDisableLayout() === false)) {
-			// Load the default layout
-			echo $this->renderBlock('templates/layout.phtml', true);
-		} else if ((is_null($this->getController()->getLayout()) === false) && ($this->getController()->getDisableLayout() === false)) {
-			// Load the custom layout
-			echo $this->renderBlock($this->getController()->getLayout(), true);
+		// Check for a layout
+		if ($this->getController()->getDisableLayout() === true) {
+			// Simply render the view
+			echo $this->getController()->getView()->renderView();
 		} else {
-			if ($this->getController()->getDisableView() === false) {
-				// Simply render the view
-				echo $this->renderBlock($this->getController()->getBlockFile());
-			}
+			// Render the layout
+			echo $this->getController()->renderLayout();
 		}
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method checks the request against a list of known invalid requests
 	 * @package Framsie
@@ -175,12 +170,12 @@ class Framsie {
 		}
 		// All requests are valid, return
 		return false;
-	} 
-	
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method sets up the request and processes it returning the block to the user
 	 * @package Framsie
@@ -204,7 +199,7 @@ class Framsie {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method renders a block file that is included in the application
 	 * @package Framsie
@@ -221,7 +216,7 @@ class Framsie {
 		}
 		// Make sure the file exists
 		if (!file_exists(BLOCK_PATH."/{$sFilename}")) {
-			// Throw an exception because if this method is called, obviously 
+			// Throw an exception because if this method is called, obviously
 			// the block is needed to continue
 			throw new Exception("The block file \"{$sFilename}\" does not exist as it was called, nor does it exist in the blocks directory");
 		}
@@ -233,11 +228,11 @@ class Framsie {
 		// or simply print the buffer directly to the screen
 		return ob_get_clean();
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Getters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method returns the current controller instance stored in the instance
 	 * @package Framsie
@@ -248,54 +243,7 @@ class Framsie {
 		// Return the current controller from the request object
 		return FramsieRequestObject::getInstance()->getController();
 	}
-	
-	/**
-	 * This is just a helper method that calls the same method in the controller
-	 * @package Framsie
-	 * @access public
-	 * @param string $sImage
-	 * @return string
-	 */
-	public function getImageUrl($sImage) {
-		// Make the call to the controller
-		return $this->getController()->getImageUrl($sImage);
-	}
-	
-	/**
-	 * This method returns the current meta tags from the current controller
-	 * @package Framsie
-	 * @access public
-	 * @param boolean $bAsHtml
-	 * @return multitype
-	 */
-	public function getMetaTags($bAsHtml = true) {
-		// Return the current meta tags from the controller
-		return $this->getController()->getMetaTags($bAsHtml);
-	}
-	
-	/**
-	 * This method returns the current page title from the current controller
-	 * @package Framsie
-	 * @access public
-	 * @return string
-	 */
-	public function getPageTitle() {
-		// Return the page title
-		return $this->getController()->getPageTitle();
-	}
-	
-	/**
-	 * This method returns a page value that was set in the controller
-	 * @package Framsie
-	 * @access public
-	 * @param string $sName
-	 * @return multitype
-	 */
-	public function getPageValue($sName) {
-		// Return the page value if one exists
-		return $this->getController()->getPageValue($sName);
-	}
-	
+
 	/**
 	 * This method returns the current request object in the instance
 	 * @package Framsie
@@ -305,69 +253,5 @@ class Framsie {
 	public function getRequest() {
 		// Return the current request in the system
 		return FramsieRequestObject::getInstance();
-	}
-	
-	/**
-	 * This method returns the scripts from the current controller
-	 * @package Framsie
-	 * @access public
-	 * @param boolean $bAsHtml
-	 * @return multitype
-	 */
-	public function getScripts($bAsHtml = true) {
-		// Return the scripts from the controller
-		return $this->getController()->getScripts($bAsHtml);
-	}
-	
-	/**
-	 * This is just a helper method that calls the same method in the controller
-	 * @package Framsie
-	 * @access public
-	 * @param string $sScript
-	 * @return string
-	 */
-	public function getScriptUrl($sScript) {
-		// Make the call to the controller
-		return $this->getController()->getScriptUrl($sScript);
-	}
-	
-	/**
-	 * This method returns the scripts from the current controller
-	 * @package Framsie
-	 * @access public
-	 * @param boolean $bAsHtml
-	 * @return multitype
-	 */
-	public function getStyles($bAsHtml = true) {
-		// REturn the styles from the controller
-		return $this->getController()->getStyles($bAsHtml);
-	}
-	
-	/**
-	 * This is just a helper method that calls the same method in the controller
-	 * @package Framsie
-	 * @access public
-	 * @param string $sStyle
-	 * @return string
-	 */
-	public function getStyleUrl($sStyle) {
-		// Make the call to the controller
-		return $this->getController()->getStyleUrl($sStyle);
-	}
-	
-	/**
-	 * This method is a layout helper to render the view file
-	 * @package Framsie
-	 * @access public
-	 * @return string
-	 */
-	public function getViewContent() {
-		// Check to see if the view has been disabled
-		if ($this->getController()->getDisableView() === false) {
-			// Return the rendered view
-			return $this->renderBlock($this->getController()->getBlockFile(), true);
-		}
-		// Return empty
-		return null;
 	}
 }

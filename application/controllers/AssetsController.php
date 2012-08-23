@@ -9,11 +9,11 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 class AssetsController extends FramsieController {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// View Methods /////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method renders an encoded image url
 	 * @package Framsie
@@ -25,7 +25,7 @@ class AssetsController extends FramsieController {
 		// Disable the layout
 		$this->setDisableLayout();
 		// Disable the view
-		$this->setDisableView();
+		$this->getView()->setDisableView();
 		// Decode the file
 		$sImage = base64_decode($this->getRequest()->getParam('file'));
 		// Determine the header type
@@ -58,7 +58,7 @@ class AssetsController extends FramsieController {
 		// Terminate
 		exit;
 	}
-	
+
 	/**
 	 * This view method renders a script and has the capability to minify it as well
 	 * @package Framsie
@@ -89,9 +89,9 @@ class AssetsController extends FramsieController {
 			);
 		}
 		// Set the script source
-		$this->setPageValue('sScriptSource', $sSource);
+		$this->mView->sScriptSource = $sSource;
 	}
-	
+
 	/**
 	 * This view method renders a stylesheet and has the capability to minify it as well
 	 * @package Framsie
@@ -102,18 +102,18 @@ class AssetsController extends FramsieController {
 	public function styleView() {
 		// Set the header content
 		$this->setHeaderContentType(FramsieController::HEADER_CSS);
-		// Disable the layout 
+		// Disable the layout
 		$this->setDisableLayout();
 		// Decode the file
 		$sStyle = (string) base64_decode($this->getRequest()->getParam('file'));
 		// Check to see if we need to minify the source
 		if ($this->getRequest()->getParam('minify') !== false) { // The source should be minified
 			// Get the source
-			$sSource = (string) self::getInstance()->getCss(  // Instantiate the assets manager
+			$sSource = (string) self::getInstance()->getCss(           // Instantiate the assets manager
 				$sStyle,                                               // Send the block file
 				"assets.style.{$this->getRequest()->getParam('file')}" // Send the cache name
 			);
-		} else {                                       // The source should not be minified
+		} else {                                                 // The source should not be minified
 			// Get the source
 			$sSource = (string) FramsieAssets::getInstance()->getCss(       // Instantiate the assets manager
 					$sStyle,                                                // Send the block file
@@ -122,6 +122,6 @@ class AssetsController extends FramsieController {
 			);
 		}
 		// Set the style source
-		$this->setPageValue('sStyleSource', $sSource);
+		$this->mView->sStyleSource = $sSource;
 	}
 }

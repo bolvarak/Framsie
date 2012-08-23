@@ -593,7 +593,7 @@ class FramsieHtml {
 			$sHtml .= (string) " />";
 		} else {
 			// Finish the tag
-			$sHtml .= (string) "</{$sType}\n";
+			$sHtml .= (string) "</{$sType}>\n";
 		}
 		// Return the HTML
 		return $sHtml;
