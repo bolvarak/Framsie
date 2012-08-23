@@ -12,11 +12,11 @@ session_start();
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 class Bootstrap {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This property stores our singleton instance
 	 * @access protected
@@ -24,7 +24,7 @@ class Bootstrap {
 	 * @var Bootstrap
 	 */
 	protected static $mInstance  = null;
-	
+
 	/**
 	 * This property stores generated instances of classes
 	 * @access protected
@@ -32,11 +32,11 @@ class Bootstrap {
 	 * @var array
 	 */
 	protected static $mInstances = array();
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method creates and ensures there is always a single instance
 	 * of this class floating around
@@ -55,7 +55,7 @@ class Bootstrap {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	/**
 	 * This method sets a custom instance of this class into itself,
 	 * this is generally only used for testing with phpUnit
@@ -71,13 +71,13 @@ class Bootstrap {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * This constructor sets up all of the path definitions and spl handlers, 
+	 * This constructor sets up all of the path definitions and spl handlers,
 	 * it's protected to enforce the singleton pattern
 	 * @package Bootstrap
 	 * @access protected
@@ -123,15 +123,15 @@ class Bootstrap {
 		// Setup the error handler
 		// set_error_handler    (array($this, 'dispatchErrors'));
 		// Setup the exception handler
-		// set_exception_handler(array($this, 'dispatchExceptions'));
+		set_exception_handler(array(Framsie::getInstance(), 'dispatchException'));
 		// Return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Static Methods ////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method generates a singleton of any existing class passed to it
 	 * @param string $sClassName
@@ -153,11 +153,11 @@ class Bootstrap {
 		// We're done, something went awry
 		throw new Exception("We could not instantiate the class \"{$sClassName}.\"");
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method automagically loads class files (if they exist)
 	 * @package Bootstrap
@@ -172,7 +172,7 @@ class Bootstrap {
 			// Replace the the class name
 			$sClassName = (string) str_replace('Framsie', null, $sClassName);
 		}
-		
+
 		// First we check in the library path, so set the filename
 		$sFilename = (string) LIBRARY_PATH."/{$sClassName}.php";
 		// Check for the file
@@ -182,7 +182,7 @@ class Bootstrap {
 			// We're done
 			return;
 		}
-		
+
 		// Next we check the Framesie framework path
 		$sFilename = (string) FRAMSIE_PATH."/{$sClassName}.php";
 		// Check for the file
@@ -192,7 +192,7 @@ class Bootstrap {
 			// We're done
 			return;
 		}
-		
+
 		// Next we check in the application path, so set the filename
 		$sFilename = (string) APPLICATION_PATH."/{$sClassName}.php";
 		// Check for the file
@@ -202,7 +202,7 @@ class Bootstrap {
 			// We're done
 			return;
 		}
-		
+
 		// Next we check in the model path, so set the filename
 		$sFilename = (string) MODEL_PATH."/{$sClassName}.php";
 		// Check for the file
@@ -212,7 +212,7 @@ class Bootstrap {
 			// We're done
 			return;
 		}
-		
+
 		// Finally we check in the controller path, so set the filename
 		$sFilename = (string) CONTROLLER_PATH."/{$sClassName}.php";
 		// Check for the file
@@ -222,12 +222,12 @@ class Bootstrap {
 			// We're done
 			return;
 		}
-		
-		// If we have not returned by now, the class does not exist, 
+
+		// If we have not returned by now, the class does not exist,
 		// so we will throw a new exception
 		throw new Exception("The class \"{$sClassName}\" could not be found.");
 	}
-	
+
 	/**
 	 * This method initializes and execute the framework (Frames)
 	 * @package Bootstrap
@@ -241,11 +241,11 @@ class Bootstrap {
 		// Return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Setters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method turns error reporting and display on and off
 	 * @package Bootstrap

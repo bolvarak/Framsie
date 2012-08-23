@@ -189,11 +189,29 @@ class Framsie {
 	public function dispatch($sHostName, $sRequest, $sStaticBase = null) {
 		// Check for an invalid request
 		if ($this->isInvalidRequest($sRequest)) {
-			// Return as there is nothign we can do
-			return $this;
+			// Throw a new exception
+			throw new Exception('The request URL is invalid.');
 		}
 		// Process the request
 		FramsieRequestObject::getInstance()->process($sRequest, $sStaticBase);
+		// Process the layout
+		$this->dispatchLayout();
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method handles exceptions in the system
+	 * @package Framsie
+	 * @access public
+	 * @param Exception $oException
+	 * @return Framsie $this
+	 */
+	public function dispatchException($oException) {
+		// Process the request
+		FramsieRequestObject::getInstance()->process('/error/default', null);
+		// Grab the controller and set the exception into the view
+		$this->getController()->getView()->oException = $oException;
 		// Process the layout
 		$this->dispatchLayout();
 		// Return the instance
