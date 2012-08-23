@@ -101,7 +101,7 @@ class AssetsController extends FramsieController {
 	 */
 	public function styleView() {
 		// Set the header content
-		$this->setHeaderContentType(FramsieController::HEADER_CSS);
+		$this->setHeaderContentType(self::HEADER_CSS);
 		// Disable the layout
 		$this->setDisableLayout();
 		// Decode the file
