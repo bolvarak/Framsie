@@ -28,6 +28,13 @@ class Framsie {
 	 */
 	protected $mRequest         = null;
 
+	/**
+	 * This property contains the redirects URLs for custom URL structures
+	 * @access protected
+	 * @var array
+	 */
+	protected $mRedirects       = array();
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
@@ -172,9 +179,44 @@ class Framsie {
 		return false;
 	}
 
+	/**
+	 * This method checks the current request against the pre-defined redirects
+	 * @package Framsie
+	 * @access protected
+	 * @param string $sRequest
+	 * @return string
+	 */
+	protected function matchRedirects($sRequest) {
+		// Loop through the redirects
+		foreach ($this->mRedirects as $sSource => $sTarget) {
+			// Check the source
+			if (strpos($sRequest, $sSource) !== false) {
+				// Reset the request
+				$sRequest = (string) $sTarget;
+			}
+		}
+		// Return the request
+		return $sRequest;
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method adds a redirect rule to the instance
+	 * @package Framsie
+	 * @access public
+	 * @param string $sSource
+	 * @param string $sTarget
+	 * @return Framsie $this
+	 */
+	public function addRedirect($sSource, $sTarget) {
+		// Add the redirect to the system
+		$this->mRedirects[$sSource] = (string) $sTarget;
+		// Return the instance
+		return $this;
+	}
 
 	/**
 	 * This method sets up the request and processes it returning the block to the user
@@ -193,7 +235,7 @@ class Framsie {
 			throw new Exception('The request URL is invalid.');
 		}
 		// Process the request
-		FramsieRequestObject::getInstance()->process($sRequest, $sStaticBase);
+		FramsieRequestObject::getInstance()->process($this->matchRedirects($sRequest), $sStaticBase);
 		// Process the layout
 		$this->dispatchLayout();
 		// Return the instance
