@@ -574,6 +574,52 @@ abstract class FramsieController {
 	}
 
 	/**
+	 * This method turns the current controller into a
+	 * JSON RMP endpoint for AJAX or REST services
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param boolean $bDisableView
+	 * @return FramsieController $this
+	 */
+	public function setEndpointJson($bDisableView = false) {
+		// Check to see if we need to disable the view
+		if ($bDisableView === true) {
+			// Disable the view
+			$this->getView()->setDisableView();
+		}
+		// Disable the layout
+		$this->setDisableLayout();
+		// Set the header
+		$this->setHeaderContentType(self::HEADER_JSON);
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method turns the current controller into an
+	 * XML RPC endpoint for AJAX or REST services
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param boolean $bDisableView
+	 * @return FramsieController $this
+	 */
+	public function setEndpointXml($bDisableView = false) {
+		// Check to see if we need to disable the view
+		if ($bDisableView === true) {
+			// Disable the view
+			$this->getView()->setDisableView();
+		}
+		// Disable the layout
+		$this->setDisableLayout();
+		// Set the header
+		$this->setHeaderContentType(self::HEADER_XML);
+		// Return the instance
+		return $this;
+	}
+
+	/**
 	 * This method sets the header content type for when we are not simply
 	 * displaying pretty HTML
 	 * @param string $sContentType

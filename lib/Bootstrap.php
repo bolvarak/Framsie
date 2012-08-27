@@ -173,6 +173,14 @@ class Bootstrap {
 			$sClassName = (string) str_replace('Framsie', null, $sClassName);
 		}
 
+		// Check for a mapper
+		if ((strpos($sClassName, 'Mapper') !== false) && ($sClassName !== 'FramsieMapper')) {
+			// Replace the class name
+			$sClassName = (string) str_replace('Mapper', null, $sClassName);
+			// Set the directory
+			$sClassName = (string) "mappers/{$sClassName}";
+		}
+
 		// First we check in the library path, so set the filename
 		$sFilename = (string) LIBRARY_PATH."/{$sClassName}.php";
 		// Check for the file

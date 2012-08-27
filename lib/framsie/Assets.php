@@ -8,22 +8,22 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 class FramsieAssets {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This property contains the singleton instance of this class
 	 * @access protected
 	 * @staticvar FramsieAssets
 	 */
 	protected static $mInstance = null;
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method provides access to the singleton instance of this class
 	 * @package Framsie
@@ -42,7 +42,7 @@ class FramsieAssets {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	/**
 	 * This method sets an external instance into this class
 	 * @package Framsie
@@ -58,13 +58,13 @@ class FramsieAssets {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * The constructor simply returns the instance of this class and is 
+	 * The constructor simply returns the instance of this class and is
 	 * protected to enforce the singleton pattern
 	 * @package Framsie
 	 * @subpackage FramsieAssets
@@ -75,13 +75,13 @@ class FramsieAssets {
 		// Return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Protected Methods ////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * This method simply loads the cache and caches the source if it isn't 
+	 * This method simply loads the cache and caches the source if it isn't
 	 * already cached or the the cache has expired, no minification is involved
 	 * @package Framsie
 	 * @subpackage FramsieAssets
@@ -103,12 +103,11 @@ class FramsieAssets {
 		// Return the cached source
 		return $sCachedSource;
 	}
-	
+
 	/**
 	 * This method minifies a javascript or CSS source set
 	 * @package Framsie
 	 * @subpackage FramsieAssets
-	 * @uses JSMin
 	 * @access protected
 	 * @param string $sSource
 	 * @return string
@@ -119,7 +118,7 @@ class FramsieAssets {
 		// Check for the minified source cache
 		if (empty($sCachedSource)) {
 			// Minify the source
-			$sMinifiedSource = (string) JSMin::minify($sSource);
+			$sMinifiedSource = (string) preg_replace('/(?|(\\s)+|(\\n)+|(\\r)+|(\\r\\n)+|(\\t))/', null, $sSource);
 			// Cache the minified source
 			FramsieCache::getInstance()->saveToCache($sName, $sMinifiedSource);
 			// Return the source
@@ -128,13 +127,13 @@ class FramsieAssets {
 		// Return the cache
 		return $sCachedSource;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Getters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * This method minifies and returns either a single stylesheet or a 
+	 * This method minifies and returns either a single stylesheet or a
 	 * batched set of stylesheets
 	 * @package Framsie
 	 * @subpackage FramsieAssets
@@ -161,7 +160,7 @@ class FramsieAssets {
 		// Return the CSS
 		return (($bMinify === true) ? $this->minifyAsset($sCss, $sName) : $this->loadAsset($sCss, $sName));
 	}
-	
+
 	/**
 	 * This method  returns an image
 	 * @package Framsie
@@ -179,7 +178,7 @@ class FramsieAssets {
 		// Return the cached asset
 		return ob_get_clean(); // $this->loadAsset($sImage, $sName);
 	}
-	
+
 	/**
 	 * This method returns either a single JS script or a batched set of scripts
 	 * @package Framsie

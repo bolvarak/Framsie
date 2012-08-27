@@ -127,6 +127,12 @@ class FramsieDatabaseInterface {
 	 */
 	const UPDATEQUERY    = 'UPDATE :sTable SET :aFieldValuePairs :sWhere;';
 
+	/**
+	 * This constant defines the SQL wildcard
+	 * @var string
+	 */
+	const WILDCARD       = '*';
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
@@ -1040,7 +1046,7 @@ class FramsieDatabaseInterface {
 		// Return the current query
 		return $this->mQuery;
 	}
-	
+
 	/**
 	 * This method executes a statement and returns the results
 	 * @package Framsie
@@ -1052,7 +1058,7 @@ class FramsieDatabaseInterface {
 		// Return an executed statement
 		return $this->getQueryStatement()->execute();
 	}
-	
+
 	/**
 	 * This method returns a prepared statement of the current query
 	 * @package Framsie
@@ -1064,7 +1070,7 @@ class FramsieDatabaseInterface {
 		// Return the query statement
 		return $this->mConnection->prepare($this->mQuery);
 	}
-	
+
 	/**
 	 * This method queries the database for a single row and returns it
 	 * @package Framsie
@@ -1085,7 +1091,7 @@ class FramsieDatabaseInterface {
 		// Return the fetched row
 		return $oStatement->fetch($iFetchType);
 	}
-	
+
 	/**
 	 * This method queries the database for all the rows and returns them
 	 * @package Framsie
