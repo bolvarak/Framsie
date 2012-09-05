@@ -8,22 +8,92 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 class FramsieHtml {
-	
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Constants ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This constant contains the type value for a button input tag
+	 * @var string
+	 */
+	const INPUT_BUTTON        = 'button';
+
+	/**
+	 * This constant contains the type value for a checkbox input tag
+	 * @var string
+	 */
+	const INPUT_CHECKBOX      = 'checkbox';
+
+	/**
+	 * This constant contains the type value for a file input tag
+	 * @var string
+	 */
+	const INPUT_FILE          = 'file';
+
+	/**
+	 * This constant contains the type value for a hidden input tag
+	 * @var string
+	 */
+	const INPUT_HIDDEN        = 'hidden';
+
+	/**
+	 * This constant contains the type value for a image input tag
+	 * @var string
+	 */
+	const INPUT_IMAGE         = 'image';
+
+	/**
+	 * This constant contains the type value for a password input tag
+	 * @var string
+	 */
+	const INPUT_PASSWORD      = 'password';
+
+	/**
+	 * This constant contains the type value for a radio input
+	 * @var string
+	 */
+	const INPUT_RADIO         = 'radio';
+
+	/**
+	 * This constant contains the select tag name
+	 * @var string
+	 */
+	const INPUT_SELECT        = 'select';
+
+	/**
+	 * This constant contains the type value for a submit input
+	 * @var string
+	 */
+	const INPUT_SUBMIT        = 'submit';
+
+	/**
+	 * This constant contains the type value for a text input
+	 * @var string
+	 */
+	const INPUT_TEXT          = 'text';
+
+	/**
+	 * This constant contains textarea tag name
+	 * @var string
+	 */
+	const INPUT_TEXTAREA      = 'textarea';
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This property contains the singleton instance of this class
 	 * @access protected
 	 * @staticvar FramsieHtml
 	 */
 	protected static $mInstance = null;
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method grabs the singleton instance from the system
 	 * @package Framsie
@@ -42,7 +112,7 @@ class FramsieHtml {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	/**
 	 * This method sets an external instance into this class
 	 * @package Framsie
@@ -58,11 +128,11 @@ class FramsieHtml {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * The constructor simply returns the instance and is protected to enforce
 	 * the singleton pattern throughout the system
@@ -75,11 +145,11 @@ class FramsieHtml {
 		// Return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Protected Methods ////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method processes the attributes array for the element being generated
 	 * @package Framsie
@@ -99,7 +169,7 @@ class FramsieHtml {
 		// Return the attribute string
 		return $sAttributes;
 	}
-	
+
 	/**
 	 * This method processes the child elements of the element currently being generated
 	 * @package Framsie
@@ -119,11 +189,11 @@ class FramsieHtml {
 		// Return the elements string
 		return $sElements;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method generates an HTML anchor tag
 	 * @package Framsie
@@ -149,7 +219,7 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates an HTML button
 	 * @package Framsie
@@ -162,7 +232,7 @@ class FramsieHtml {
 	 * @return string
 	 **/
 	public function getButton($sName, $sLabel, $sId = null, $aAttributes = null) {
-	
+
 		// Start the element
 		$sHtml = (string) "<button name=\"{$sName}\" ";
 		// Check for an ID
@@ -175,11 +245,11 @@ class FramsieHtml {
 			$sHtml .= (string) $this->processAttributes($aAttributes);
 		}
 		// Finish off the tag
-		$sHtml .= (string) ">{$sLabel}</button>";	
+		$sHtml .= (string) ">{$sLabel}</button>";
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates an HTML div with elements
 	 * @package Framsie
@@ -209,7 +279,7 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates an HTML drop down select form element
 	 * @package Framsie
@@ -271,7 +341,7 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates an HTML fieldset with elements
 	 * @package Framsie
@@ -301,7 +371,7 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates an HTML form with elements
 	 * @package Framsie
@@ -338,7 +408,7 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates and img tag
 	 * @package Framsie
@@ -361,7 +431,35 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
+	/**
+	 * This method generates a label tag
+	 * @package Framsie
+	 * @subpackage FramsieHtml
+	 * @param string $sText
+	 * @param string $sFor
+	 * @param array [$aAttributes]
+	 * @return string
+	 */
+	public function getLabel($sText, $sFor = null, $aAttributes = array()) {
+		// Start the element
+		$sHtml = (string) "<label ";
+		// Check for a for attribute
+		if (!empty($sFor)) {
+			// Add the for attribute
+			$sHtml .= (string) "fore=\"{$sFor}\" ";
+		}
+		// Check for attributes
+		if (!empty($aAttributes)) {
+			// Load the attributes
+			$sHtml .= (string) $this->processAttributes($aAttributes);
+		}
+		// Add the text and close the tag
+		$sHtml .= (string) ">{$sText}</label>";
+		// Return the HTML
+		return $sHtml;
+	}
+
 	/**
 	 * This method generates an HTML input
 	 * @package Framsie
@@ -376,7 +474,11 @@ class FramsieHtml {
 	 **/
 	public function getInput($sType, $sName, $sId = null, $aAttributes = array()) {
 		// Allowed types
-		$aAllowedTypes = array('checkbox', 'button', 'file', 'hidden', 'image', 'password', 'radio', 'submit', 'text');
+		$aAllowedTypes = array(
+			self::INPUT_BUTTON, self::INPUT_CHECKBOX, self::INPUT_FILE,
+			self::INPUT_HIDDEN, self::INPUT_IMAGE,    self::INPUT_PASSWORD,
+			self::INPUT_RADIO,  self::INPUT_SUBMIT,   self::INPUT_TEXT
+		);
 		// Check to make sure the caller wants to generate a valid HTML input
 		if (!in_array($sType, $aAllowedTypes)) {
 			// Throw an exception
@@ -399,9 +501,9 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
-	 * This method generates a link tag which are primarily used in the 
+	 * This method generates a link tag which are primarily used in the
 	 * head of the page for loading in cascading stylesheets
 	 * @package Framsie
 	 * @subpackage FramsieHtml
@@ -425,7 +527,7 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates an HTML meta tag
 	 * @package Framsie
@@ -436,7 +538,7 @@ class FramsieHtml {
 	 * @param array [$aAttributes]
 	 * @return string
 	 */
-	public function getMetaTag($sName = null, $sContent = null, array $aAttributes = array()) {	
+	public function getMetaTag($sName = null, $sContent = null, array $aAttributes = array()) {
 		// Start the element
 		$sHtml = (string) "<meta ";
 		// Check for a name
@@ -459,7 +561,7 @@ class FramsieHtml {
 		// Return HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates an HTML script tag
 	 * @package Framsie
@@ -495,7 +597,7 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates an HTML style tag
 	 * @package Framsie
@@ -523,7 +625,7 @@ class FramsieHtml {
 		// Return the HTML
 		return $sHtml;
 	}
-	
+
 	/**
 	 * This method generates an HTML textarea
 	 * @package Framsie

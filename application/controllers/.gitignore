@@ -1,4 +1,3 @@
 *
 !.gitignore
 !AssetsController.php
-!ErrorController.php

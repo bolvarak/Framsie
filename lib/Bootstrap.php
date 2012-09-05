@@ -174,11 +174,19 @@ class Bootstrap {
 		}
 
 		// Check for a mapper
-		if ((strpos($sClassName, 'Mapper') !== false) && ($sClassName !== 'FramsieMapper')) {
+		if ((strpos($sClassName, 'Mapper') !== false) && ($sClassName !== 'Mapper')) {
 			// Replace the class name
 			$sClassName = (string) str_replace('Mapper', null, $sClassName);
 			// Set the directory
 			$sClassName = (string) "mappers/{$sClassName}";
+		}
+
+		// Check for a form
+		if ((strpos($sClassName, 'Form') !== false) && ($sClassName !== 'Form')) {
+			// Replace the class name
+			$sClassName = (string) str_replace('Form', null, $sClassName);
+			// Set the directory
+			$sClassName = (string) "forms/{$sClassName}";
 		}
 
 		// First we check in the library path, so set the filename

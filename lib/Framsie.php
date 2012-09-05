@@ -19,21 +19,28 @@ class Framsie {
 	 * @access protected
 	 * @staticvar Framsie
 	 */
-	protected static $mInstance = null;
+	protected static $mInstance  = null;
+
+	/**
+	 * This property contains an array of class instances
+	 * @access protected
+	 * @staticvar array
+	 */
+	protected static $mInstances = array();
 
 	/**
 	 * This property contains a globally accesssible instance of the request object
 	 * @access protected
 	 * @var FramsieRequestObject
 	 */
-	protected $mRequest         = null;
+	protected $mRequest          = null;
 
 	/**
 	 * This property contains the redirects URLs for custom URL structures
 	 * @access protected
 	 * @var array
 	 */
-	protected $mRedirects       = array();
+	protected $mRedirects        = array();
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
@@ -71,6 +78,39 @@ class Framsie {
 		self::$mInstance = $oInstance;
 		// Return the instance
 		return self::$mInstance;
+	}
+
+	/**
+	 * This method creates a singleton out of a normal class
+	 * @package Framsie
+	 * @access public
+	 * @static
+	 * @param string $sClass
+	 * @param Dynamic constructor arguments
+	 * @return object self::$mInstances[$sClass]
+	 */
+	public static function Singleton() {
+		// Grab the arguments
+		$aArguments = func_get_args();
+		// Set the class name
+		$sClass = (string) $aArguments[0];
+		// Remove the class name
+		array_shift($aArguments);
+		// Check for an existing instance
+		if (empty(self::$mInstances[$sClass]) || ($bReset === true)) {
+			// Check for arguments to pass
+			if (empty($aArguments)) {
+				// Create a new instance
+				self::$mInstances[$sClass] = new $sClass();
+			} else {
+				// Create an instance of the reflection class
+				$oReflection = new ReflectionClass($sClass);
+				// Create a new instance
+				self::$mInstances[$sClass] = $oReflection->newInstanceArgs($aArguments);
+			}
+		}
+		// Return the instance
+		return self::$mInstances[$sClass];
 	}
 
 	///////////////////////////////////////////////////////////////////////////
