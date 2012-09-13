@@ -128,6 +128,20 @@ class Bootstrap {
 		return $this;
 	}
 
+	/**
+	 * This method loads redirect URLs into the framework
+	 * @package Framsie
+	 * @subpackage Bootstrap
+	 * @access protected
+	 * @return Bootstrap $this
+	 */
+	protected function loadRedirects() {
+		// Redirect faq to faqs
+		Framsie::getInstance()->addRedirect('/home/faq', '/home/faqs');
+		// Return the instance
+		return $this;
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Static Methods ////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
@@ -252,6 +266,8 @@ class Bootstrap {
 	 * @return Bootstrap $this
 	 */
 	public function dispatch() {
+		// Load the redirects
+		$this->loadRedirects();
 		// Instantiate and execute Framsie
 		Framsie::getInstance()->dispatch($_SERVER['SERVER_NAME'], $_SERVER['REQUEST_URI']);
 		// Return the instance

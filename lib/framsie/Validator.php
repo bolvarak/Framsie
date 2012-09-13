@@ -56,7 +56,7 @@ class FramsieValidator {
 	const NUMERIC                  = '/[0-9]+/';
 
 
-	const URI                      = '/http|https[a-zA-Z0-9]/'
+	const URI                      = '/http|https[a-zA-Z0-9]/';
 
 
 	///////////////////////////////////////////////////////////////////////////

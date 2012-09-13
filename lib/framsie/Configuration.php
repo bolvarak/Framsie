@@ -8,11 +8,11 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 class FramsieConfiguration {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Proeprties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This property holds the configuration file data
 	 * @access protected
@@ -20,11 +20,11 @@ class FramsieConfiguration {
 	 * @var array
 	 */
 	protected static $mConfiguration = array();
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Protected Static Methods /////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method loads or reloads the configuration file into the system
 	 * @package FramsieConfiguration
@@ -42,17 +42,18 @@ class FramsieConfiguration {
 		// We're done
 		return;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Static Methods ////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method loads the configuration or specific parts of the configuration
 	 * @package FramsieConfiguration
 	 * @access public
 	 * @static
 	 * @param string [$sProperty]
+	 * @throws Exception
 	 * @return multitype
 	 */
 	public static function Load($sProperty = null) {
@@ -63,13 +64,18 @@ class FramsieConfiguration {
 			// Return the entire configuration file
 			return self::$mConfiguration;
 		}
-		
+
 		// Check for a delimiter in the property key
 		if (strpos($sProperty, '.') === false) {
-			// Return the appropriate value
-			return (empty(self::$mConfiguration[$sProperty]) ? array() : self::$mConfiguration[$sProperty]);
+			// Check for the configuration value
+			if (empty(self::$mConfiguration[$sProperty])) {
+				// Throw an exception
+				throw new Exception("The configuration section or property \"{$sProperty}\" does not exist.");
+			}
+			// Return the property
+			return self::$mConfiguration[$sProperty];
 		}
-		
+
 		// Localize the configuration
 		$aConfiguration = self::$mConfiguration;
 		// Separate the delimiters
@@ -78,8 +84,8 @@ class FramsieConfiguration {
 		foreach ($aParts as $sPropertyKey) {
 			// Check for the existance of the property
 			if (empty($aConfiguration[$sPropertyKey])) {
-				// The property does not exist, return
-				return null;
+				// Throw an exception
+				throw new Exception("The configuration section or property \"{$sPropertyKey}\" does not exist.");
 			}
 			// Reset the configuration
 			$aConfiguration = $aConfiguration[$sPropertyKey];
@@ -87,7 +93,7 @@ class FramsieConfiguration {
 		// Return the requested configuration
 		return $aConfiguration;
 	}
-	
+
 	/**
 	 * This method temporarily saves properties to the configuration array
 	 * @pacakge FramsieConfiguration

@@ -362,6 +362,30 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method returns the current HTTP password set in the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return string
+	 */
+	public function getHttpPassword() {
+		// Return the current HTTP password
+		return $this->mPassword;
+	}
+
+	/**
+	 * This method returns the current HTTP username set in the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return string
+	 */
+	public function getHttpUsername() {
+		// Return the current HTTP username
+		return $this->mUsername;
+	}
+
+	/**
 	 * This method returns the last request in the system
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -386,15 +410,21 @@ abstract class FramsieHttp {
 	}
 
 	/**
-	 * This method returns the current HTTP password set in the system
+	 * This method returns a specific parameter from the data object
 	 * @package Framsie
 	 * @subpackage FramsieHttp
 	 * @access public
-	 * @return string
+	 * @param string $sName
+	 * @return multitype
 	 */
-	public function getPassword() {
-		// Return the current HTTP password
-		return $this->mPassword;
+	public function getParam($sName) {
+		// Check for the parameter
+		if (empty($this->mData[$sName])) {
+			// Return empty
+			return null;
+		}
+		// Return the parameter
+		return $this->mData[$sName];
 	}
 
 	/**
@@ -431,18 +461,6 @@ abstract class FramsieHttp {
 	public function getUrl() {
 		// Return the URL
 		return $this->mUrl;
-	}
-
-	/**
-	 * This method returns the current HTTP username set in the system
-	 * @package Framsie
-	 * @subpackage FramsieHttp
-	 * @access public
-	 * @return string
-	 */
-	public function getUsername() {
-		// Return the current HTTP username
-		return $this->mUsername;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -502,9 +520,24 @@ abstract class FramsieHttp {
 	 * @param string $sPassword
 	 * @return FramsieHttp $this
 	 */
-	public function setPassword($sPassword) {
+	public function setHttpPassword($sPassword) {
 		// Set the password into the system
 		$this->mPassword = (string) $sPassword;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets the HTTP username into the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param string $sUsername
+	 * @return FramsieHttp $this
+	 */
+	public function setHttpUsername($sUsername) {
+		// Set the username into the system
+		$this->mUsername = (string) $sUsername;
 		// Return the instance
 		return $this;
 	}
@@ -543,20 +576,5 @@ abstract class FramsieHttp {
 		}
 		// Throw an exception
 		throw new Exception("The URL \"{$sUrl}\" is not a valid URL.");
-	}
-
-	/**
-	 * This method sets the HTTP username into the system
-	 * @package Framsie
-	 * @subpackage FramsieHttp
-	 * @access public
-	 * @param string $sUsername
-	 * @return FramsieHttp $this
-	 */
-	public function setUsername($sUsername) {
-		// Set the username into the system
-		$this->mUsername = (string) $sUsername;
-		// Return the instance
-		return $this;
 	}
 }

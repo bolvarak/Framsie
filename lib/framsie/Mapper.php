@@ -15,6 +15,13 @@ abstract class FramsieMapper {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This property contains the column to property map
+	 * @access protected
+	 * @var array
+	 */
+	protected $mColumns    = array();
+
+	/**
 	 * This property contains the database table name associated with this map
 	 * @access protected
 	 * @var string
@@ -61,6 +68,42 @@ abstract class FramsieMapper {
 	///////////////////////////////////////////////////////////////////////////
 	/// Protected Methods ////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method loops through the column to property map and adds the fields
+	 * and values to the database interface
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @param boolean $bInsertUpdate
+	 * @return FramsieMapper $this
+	 */
+	protected function setColumnMapIntoInterface($bInsertUpdate = false) {
+		// Check to see if this is an INSERT or UPDATE query
+		if ($bInsertUpdate === true) {
+			// Loop through the columns and add the fields
+			foreach ($this->mColumns as $sColumn => $sPropertyName) {
+				// Set the method name
+				$sMethod = (string) "get{$sColumn}";
+				// Make sure this column isn't the primary key and that the property has a value
+				if (($sColumn !== $this->mPrimaryKey) && (empty($this->{$sPropertyName}) === false)) {
+					// Add the field to the interface
+					FramsieDatabaseInterface::getInstance()->addField($sColumn, $this->{$sMethod}());
+				}
+			}
+			// Return the instance
+			return $this;
+		}
+		// Loop through the columns and add the fields
+		foreach ($this->mColumns as $sColumn => $sPropertyName) {
+			// Make sure this column isnt't the primary key
+			if ($sColumn !== $this->mPrimaryKey) {
+				// Add the field
+				FramsieDatabaseInterface::getInstance()->addField($sColumn);
+			}
+		}
+		// Return the instance
+		return $this;
+	}
 
 	/**
 	 * This method ensures that a database table name is set before
@@ -181,41 +224,150 @@ abstract class FramsieMapper {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * This method maps a database table to the mapper
+	 * This method maps a database column name to its class property name
 	 * @package Framsie
-	 * @subpackage FramieMapper
+	 * @subpackage FramsieMapper
 	 * @access public
-	 * @param number $iUniqueIdentifier
+	 * @param string $sColumn
+	 * @param string $sPropertyName
 	 * @return FramsieMapper $this
 	 */
-	public function mapTable(number $iUniqueIdentifier) {
-		// Check for a database table
-		$this->verifyDbTable();
-		// Check for a primary key
-		$this->verifyPrimaryKey();
-		// Setup the database interface
-		FramsieDatabaseInterface::getInstance()                      // Instantiate the interface
-			->setQuery(FramsieDatabaseInterface::SELECTQUERY)        // We want a SELECT query
-			->setTable($this->mDbTable)                              // Set the table
-			->addField(FramsieDatabaseInterface::WILDCARD)           // SELECT *
-			->addWhereClause($this->mPrimaryKey, $iUniqueIdentifier) // Send the ID
-			->generateQuery();                                       // Build the query
-		// Grab the row
-		$oMapRow = (object) FramsieDatabaseInterface::getInstance()->getRow(PDO::FETCH_OBJ);
-		// Loop through the object
-		foreach ($oMapRow as $sColumn => $sValue) {
-			// Define the method name
-			$sMethod = (string) 'set'.ucwords($sColumn);
+	public function addColumn($sColumn, $sPropertyName) {
+		// Add the column to property map
+		$this->mColumns[$sColumn] = (string) $sPropertyName;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets up the mapper from a PDO result
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @access public
+	 * @param object|array $oPdoResults
+	 * @return FramsieMapper $this
+	 */
+	public function fromPdo($oPdoResults) {
+		// Loop through the PDO result set
+		foreach ($oPdoResults as $sColumn => $sValue) {
 			// Set the property
-			$this->{$sMethod}($sValue);
+			$this->{$this->mColumns[$sColumn]} = $sValue;
 		}
 		// Return the instance
 		return $this;
 	}
 
+	/**
+	 * This method maps a database table to the mapper
+	 * @package Framsie
+	 * @subpackage FramieMapper
+	 * @access public
+	 * @param integer $iUniqueIdentifier
+	 * @return FramsieMapper $this
+	 */
+	public function load($iUniqueIdentifier) {
+		// Check for a database table
+		$this->verifyDbTable();
+		// Check for a primary key
+		$this->verifyPrimaryKey();
+		// Set the unique ID
+		$this->{$this->mColumns[$this->mPrimaryKey]} = (integer) $iUniqueIdentifier;
+		// Setup the database interface
+		FramsieDatabaseInterface::getInstance()                       // Instantiate the interface
+			->setQuery(FramsieDatabaseInterface::SELECTQUERY)         // We want a SELECT query
+			->setTable($this->mDbTable)                               // Set the table
+			->addWhereClause($this->mPrimaryKey, $iUniqueIdentifier); // Send the ID
+		// Add the fields to the interface
+		$this->setColumnMapIntoInterface(false);
+		// Generate the query
+		FramsieDatabaseInterface::getInstance()->generateQuery();
+		// Grab the row
+		$oMapRow = (object) FramsieDatabaseInterface::getInstance()->getRow(PDO::FETCH_OBJ);
+		// Loop through the object
+		foreach ($oMapRow as $sColumn => $sValue) {
+			// Set the property
+			$this->{$this->mColumns[$sColumn]} = $sValue;
+		}
+		// Return the instance
+		return $this;
+	}
 
-	public function saveObject() {
+	/**
+	 * This method saves the instance of this class back into the database
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @access public
+	 * @throws Exception
+	 * @return FramsieMapper $this
+	 */
+	public function save() {
+		// Check for a database table
+		$this->verifyDbTable();
+		// Check for a primary key
+		$this->verifyPrimaryKey();
+		// Check to see if we have a primary key value
+		if (empty($this->{$this->mColumns[$this->mPrimaryKey]})) { // Run an INSERT
+			// Setup the database interface
+			FramsieDatabaseInterface::getInstance()               // Instantiate the interface
+				->setQuery(FramsieDatabaseInterface::INSERTQUERY) // We want an INSERT query
+				->setTable($this->mDbTable);                      // Set the table
+			// Add the fields to the insterface
+			$this->setColumnMapIntoInterface(true);
+			// Generate the query
+			FramsieDatabaseInterface::getInstance()->generateQuery();
+			// Execute the statement
+			if (!FramsieDatabaseInterface::getInstance()->getQueryExecutionStatus()) {
+				// Throw an exception
+				throw new Exception('Could not insert instance of '.get_class($this)." into database table {$this->mDbTable}.");
+			}
+			// Set the primary key into the object
+			$this->{$this->mColumns[$this->mPrimaryKey]} = (integer) FramsieDatabaseInterface::getInstance()->getLastInsertId();
+			// Return the instane
+			return $this;
+		}
+		// We're running an UPDATE query
+		FramsieDatabaseInterface::getInstance()               // Instantiate the interface
+			->setQuery(FramsieDatabaseInterface::UPDATEQUERY) // We want an UPDATE query
+			->setTable($this->mDbTable);                      // Set the table
+		// Add the fields to the interface
+		$this->setColumnMapIntoInterface(true);
+		// Add the WHERE clause and generate the query
+		FramsieDatabaseInterface::getInstance()
+			->addWhereClause($this->mPrimaryKey, $this->{$this->mColumns[$this->mPrimaryKey]})
+			->generateQuery();
+		// Execute the statement
+		if (!FramsieDatabaseInterface::getInstance()->getQueryExecutionStatus()) {
+			// Throw an exception
+			throw new Exception('Could not update instance of '.get_class($this)." into database table {$this->mDbTable}.");
+		}
+		// Return the instance
+		return $this;
+	}
 
+	/**
+	 * This method converts the current mapper to JSON for ease of use in APIs
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @access public
+	 * @param boolean $bIncludeDbInfo
+	 * @return string json_encode($aInstance)
+	 */
+	public function toJson($bIncludeDbInfo = false) {
+		// Start the instance array
+		$aInstance = array(
+			'__instance' => (string) get_class($this)
+		);
+		// Loop through the object properties
+		foreach (get_object_vars($this) as $sPropertyName => $sPropertyValue) {
+			if (($sPropertyName === 'mColumns') || ($sPropertyName === 'mDbTable') || ($sPropertyName === 'mPrimaryKey') && ($bIncludeDbInfo === false)) {
+				// Continue to the next iteration
+				continue;
+			}
+			// Add the property to the instance array
+			$aInstance[$sPropertyName] = $this->{$sPropertyName};
+		}
+		// Return the instance array
+		return json_encode($aInstance);
 	}
 
 	///////////////////////////////////////////////////////////////////////////

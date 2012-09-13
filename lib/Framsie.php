@@ -87,7 +87,7 @@ class Framsie {
 	 * @static
 	 * @param string $sClass
 	 * @param Dynamic constructor arguments
-	 * @return object self::$mInstances[$sClass]
+	 * @return instance self::$mInstances[$sClass]
 	 */
 	public static function Singleton() {
 		// Grab the arguments
@@ -97,7 +97,7 @@ class Framsie {
 		// Remove the class name
 		array_shift($aArguments);
 		// Check for an existing instance
-		if (empty(self::$mInstances[$sClass]) || ($bReset === true)) {
+		if (empty(self::$mInstances[$sClass])) {
 			// Check for arguments to pass
 			if (empty($aArguments)) {
 				// Create a new instance
@@ -108,6 +108,35 @@ class Framsie {
 				// Create a new instance
 				self::$mInstances[$sClass] = $oReflection->newInstanceArgs($aArguments);
 			}
+		}
+		// Return the instance
+		return self::$mInstances[$sClass];
+	}
+
+	/**
+	 * This method resets a singleton instance set into the class
+	 * @package Framsie
+	 * @access public
+	 * @static
+	 * @param string $sClass
+	 * @return instance self::$mInstances[$sClass]
+	 */
+	public static function SingletonReset() {
+		// Grab the arguments
+		$aArguments = func_get_args();
+		// Set the class name
+		$sClass = (string) $aArguments[0];
+		// Remove the class name
+		array_shift($aArguments);
+		// Check for arguments to pass
+		if (empty($aArguments)) {
+			// Create a new instance
+			self::$mInstances[$sClass] = new $sClass();
+		} else {
+			// Create an instance of the reflection class
+			$oReflection = new ReflectionClass($sClass);
+			// Create a new instance
+			self::$mInstances[$sClass] = $oReflection->newInstanceArgs($aArguments);
 		}
 		// Return the instance
 		return self::$mInstances[$sClass];

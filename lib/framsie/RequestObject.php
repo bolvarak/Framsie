@@ -163,7 +163,7 @@ class FramsieRequestObject {
 	 */
 	protected function processBlock() {
 		// Set the temporary block
-		$sBlock = (string) ((empty($this->mQueryInProcessing[0]))) ? 'defaultView' : strtolower($this->mQueryInProcessing[0]).'View';
+		$sBlock = (string) ((empty($this->mQueryInProcessing[0]))) ? 'defaultView' : strtolower(preg_replace('/[^a-zA-Z]/', null, $this->mQueryInProcessing[0])).'View';
 		// Check for the method
 		if (!method_exists($this->mController, $sBlock)) {
 			// Set the default block
@@ -194,7 +194,7 @@ class FramsieRequestObject {
 	 */
 	protected function processController() {
 		// Set the temporary controller
-		$sController = (string) ((empty($this->mQueryInProcessing[0])) ? 'HomeController' : ucwords(strtolower($this->mQueryInProcessing[0])).'Controller');
+		$sController = (string) ((empty($this->mQueryInProcessing[0])) ? 'HomeController' : ucwords(strtolower(preg_replace('/[^a-zA-Z]/', null, $this->mQueryInProcessing[0]))).'Controller');
 		// Check for the class
 		if (!class_exists($sController)) {
 			// Set the default controller
@@ -548,7 +548,7 @@ class FramsieRequestObject {
 	 * @access public
 	 * @return stdClass
 	 */
-	public function getPostRequest() {
+	public function getPost() {
 		// Return the POST request object
 		return $this->mPostRequest;
 	}

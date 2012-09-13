@@ -14,6 +14,12 @@ abstract class FramsieController {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This constant contains the font header content-tyle
+	 * @var string
+	 */
+	const FONT              = 'application/font';
+
+	/**
 	 * This constant contains the EOT font header content-type
 	 * @var string
 	 */
@@ -126,6 +132,20 @@ abstract class FramsieController {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This property contains the class(es) to append to the body element
+	 * @access protected
+	 * @var string
+	 */
+	protected $mBodyClass       = null;
+
+	/**
+	 * This property contains the body element onload subroutine
+	 * @access protected
+	 * @var string
+	 */
+	protected $mBodyOnload      = null;
+
+	/**
 	 * This property tells the system whether or not to disable the layout rendering
 	 * @access protected
 	 * @var boolean
@@ -225,13 +245,18 @@ abstract class FramsieController {
 	 * @return FramsieController $this
 	 */
 	public function addMetaTag($sName, $sContent, $sHttpEquiv = null, $sScheme = null) {
+		// Initialize the meta tag
+		$oMetaTag = new stdClass();
+		// Set the content
+		$oMetaTag->sContent   = (string) $sContent;
+		// Set the http-equiv if any
+		$oMetaTag->sHttpEquiv = (string) $sHttpEquiv;
+		// Set the name
+		$oMetaTag->sName      = (string) $sName;
+		// Set the content
+		$oMetaTag->sScheme    = (string) $sScheme;
 		// Add the meta tag to the instance
-		array_push($this->mMetaTags, array(
-			'sContent'   => (string) $sContent,
-			'sHttpEquiv' => (string) $sHttpEquiv,
-			'sName'      => (string) $sName,
-			'sScheme'    => (string) $sScheme
-		));
+		array_push($this->mMetaTags, $oMetaTag);
 		// Return the instance
 		return $this;
 	}
@@ -269,15 +294,18 @@ abstract class FramsieController {
 	 * @access public
 	 * @param string $sSource
 	 * @param boolean [$bSourceIsLink]
+	 * @param string [$sMedia]
 	 * @return FramsieController
 	 */
-	public function addStylesheet($sSource, $bSourceIsLink = true) {
+	public function addStylesheet($sSource, $bSourceIsLink = true, $sMedia = null) {
 		// Create the stylesheet object
 		$oStylesheet = new stdClass();
 		// Set the source
 		$oStylesheet->sSource       = (string) $sSource;
 		// Set the source type
 		$oStylesheet->bSourceIsLink = (boolean) $bSourceIsLink;
+		// Set the media
+		$oStylesheet->sMedia        = (string) $sMedia;
 		// Add the stylesheet to the instance
 		array_push($this->mStylesheets, $oStylesheet);
 		// Return the instance
@@ -320,6 +348,30 @@ abstract class FramsieController {
 	///////////////////////////////////////////////////////////////////////////
 	/// Getters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method returns the body element class styles
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @return string
+	 */
+	public function getBodyClass() {
+		// Return the body class
+		return $this->mBodyClass;
+	}
+
+	/**
+	 * This method returns the body element onload subroutine
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @return string
+	 */
+	public function getBodyOnload() {
+		// Return the body onload
+		return $this->mBodyOnload;
+	}
 
 	/**
 	 * This method returns the current layout active status
@@ -489,7 +541,7 @@ abstract class FramsieController {
 				// Check for a source link
 				if ($oStylesheet->bSourceIsLink === true) {
 					// Generate the link tag
-					$sStyles .= (string) FramsieHtml::getInstance()->getLink('stylesheet', 'text/css', $oScript->sSource);
+					$sStyles .= (string) FramsieHtml::getInstance()->getLink('stylesheet', 'text/css', $oStylesheet->sSource, (empty($oStylesheet->sMedia) ? array() : array('media' => $oStylesheet->sMedia)));
 				} else {
 					// Generate the style tag
 					$sStyles .= (string) FramsieHtml::getInstance()->getStyle('text/css', $oStylesheet->sSource);
@@ -508,11 +560,14 @@ abstract class FramsieController {
 	 * @subpackage FramsieController
 	 * @access public
 	 * @param string $sStyle
+	 * @param string $sVersion
 	 * @return string
 	 */
-	public function getStyleUrl($sStyle) {
+	public function getStyleUrl($sStyle, $sVersion = null) {
+		// Generate the URL
+		$sUrl = (string) $this->getUrl('assets', 'style', 'file', base64_encode($sStyle));
 		// Return the URL
-		return $this->getUrl('assets', 'style', 'file', base64_encode($sStyle));
+		return (empty($sVersion) ? $sUrl : "{$sUrl}?v={$sVersion}");
 	}
 
 	/**
@@ -557,6 +612,36 @@ abstract class FramsieController {
 	///////////////////////////////////////////////////////////////////////////
 	/// Setters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method sets the body element class styles
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param string $sClass
+	 * @return FramsieController $this
+	 */
+	public function setBodyClass($sClass) {
+		// Set the body element class
+		$this->mBodyClass = (string) $sClass;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets the body element onload subroutine
+	 * @package Framse
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param string $sRoutine
+	 * @return FramsieController $this
+	 */
+	public function setBodyOnload($sRoutine) {
+		// Set the body element onload subroutine
+		$this->mBodyClass = (string) $sRoutine;
+		// Return the instance
+		return $this;
+	}
 
 	/**
 	 * This method tells the system whether or not to disable the layout view

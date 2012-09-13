@@ -315,9 +315,9 @@ class FramsieDatabaseInterface {
 		try {
 			// Create the database connection
 			$this->mConnection = new PDO(
-					ConfigurationService::Load('database.dsn'),  // Data Source Name
-					ConfigurationService::Load('database.user'), // Username
-					ConfigurationService::Load('datbase.pass')   // Password
+					FramsieConfiguration::Load('database.dsn'),  // Data Source Name
+					FramsieConfiguration::Load('database.user'), // Username
+					FramsieConfiguration::Load('database.pass')   // Password
 			);
 		} catch (PDOException $oException) {
 			// Do something with the exception
@@ -571,21 +571,20 @@ class FramsieDatabaseInterface {
 			throw new Exception('No fieldsets present, fieldsets are needed to generate valid SELECT statements.');
 		}
 		// Loop through the fieldsets
-		foreach ($this->mFields as $sName => $sValue) {
-			// Check for a wildcard
-			if (strpos($sName, '*') !== false) {
-				// Add the wildcard
-				$sFields .= (string) "{$sName}";
-			} else {
-				// Add the field name
-				$sFields .= (string) "`{$sName}`";
+		foreach ($this->mFields as $sColumn => $aData) {
+			// Check for a table name
+			if (empty($aData['sTable']) === false) {
+				// Add the table
+				$sFields .= (string) "`{$aData['sTable']}`.";
 			}
-			// Is this the last field
+			// Add the field
+			$sFields .= (string) (($sColumn === '*') ? "*" : "`{$sColumn}`");
+			// Check the iterator
 			if (($iIterator + 1) === count($this->mFields)) {
 				// Reset the iterator
 				$iIterator = 0;
 			} else {
-				// Add a delimiter
+				// Append a separator
 				$sFields .= (string) ', ';
 				// Increment the iterator
 				$iIterator++;
@@ -670,13 +669,24 @@ class FramsieDatabaseInterface {
 			foreach ($this->mWhereClauses as $aClause) {
 				// Check to see if this is the first clause
 				if ($iIterator === 0) {
-					// Set the clause
-					$sWhere .= (string) "`{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])}";
+					// Check for a table
+					if (empty($aClause['sTable'])) {
+						$sWhere .= (string) "`{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
+					} else {
+						// Set the clause
+						$sWhere .= (string) "`{$aClause['sTable']}`.`{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
+					}
 					// Increment the iterator
 					$iIterator++;
 				} else {
-					// Set the clause
-					$sWhere .= (string) "{$aClause['sConditional']} `{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])}";
+					// Check for a table
+					if (empty($aClause['sTable'])) {
+						// Set the clause
+						$sWhere .= (string) "{$aClause['sConditional']} `{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
+					} else {
+						// Set the clause
+						$sWhere .= (string) "{$aClause['sConditional']} `{$aClause['sTable']}`.`{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
+					}
 					// Increment the iterator
 					$iIterator++;
 				}
@@ -712,12 +722,16 @@ class FramsieDatabaseInterface {
 	 * @package FramsieDatabaseInterface
 	 * @access public
 	 * @param string $sName
-	 * @param multitype [$siValue]
+	 * @param multitype [$sValue]
+	 * @param string [$sTable]
 	 * @return FramsieDatabaseInterface $this
 	 */
-	public function addField($sName, $siValue = null) {
+	public function addField($sName, $sValue = null, $sTable = null) {
 		// Add the field to the list
-		$this->mFields[(string) $sName] = (empty($siValue) ? null : $siValue);
+		$this->mFields[(string) $sName] = array(
+			'sTable' => (string) $sTable,
+			'sValue' => $sValue
+		);
 		// Return the instance
 		return $this;
 	}
@@ -957,17 +971,19 @@ class FramsieDatabaseInterface {
 	 * @access public
 	 * @param string $sField
 	 * @param string $sValue
-	 * @param string $sOperator
-	 * @param string $sConditional
+	 * @param string [$sTable]
+	 * @param string [$sOperator]
+	 * @param string [$sConditional]
 	 * @return FramsieDatabaseInterface $this
 	 */
-	public function addWhereClause($sField, $sValue, $sOperator = self::EQOP, $sConditional = self::ANDCON) {
+	public function addWhereClause($sField, $sValue, $sTable = null, $sOperator = self::EQOP, $sConditional = self::ANDCON) {
 		// Add the clause to the system
 		array_push($this->mWhereClauses, array(
 		'sConditional' => (string) $sConditional,
 		'sField'       => (string) $sField,
 		'sOperator'    => (string) $sOperator,
-		'sbValue'      => (string) $sValue
+		'sTable'       => (string) $sTable,
+		'sValue'       => (string) $sValue
 		));
 		// Return the instance
 		return $this;
@@ -1033,6 +1049,30 @@ class FramsieDatabaseInterface {
 	public function getFields() {
 		// Return the current field set
 		return $this->mFields;
+	}
+
+	/**
+	 * This method returns the last inserted ID from the connection
+	 * @package FramsieDatabaseInterface
+	 * @subpackage Getters
+	 * @access public
+	 * @return string
+	 */
+	public function getLastInsertId() {
+		// Return the last inserted ID from the connection
+		return $this->mConnection->lastInsertId();
+	}
+
+	/**
+	 * This method returns the number of rows from the last executed statement
+	 * @package FramsieDatabaseInterface
+	 * @subpackage Getters
+	 * @access public
+	 * @return integer
+	 */
+	public function getNumRows() {
+		// Return the number of rows
+		return $this->getQueryStatement()->rowCount();
 	}
 
 	/**

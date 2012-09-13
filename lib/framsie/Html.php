@@ -195,6 +195,39 @@ class FramsieHtml {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This method generates a dropdown data provider from a database lookup table
+	 * @package Framsie
+	 * @subpackage FramsieHtml
+	 * @param string $sLookupTable
+	 * @param string $sValueField
+	 * @param string $sLabelField
+	 * @param boolean $bAddPlaceholder
+	 * @return array
+	 */
+	public function generateDataProvider($sLookupTable, $sValueField, $sLabelField, $bAddPlaceholder = true) {
+		// Create the placeholder array
+		$aDataProvider = array();
+		// Check to see if we should add a placeholder
+		if ($bAddPlaceholder === true) {
+			$aDataProvider['Select...'] = null;
+		}
+		// Setup the DBI
+		FramsieDatabaseInterface::getInstance(true)
+			->setTable($sLookupTable)
+			->setQuery(FramsieDatabaseInterface::SELECTQUERY)
+			->addField($sValueField)
+			->addField($sLabelField)
+			->generateQuery();
+		// Fetch and loop through the resultd
+		foreach (FramsieDatabaseInterface::getInstance()->getRows(PDO::FETCH_OBJ) as $oRow) {
+			// Append the value
+			$aDataProvider[$oRow->{$sLabelField}] = $oRow->{$sValueField};
+		}
+		// Return the data provider
+		return $aDataProvider;
+	}
+
+	/**
 	 * This method generates an HTML anchor tag
 	 * @package Framsie
 	 * @subpackage FramsieHtml
@@ -289,9 +322,10 @@ class FramsieHtml {
 	 * @param string [$sId]
 	 * @param array [$aDataProvider]
 	 * @param array [$aAttributes]
+	 * @param string [$sSelected]
 	 * @return string
 	 **/
-	public function getDropdown($sName, $sId = null, $aDataProvider = array(), $aAttributes = array(), $aSelected = array()) {
+	public function getDropdown($sName, $sId = null, $aDataProvider = array(), $aAttributes = array(), $sSelected = null) {
 		// Start the HTML
 		$sHtml = (string) "<select name=\"{$sName}\" ";
 		// Check for an ID
@@ -313,22 +347,10 @@ class FramsieHtml {
 			foreach ($aDataProvider as $sLabel => $sValue) {
 				// Option placeholder
 				$sOption = (string) "<option value=\"{$sValue}\" ";
-				// Check for default selected values
-				if (!empty($aSelected) && is_array($aSelected)) {
-					// Loop through the selected array
-					foreach ($aSelected as $sSelectedValue) {
-						// Match the selected value
-						if ($sSelectedValue == $sValue) {
-							// Make this option selected
-							$sOption .= (string) "selected=\"selected\" ";
-						}
-					}
-				} elseif(!empty($aSelected) && !is_array($aSelected)) {
-					// We just have one selected option
-					if ($aSelected == $sValue) {
-						// Make this option selected
-						$sOption .= (string) "selected=\"selected\" ";
-					}
+				// Check to see if this value should be selected
+				if ($sSelected == $sValue) {
+					// Make this option selected
+					$sOption .= (string) "selected=\"selected\" ";
 				}
 				// Finish the option tag
 				$sOption .= (string) ">{$sLabel}</option>";

@@ -31,7 +31,7 @@ class AssetsController extends FramsieController {
 		// Determine the header type
 		switch (preg_replace('/^.*\.([^.]+)$/D', '$1', $sImage)) {
 			// EOT Font
-			case 'eot'  : $this->setHeaderContentType(self::FONT_EOT);  break;
+			case 'eot'  : $this->setHeaderContentType(self::FONT);  break;
 			// GIF
 			case 'gif'  : $this->setHeaderContentType(self::IMG_GIF);   break;
 			// JPEG
@@ -39,7 +39,7 @@ class AssetsController extends FramsieController {
 			// JPG
 			case 'jpg'  : $this->setHeaderContentType(self::IMG_JPEG);  break;
 			// OTF Font
-			case 'otf'  : $this->setHeaderContentType(self::FONT_TTF);  break;
+			case 'otf'  : $this->setHeaderContentType(self::FONT);  break;
 			// PNG
 			case 'png'  : $this->setHeaderContentType(self::IMG_PNG);   break;
 			// SVG
@@ -49,9 +49,9 @@ class AssetsController extends FramsieController {
 			// TIFF
 			case 'tif'  : $this->setHeaderContentType(self::IMG_TIF);   break;
 			// TTF Font
-			case 'ttf'  : $this->setHeaderContentType(self::FONT_TTF);  break;
+			case 'ttf'  : $this->setHeaderContentType(self::FONT);  break;
 			// WOFF Font
-			case 'woff' : $this->setHeaderContentType(self::FONT_WOFF); break;
+			case 'woff' : $this->setHeaderContentType(self::FONT); break;
 		}
 		// Print the image
 		readfile(BLOCK_PATH.'/'.IMG_ASSETS_PATH."/{$sImage}");

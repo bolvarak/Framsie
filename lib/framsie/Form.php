@@ -34,63 +34,70 @@ abstract class FramsieForm {
 	 * @access protected
 	 * @var string
 	 */
-	protected $mAction        = null;
+	protected $mAction         = null;
 
 	/**
 	 * This property contains the form's attributes
 	 * @access protected
 	 * @var array
 	 */
-	protected $mAttributes    = array('enctype' => 'multipart/form-data');
+	protected $mAttributes     = array('enctype' => 'multipart/form-data');
 
 	/**
 	 * This property contains the block file for the form's display
 	 * @access protected
 	 * @var string
 	 */
-	protected $mBlockFile     = null;
+	protected $mBlockFile      = null;
 
 	/**
 	 * This property contains the form's class
 	 * @access protected
 	 * @var string
 	 */
-	protected $mClass         = null;
+	protected $mClass          = null;
 
 	/**
 	 * This property contains the data providers for select fields
 	 * @access protected
-	 * @var object
+	 * @var stdClass
 	 */
-	protected $mDataProviders = null;
+	protected $mDataProviders  = null;
 
 	/**
 	 * This property contains the fields for the form
 	 * @access protected
 	 * @var stdClass
 	 */
-	protected $mFields        = null;
+	protected $mFields         = null;
 
 	/**
 	 * This property contains the form's ID
 	 * @access protected
 	 * @var string
 	 */
-	protected $mIdentifier    = null;
+	protected $mIdentifier     = null;
 
 	/**
 	 * This property contains the request method for the form
 	 * @access protected
 	 * @var string
 	 */
-	protected $mMethod        = self::METHOD_POST;
+	protected $mMethod         = self::METHOD_POST;
 
 	/**
 	 * This property contains the name of the form
 	 * @access protected
 	 * @var string
 	 */
-	protected $mName          = null;
+	protected $mName           = null;
+
+	/**
+	 * This property contains the selected values for dropdowns
+	 * @access protected
+	 * @var stdClass
+	 */
+	protected $mSelectedValues = null;
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
@@ -105,9 +112,11 @@ abstract class FramsieForm {
 	 */
 	public function __construct() {
 		// Initialize the fields
-		$this->mFields        = new stdClass();
+		$this->mFields         = new stdClass();
 		// Initialize the data providers
-		$this->mDataProviders = new stdClass();
+		$this->mDataProviders  = new stdClass();
+		// Initialize the selected values
+		$this->mSelectedValues = new stdClass();
 		// Return the instance
 		return $this;
 	}
@@ -198,9 +207,11 @@ abstract class FramsieForm {
 	 * @param string $sId
 	 * @param string $sClass
 	 * @param array $aAttributes
+	 * @param array $aDataProvider
+	 * @param string $sSelected
 	 * @return FramsieForm $this
 	 */
-	public function addField($sType, $sName, $sLabel, $sId = null, $sClass = null, $aAttributes = array()) {
+	public function addField($sType, $sName, $sLabel, $sId = null, $sClass = null, $aAttributes = array(), $aDataProvider = array(), $sSelected = null) {
 		// Check for a class
 		if (!empty($sClass)) {
 			// Set the class into the attributes
@@ -216,6 +227,38 @@ abstract class FramsieForm {
 		$this->mFields->{$sName}->sLabel      = (string) $sLabel;
 		// Set the type
 		$this->mFields->{$sName}->sType       = (string) $sType;
+		// Check for a data provider
+		if (empty($aDataProvider) === false) {
+			// Add the data provider
+			$this->addDataProvider($sName, $aDataProvider);
+		}
+		// Check for a selected value
+		if (empty($sSelected) === false) {
+			// Add the selected value
+			$this->addSelectedValue($sName, $sSelected);
+		}
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method adds a selected value to the dropdown
+	 * @package Framsie
+	 * @subpackage FramsieForm
+	 * @access public
+	 * @param string $sName
+	 * @param string $sValue
+	 * @throws Exception
+	 * @return FramsieForm $this
+	 */
+	public function addSelectedValue($sName, $sValue) {
+		// Check for the field
+		if (empty($this->mFields->{$sName})) {
+			// Throw an exception
+			throw new Exception("The field \"{$sName}\" does not exist.");
+		}
+		// Set the selected value
+		$this->mSelectedValues->{$sName} = $sValue;
 		// Return the instance
 		return $this;
 	}
@@ -312,7 +355,8 @@ abstract class FramsieForm {
 					$sName,                                                                               // Send the name
 					$this->mFields->{$sName}->sIdentifier,                                                // Send the identifier
 					(empty($this->mDataProviders->{$sName}) ? array() : $this->mDataProviders->{$sName}), // Send the data provider
-					$this->mFields->{$sName}->aAttribues                                                  // Send the attributes
+					$this->mFields->{$sName}->aAttributes,                                                // Send the attributes
+					(empty($this->mSelectedValues->{$sName}) ? null   : $this->mSelectedValues->{$sName}) // Send the selected value
 				);
 			// We're done
 			break;
@@ -405,17 +449,22 @@ abstract class FramsieForm {
 	 * @subpackage FramsieForm
 	 * @access public
 	 * @param string $sName
+	 * @param boolean $bAsHtml
 	 * @throws Exception
 	 * @return string
 	 */
-	public function getLabel($sName) {
+	public function getLabel($sName, $bAsHtml = true) {
 		// Check for the field
 		if (empty($this->mFields->{$sName})) {
 			// Throw an exception
 			throw new Exception("The field \"{$sName}\" does not exist.");
 		}
 		// Return the label
-		return FramsieHtml::getInstance()->getLabel($this->mFields->{$sName}->sLabel, $this->mFields->{$sName}->sIdentifier);
+		if ($bAsHtml === true) { // Return the HTML formatted label
+			return FramsieHtml::getInstance()->getLabel($this->mFields->{$sName}->sLabel, $this->mFields->{$sName}->sIdentifier);
+		}
+		// Return the plain text label
+		return $this->mFields->{$sName}->sLabel;
 	}
 
 	/**
@@ -489,7 +538,7 @@ abstract class FramsieForm {
 	 */
 	public function setClass($sClass) {
 		// Set the cladd into the system
-		$this->mAttributes['class'] = (string) $sClass;
+		$this->mClass = (string) $sClass;
 		// Return the instance
 		return $this;
 	}
