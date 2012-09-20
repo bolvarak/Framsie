@@ -352,11 +352,11 @@ abstract class FramsieForm {
 			case FramsieHtml::INPUT_SELECT :
 				// Return the field
 				return FramsieHtml::getInstance()->getDropdown(
-					$sName,                                                                               // Send the name
-					$this->mFields->{$sName}->sIdentifier,                                                // Send the identifier
-					(empty($this->mDataProviders->{$sName}) ? array() : $this->mDataProviders->{$sName}), // Send the data provider
-					$this->mFields->{$sName}->aAttributes,                                                // Send the attributes
-					(empty($this->mSelectedValues->{$sName}) ? null   : $this->mSelectedValues->{$sName}) // Send the selected value
+					$sName,                                                                                                                          // Send the name
+					$this->mFields->{$sName}->sIdentifier,                                                                                           // Send the identifier
+					(empty($this->mDataProviders->{$sName}) ? array() : $this->mDataProviders->{$sName}),                                            // Send the data provider
+					$this->mFields->{$sName}->aAttributes,                                                                                           // Send the attributes
+					(empty($this->mSelectedValues->{$sName}) ? null   : (empty($_POST[$sName]) ? $this->mSelectedValues->{$sName} : $_POST[$sName])) // Send the selected value
 				);
 			// We're done
 			break;
@@ -365,16 +365,21 @@ abstract class FramsieForm {
 			case FramsieHtml::INPUT_TEXTAREA :
 				// Return the field
 				return FramsieHtml::getInstance()->getTextarea(
-					$sName,                                // Send the name
-					$this->mFields->{$sName}->sIdentifier, // Send the identifier
-					null,                                  // Send the content
-					$this->mFields->{$sName}->aAttributes  // Send the attributes
+					$sName,                                          // Send the name
+					$this->mFields->{$sName}->sIdentifier,           // Send the identifier
+					(empty($_POST[$sName]) ? null : $_POST[$sName]), // Send the content
+					$this->mFields->{$sName}->aAttributes            // Send the attributes
 				);
 			// We're done
 			break;
 
 			// Everything else
 			default :
+				// Check for POST data
+				if (empty($_POST[$sName]) === false) {
+					// Set the field value
+					$this->mFields->{$sName}->aAttributes['value'] = $_POST[$sName];
+				}
 				// Return the field
 				return FramsieHtml::getInstance()->getInput(
 					$this->mFields->{$sName}->sType,       // Send the input type

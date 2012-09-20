@@ -73,6 +73,13 @@ class FramsieRequestObject {
 	protected $mQueryInProcessing = array();
 
 	/**
+	 * This property holds the $_SERVER variable
+	 * @access protected
+	 * @var stdClass
+	 */
+	protected $mServer            = null;
+
+	/**
 	 * This property contains the sessions that came with the request
 	 * @access protected
 	 * @var stdClass
@@ -265,7 +272,7 @@ class FramsieRequestObject {
 		// Loop through the POST request
 		foreach ($_POST as $sName => $sValue) {
 			// Set the request variable into the system
-			$this->mPostRequest->{$sName} = $sValue;
+			$this->mPostRequest->{$sName} = htmlspecialchars($sValue);
 		}
 		// We're done, return the instance
 		return $this;
@@ -323,6 +330,25 @@ class FramsieRequestObject {
 		if (empty($this->mQueryInProcessing[0])) {
 			// Shift this key off of the array
 			array_shift($this->mQueryInProcessing);
+		}
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method processes the $_SERVER variable into the system
+	 * @package Framsie
+	 * @subpackage FramsieRequestObject
+	 * @access protected
+	 * @return FramsieRequestObject $this
+	 */
+	protected function processServer() {
+		// Reset the server object
+		$this->mServer = new stdClass();
+		// Loop through the SERVER object
+		foreach ($_SERVER as $sProperty => $sValue) {
+			// Set the server variable into the system
+			$this->mServer->{"m".str_replace(' ', null, ucwords(str_replace('_', ' ', strtolower($sProperty))))} = $sValue;
 		}
 		// Return the instance
 		return $this;
@@ -390,7 +416,7 @@ class FramsieRequestObject {
 	 */
 	public function isPost() {
 		// Check to see if this request is post
-		if ((empty($_POST) === false) || (empty($this->mPostRequest) === false)) {
+		if (empty($_POST) === false) {
 			// POST variables exist, we have a POST request
 			return true;
 		}
@@ -408,6 +434,8 @@ class FramsieRequestObject {
 	 * @return FramsieRequestObject $this
 	 */
 	public function process($sRequest, $sStaticBasePath = null) {
+		// Remove the query string from the request
+		$sRequest = (string) str_replace(array($_SERVER['QUERY_STRING'], '?'), null, $sRequest);
 		// Set the request
 		$this->mRequest       = (string) $sRequest;
 		// Set the static base path
@@ -418,6 +446,8 @@ class FramsieRequestObject {
 		$this->processGetRequest();
 		// Then we process the cookies
 		$this->processCookies();
+		// Then we process the SERVER
+		$this->processServer();
 		// Finally we process the sessions
 		$this->processSessions();
 		// Process the request string
@@ -429,7 +459,9 @@ class FramsieRequestObject {
 		// Process the query string and return
 		$this->processQuery();
 		// Execute the controller
-		$this->mController = new $this->mController($this);
+		$this->mController = new $this->mController();
+		// Set the request into the controller
+		$this->mController->setRequest($this);
 		// Set the view object into the controller
 		$this->mController->setView(new FramsieView());
 		// Set the block file in the controller
@@ -537,6 +569,11 @@ class FramsieRequestObject {
 			// Return the GET parameter
 			return $this->mGetRequest->{$sName};
 		}
+		// Check for the parameter in the SERVER request
+		if (empty($this->mServer->{$sName}) === false) {
+			// Return the SERVER parameter
+			return $this->mServer->{$sName};
+		}
 		// The parameter does not exist
 		return false;
 	}
@@ -575,6 +612,18 @@ class FramsieRequestObject {
 	public function getRequest() {
 		// Return the current request URI
 		return $this->mRequest;
+	}
+
+	/**
+	 * This method returns the current SERVER set in the instance
+	 * @package Framsie
+	 * @subpackage FramsieRequestObject
+	 * @access public
+	 * @return stdClass
+	 */
+	public function getServer() {
+		// Return the current SERVER request
+		return $this->mServer;
 	}
 
 	/**

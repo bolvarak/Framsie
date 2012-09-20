@@ -82,12 +82,10 @@ abstract class FramsieMapper {
 		if ($bInsertUpdate === true) {
 			// Loop through the columns and add the fields
 			foreach ($this->mColumns as $sColumn => $sPropertyName) {
-				// Set the method name
-				$sMethod = (string) "get{$sColumn}";
 				// Make sure this column isn't the primary key and that the property has a value
 				if (($sColumn !== $this->mPrimaryKey) && (empty($this->{$sPropertyName}) === false)) {
 					// Add the field to the interface
-					FramsieDatabaseInterface::getInstance()->addField($sColumn, $this->{$sMethod}());
+					FramsieDatabaseInterface::getInstance()->addField($sColumn, $this->{$sPropertyName});
 				}
 			}
 			// Return the instance
@@ -273,7 +271,7 @@ abstract class FramsieMapper {
 		// Set the unique ID
 		$this->{$this->mColumns[$this->mPrimaryKey]} = (integer) $iUniqueIdentifier;
 		// Setup the database interface
-		FramsieDatabaseInterface::getInstance()                       // Instantiate the interface
+		FramsieDatabaseInterface::getInstance(true)                   // Instantiate the interface
 			->setQuery(FramsieDatabaseInterface::SELECTQUERY)         // We want a SELECT query
 			->setTable($this->mDbTable)                               // Set the table
 			->addWhereClause($this->mPrimaryKey, $iUniqueIdentifier); // Send the ID
@@ -308,7 +306,7 @@ abstract class FramsieMapper {
 		// Check to see if we have a primary key value
 		if (empty($this->{$this->mColumns[$this->mPrimaryKey]})) { // Run an INSERT
 			// Setup the database interface
-			FramsieDatabaseInterface::getInstance()               // Instantiate the interface
+			FramsieDatabaseInterface::getInstance(true)           // Instantiate the interface
 				->setQuery(FramsieDatabaseInterface::INSERTQUERY) // We want an INSERT query
 				->setTable($this->mDbTable);                      // Set the table
 			// Add the fields to the insterface
@@ -326,7 +324,7 @@ abstract class FramsieMapper {
 			return $this;
 		}
 		// We're running an UPDATE query
-		FramsieDatabaseInterface::getInstance()               // Instantiate the interface
+		FramsieDatabaseInterface::getInstance(true)           // Instantiate the interface
 			->setQuery(FramsieDatabaseInterface::UPDATEQUERY) // We want an UPDATE query
 			->setTable($this->mDbTable);                      // Set the table
 		// Add the fields to the interface

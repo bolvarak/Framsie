@@ -66,4 +66,39 @@ class FramsieModel {
 		// Return the instance
 		return self::$mInstance;
 	}
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Getters //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method returns the current mapper instance
+	 * @package Framsie
+	 * @subpackage FramsieModel
+	 * @access public
+	 * @return FramsieMapper
+	 */
+	public function getMapper() {
+		// Return the mapper
+		return $this->mMapper;
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Setters //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method sets the mapper instance into the class
+	 * @package Framsie
+	 * @subpackage FramsieModel
+	 * @access public
+	 * @param FramsieMapper $oInstance
+	 * @return FramsieModel $this
+	 */
+	public function setMapper(FramsieMapper $oInstance) {
+		// Set the mapper into the class
+		$this->mMapper = $oInstance;
+		// Return the instance
+		return $this;
+	}
 }

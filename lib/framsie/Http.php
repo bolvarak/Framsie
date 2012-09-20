@@ -26,22 +26,28 @@ abstract class FramsieHttp {
 	const DATA_TYPE_JSON      = 2;
 
 	/**
+	 * This constant contains the QUERY_STRING type definition
+	 * @var integer
+	 */
+	const DATA_TYPE_QUERY_STR = 3;
+
+	/**
 	 * This constant contains the SCRIPT type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_SCRIPT    = 3;
+	const DATA_TYPE_SCRIPT    = 4;
 
 	/**
 	 * This constant contains the TEXT type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_TEXT      = 4;
+	const DATA_TYPE_TEXT      = 5;
 
 	/**
 	 * This constant contains the XML type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_XML       = 5;
+	const DATA_TYPE_XML       = 6;
 
 	/**
 	 * This constant contains the GET type definition
@@ -109,6 +115,13 @@ abstract class FramsieHttp {
 	protected $mPassword      = null;
 
 	/**
+	 * This property contains hooks that should be executed before the request is made
+	 * @access protected
+	 * @var arrau
+	 */
+	protected $mRequestHooks  = array();
+
+	/**
 	 * This property contains the request method
 	 * @access protected
 	 * @var string
@@ -118,9 +131,16 @@ abstract class FramsieHttp {
 	/**
 	 * This property contains the decoded response from the server
 	 * @access protected
-	 * @var stdClass
+	 * @var array
 	 */
-	protected $mResponse      = null;
+	protected $mResponse      = array();
+
+	/**
+	 * This property contains the hooks that should be executed upon response
+	 * @access protected
+	 * @var array
+	 */
+	protected $mResponseHooks = array();
 
 	/**
 	 * This property contains the request url
@@ -193,6 +213,133 @@ abstract class FramsieHttp {
 	}
 
 	///////////////////////////////////////////////////////////////////////////
+	/// Protected Methods ////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method encodes the parameters in the data array into a query string
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param array $aParameters
+	 * @return string
+	 */
+	protected function encodeDataParams($aParameters = array()) {
+		// Check to see if we need to encode a custom data set
+		if (empty($aParameters) === false) {
+			// Encode the custom data array
+			return http_build_query($aParameters);
+		}
+		// Return the Query String version of the parameters in the system
+		return http_build_query($this->mData);
+	}
+
+	/**
+	 * This method ensures that the hook methods being added to the class actually exist
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param multitype $mMethod
+	 * @throws Exception
+	 * @return FramsieHttp $this
+	 */
+	protected function ensureHookMethod($mMethod) {
+		// Check to see if an object was send with the method
+		if (is_array($mMethod)) {
+			// Check to make sure there is an actual object
+			if (is_object($mMethod[0]) === false) {
+				// Throw an exception
+				throw new Exception("No valid instance was provided with the hook method");
+			}
+			// Check to see if the method exists
+			if (method_exists($mMethod[0], $mMethod[1]) === false) {
+				// Throw an exception
+				throw new Exception("The hook method \"{$mMethod[1]}\" does not exist in the class \"".get_class($mMethod[0])."\".");
+			}
+			// We're done, return the instance
+			return $this;
+		}
+		// The method is associated with this object, make sure it exists
+		if (method_exists($this, $mMethod) === false) {
+			// Throw an exception
+			throw new Exception("The hook method \"{$mMethod}\" does not exist in the class \"".get_class($this)."\".");
+		}
+		// We're done, return the instance
+		return $this;
+	}
+
+	/**
+	 * This method loops through the request hooks and executes them
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @return FramsieHttp $this
+	 */
+	protected function executeRequestHooks() {
+		// Loop through the request hooks and execute them
+		foreach ($this->mRequestHooks as $sMethod) {
+			// Check to see if the method has an object associated with it
+			if (is_array($sMethod) === true) {
+				// Execute the hook
+				call_user_func($sMethod);
+			} else {
+				// Execute the method
+				$this->{$sMethod}();
+			}
+		}
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method parses a Query string into the response or into an array
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param string $sQuery
+	 * @param boolean $bUseReturnArray
+	 * @return array|FramsieHttp $this
+	 */
+	protected function parseQueryString($sQuery, $bUseReturnArray = false) {
+		// Check to see if we have an array to pipe it into
+		if ($bUseReturnArray === true) {
+			// Setup the array placeholder
+			$aReturn = array();
+			// Parse the query string into an array
+			parse_str($sQuery, $aReturn);
+			// Return the array
+			return $aReturn;
+		}
+		// Parse the query string into the response
+		parse_str($sQuery, $this->mResponse);
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method loops through the response hooks and executes them
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @return FramsieHttp $this
+	 */
+	protected function executeResponseHooks() {
+		// Loop through the response hooks and execute them
+		foreach ($this->mResponseHooks as $sMethod) {
+			// Check to see if the method has an object associated with it
+			if (is_array($sMethod) === true) {
+				// Execute the hook
+				call_user_func($sMethod);
+			} else {
+				// Execute the method
+				$this->{$sMethod}();
+			}
+		}
+		// Return the instance
+		return $this;
+	}
+
+	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
@@ -238,6 +385,42 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method adds a hook method to the request
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param multitype $mMethod
+	 * @throws Exception
+	 * @return FramsieHttp $this
+	 */
+	public function addRequestHook($mMethod) {
+		// Make sure the method exists
+		$this->ensureHookMethod($mMethod);
+		// Add the method
+		array_push($this->mRequestHooks, $mMethod);
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method adds a hook method to the response
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param multitype $mMethod
+	 * @throws Exception
+	 * @return FramsieHttp $this
+	 */
+	public function addResponseHook($mMethod) {
+		// Make sure the method exists
+		$this->ensureHookMethod($mMethod);
+		// Add the method
+		array_push($this->mResponseHooks, $mMethod);
+		// Return the instance
+		return $this;
+	}
+
+	/**
 	 * This method makes the request to the remote server and processes the response
 	 * @package Framsie
 	 * @subpackage FramsieHtml
@@ -250,12 +433,12 @@ abstract class FramsieHttp {
 		// Determine the request method
 		if ($this->mRequestMethod === self::REQUEST_METHOD_GET) {
 			// Set the URL
-			curl_setopt($rHandle, CURLOPT_URL, (empty($this->mData) ? $this->mUrl : $this->mUrl.'?'.http_build_query($$this->mData)));
+			curl_setopt($rHandle, CURLOPT_URL, (empty($this->mData) ? $this->mUrl : $this->mUrl.'?'.$this->encodeDataParams()));
 		} else {
 			// Tell the handle that we are making a POST request
 			curl_setopt($rHandle, CURLOPT_POST, true);
 			// Send the data
-			curl_setopt($rHandle, CURLOPT_POSTFIELDS, (empty($this->mData) ? null : http_build_query($this->mData)));
+			curl_setopt($rHandle, CURLOPT_POSTFIELDS, (empty($this->mData) ? null : $this->encodeDataParams()));
 		}
 		// Check for a username
 		if (!empty($this->mUsername) || !empty($this->mPassword)) {
@@ -278,7 +461,9 @@ abstract class FramsieHttp {
 		// Set the request data
 		$this->mLastRequest->aRequestData = (array) $this->mData;
 		// Set the request query string
-		$this->mLastRequest->sQueryString = (string) (empty($this->mData) ? null : http_build_query($this->mData));
+		$this->mLastRequest->sQueryString = (string) (empty($this->mData) ? null : $this->encodeDataParams());
+		// Execute the request hooks
+		$this->executeRequestHooks();
 		// Set the response placeholder
 		$sResponse = null;
 		// Try to execute the handle
@@ -311,12 +496,15 @@ abstract class FramsieHttp {
 		$this->mLastResponse->iCode     = (integer) curl_errno($rHandle);
 		// Determine the datatype
 		switch ($this->mDataType) {
-			case self::DATA_TYPE_JSON : $this->mResponse = json_decode($sResponse);                         break; // JSON
-			// case self::DATA_TYPE_XML  : $this->mResponse = FramsieXml::getInstance()->toObject($sResponse); break; // XML
-			default                   : $this->mResponse = (string) $sResponse;                             break; // HTML|SCRIPT|TEXT
+			case self::DATA_TYPE_JSON      : $this->mResponse = json_decode($sResponse, true);                   break; // JSON
+			case self::DATA_TYPE_QUERY_STR : $this->parseQueryString($sResponse);                                break; // Query String
+			// case self::DATA_TYPE_XML       : $this->mResponse = FramsieXml::getInstance()->toObject($sResponse); break; // XML
+			default                        : $this->mResponse = (string) $sResponse;                             break; // HTML|SCRIPT|TEXT
 		}
 		// Close the handle
 		curl_close($rHandle);
+		// Process the response hooks
+		$this->executeResponseHooks();
 		// Return the instance
 		return $this;
 	}
@@ -444,7 +632,7 @@ abstract class FramsieHttp {
 	 * @package Framsie
 	 * @subpackage FramsieHttp
 	 * @access public
-	 * @return stdClass
+	 * @return array
 	 */
 	public function getResponse() {
 		// Return the response from the server

@@ -48,6 +48,43 @@ class FramsieConfiguration {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This method loads a configuration value from the database
+	 * @package Framsie
+	 * @subpackage FramsieConfiguration
+	 * @access public
+	 * @static
+	 * @param string $sProperty
+	 * @throws Exception
+	 */
+	public static function DbLoad($sProperty) {
+		// Check for a proper section and property name
+		if (strpos($sProperty, '.') === false) {
+			// Throw an exception
+			throw new Exception("{$sProperty} is an invalid property name, you must use Section.Property");
+		}
+		// Split the property name from the section name
+		$aProperty = explode('.', $sProperty);
+		// Setup the interface
+		FramsieDatabaseInterface::getInstance(true)                                                  // Instantiate the interface
+			->setTable      ('ConfigProperties')                                                     // Send the table
+			->setQuery      (FramsieDatabaseInterface::SELECTQUERY)                                  // We want a SELECT query
+			->addInnerJoin  ('ConfigSections', 'SectionId',                      'SectionId')        // Add the INNER JOIN
+			->addField      ('Value',          null,                             'ConfigProperties') // Add the field we want
+			->addWhereClause('Name',           $aProperty[0],                    'ConfigSections')   // Add the section name to the WHERE clause
+			->addWhereClause('Key',            $aProperty[1],                    'ConfigProperties') // Add the property name to the WHERE clause
+			->generateQuery ();                                                                      // Generate the query
+		// Grab the row
+		$oRow      = FramsieDatabaseInterface::getInstance()->getRow(PDO::FETCH_OBJ);
+		// Check for a value
+		if (empty($oRow->Value) && (isset($oRow->Value) === false)) {
+			// Throw an exception
+			throw new Exception("{$sProperty} does not exist in the configuration.");
+		}
+		// Return the value
+		return $oRow->Value;
+	}
+
+	/**
 	 * This method loads the configuration or specific parts of the configuration
 	 * @package FramsieConfiguration
 	 * @access public

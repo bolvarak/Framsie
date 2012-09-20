@@ -17,121 +17,145 @@ class FramsieDatabaseInterface {
 	 * This constant defines the AND conditional keyword
 	 * @var string
 	 */
-	const ANDCON         = 'AND';
+	const ANDCON          = 'AND';
 
 	/**
 	 * This constant defines tha ASC order by keyword
 	 * @var string
 	 */
-	const ASCORD         = 'ASC';
+	const ASCORD          = 'ASC';
 
 	/**
 	 * This constant defines the skeleton of a DELETE query
 	 * @var string
 	 */
-	const DELETEQUERY    = 'DELETE FROM :sTable :sWhere;';
+	const DELETEQUERY     = 'DELETE FROM :sTable :sWhere;';
 
 	/**
 	 * This constant defines the DESC order by keyword
 	 * @var string
 	 */
-	const DESCORD        = 'DESC';
+	const DESCORD         = 'DESC';
 
 	/**
 	 * This constant defines the = (equal to) operator
 	 * @var string
 	 */
-	const EQOP           = '=';
+	const EQOP            = '=';
 
 	/**
 	 * This constant defines the skeleton of a FULL JOIN statement
 	 * @var string
 	 */
-	const FULLJOINQUERY  = 'FULL JOIN :sJoinTable :sAsAlias ON (:sJoinAlias.:sJoinField = :sFromAlias.:sFromField)';
+	const FULLJOINQUERY   = 'FULL JOIN :sJoinTable :sAsAlias ON (:sJoinAlias.:sJoinField = :sFromAlias.:sFromField)';
 
 	/**
 	 * This constant defines the >= (greater than or equal to) operator
 	 * @var string
 	 */
-	const GTEQOP         = '>=';
+	const GTEQOP          = '>=';
 
 	/**
 	 * This constant defines the > (greater than) operator
 	 * @var string
 	 */
-	const GTOP           = '>';
+	const GTOP            = '>';
 
 	/**
 	 * This constant defines the skeleton of an INNER JOIN statement
 	 * @var string
 	 */
-	const INNERJOINQUERY = 'INNER JOIN :sJoinTable :sAsAlias ON (:sJoinAlias.:sJoinField = :sFromAlias.:sFromField)';
+	const INNERJOINQUERY  = 'INNER JOIN :sJoinTable :sAsAlias ON (:sJoinAlias.:sJoinField = :sFromAlias.:sFromField)';
 
 	/**
 	 * This constant defines the skeleton of an INSERT statement
 	 * @var string
 	 */
-	const INSERTQUERY    = 'INSERT INTO :sTable (:aFields) VALUES (:aValues);';
+	const INSERTQUERY     = 'INSERT INTO :sTable (:aFields) VALUES (:aValues);';
+
+	/**
+	 * This constant contains the definition for MySQL interactions
+	 * @var integer
+	 */
+	const INTERFACE_MYSQL = 1;
+
+	/**
+	 * This constant contains the definition for PostgreSQL interactions
+	 * @var integer
+	 */
+	const INTERFACE_PGSQL = 2;
 
 	/**
 	 * This constant defines the skeleton of a LEFT JOIN statement
 	 * @var string
 	 */
-	const LEFTJOINQUERY  = 'LEFT JOIN :sJoinTable :sAsAlias ON (:sJoinAlias.:sJoinField = :sFromAlias.:sFromField)';
+	const LEFTJOINQUERY   = 'LEFT JOIN :sJoinTable :sAsAlias ON (:sJoinAlias.:sJoinField = :sFromAlias.:sFromField)';
 
 	/**
 	 * This constant defines the LIKE operator
 	 * @var string
 	 */
-	const LIKEOP         = 'LIKE';
+	const LIKEOP          = 'LIKE';
 
 	/**
 	 * This constant defines the <= (less than or equal to) operator
 	 * @var string
 	 */
-	const LTEQOP         = '<=';
+	const LTEQOP          = '<=';
 
 	/**
 	 * This constant defines the < (less than) operator
 	 * @var string
 	 */
-	const LTOP           = '<';
+	const LTOP            = '<';
+
+	/**
+	 * This constant contains the MySQL column and table name wrapper
+	 * @var string
+	 */
+	const MYSQL_WRAPPER   = '`';
 
 	/**
 	 * This constant defines the <> (!= or not equal to) operator
 	 * @var string
 	 */
-	const NEQOP          = '<>';
+	const NEQOP           = '<>';
 
 	/**
 	 * This constant defines the OR conditional keyword
 	 * @var string
 	 */
-	const ORCON          = 'OR';
+	const ORCON           = 'OR';
+
+	/**
+	 * This constant contains the PostgreSQL column and table name wrapper
+	 * @var string
+	 */
+	const PGSQL_WRAPPER   = '"';
 
 	/**
 	 * This constant defines the skeleton of a RIGHT JOIN statement
 	 * @var string
 	 */
-	const RIGHTJOINQUERY = 'RIGHT JOIN :sJoinTable :sAsAlias ON (:sJoinAlias.:sJoinField = :sFromAlias.:sFromField)';
+	const RIGHTJOINQUERY  = 'RIGHT JOIN :sJoinTable :sAsAlias ON (:sJoinAlias.:sJoinField = :sFromAlias.:sFromField)';
 
 	/**
 	 * This constant defines the skeleton of a SELECT statement
 	 * @var string
 	 */
-	const SELECTQUERY    = 'SELECT :aFields FROM :sTable :sAsAlias :aJoins :sWhere :sGroupBy :sOrderBy :sLimit;';
+	const SELECTQUERY     = 'SELECT :aFields FROM :sTable :sAsAlias :aJoins :sWhere :sGroupBy :sOrderBy :sLimit;';
 
 	/**
 	 * This constant defines the skeleton of an UPDATE statement
 	 * @var string
 	 */
-	const UPDATEQUERY    = 'UPDATE :sTable SET :aFieldValuePairs :sWhere;';
+	const UPDATEQUERY     = 'UPDATE :sTable SET :aFieldValuePairs :sWhere;';
 
 	/**
 	 * This constant defines the SQL wildcard
 	 * @var string
 	 */
-	const WILDCARD       = '*';
+	const WILDCARD        = '*';
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
@@ -180,6 +204,13 @@ class FramsieDatabaseInterface {
 	 * @var array
 	 */
 	protected $mFields           = array();
+
+	/**
+	 * This property contains the definition for the interface we will be using
+	 * @access protected
+	 * @var integer
+	 */
+	protected $mInterface        = self::INTERFACE_MYSQL;
 
 	/**
 	 * This property contains the generated JOIN statements
@@ -366,12 +397,12 @@ class FramsieDatabaseInterface {
 				// Is this the last field
 				if (($iIterator + 1) === count($this->mGroupBy)) {
 					// Add the field
-					$sGroupBys .= (string) "`{$sName}`";
+					$sGroupBys .= (string) "{$this->quoteTableColumnName($sName)}";
 					// Reset the iterator
 					$iIterator = 0;
 				} else {
 					// Add the field
-					$sGroupBys .= (string) "`{$sName}`,";
+					$sGroupBys .= (string) "{$this->quoteTableColumnName($sName)},";
 					// Increment the iterator
 					$iIterator++;
 				}
@@ -403,20 +434,20 @@ class FramsieDatabaseInterface {
 			throw new Exception('No fieldsets present, fieldsets are needed to generate valid INSERT statements.');
 		}
 		// Loop through the fields
-		foreach ($this->mFields as $sName => $sValue) {
+		foreach ($this->mFields as $sName => $aField) {
 			// Check to see if we are on the last field
 			if (($iIterator + 1) === count($this->mFields)) {
 				// Set the field into the query
-				$sFields .= (string) "`{$sName}`";
+				$sFields .= (string) "{$this->quoteTableColumnName($sName)}";
 				// Set the value into the query
-				$sValues .= (string) $this->quoteTrueFieldValue($sValue);
+				$sValues .= (string) $this->quoteTrueFieldValue($aField['sValue']);
 				// Reset the iterator
 				$iIterator = 0;
 			} else {
 				// Set the field into the query
-				$sFields .= (string) "`{$sName}`, ";
+				$sFields .= (string) "{$this->quoteTableColumnName($sName)}, ";
 				// Set the value into the query
-				$sValues .= (string) "{$this->quoteTrueFieldValue($sValue)}, ";
+				$sValues .= (string) "{$this->quoteTrueFieldValue($aField['sValue'])}, ";
 				// Increment the iterator
 				$iIterator++;
 			}
@@ -525,7 +556,7 @@ class FramsieDatabaseInterface {
 				// Loop through ascending clause
 				foreach ($this->mOrderBy['aAscending'] as $sName) {
 					// Append the field
-					$sOrderBys .= (string) "`{$sName}` ";
+					$sOrderBys .= (string) "{$this->quoteTableColumnName($sName)} ";
 				}
 				// Add the direction
 				$sOrderBys .= (string) self::ASCORD;
@@ -537,7 +568,7 @@ class FramsieDatabaseInterface {
 				// Loop through the descending fields
 				foreach ($this->mOrderBy['aDescending'] as $sName) {
 					// Append the field
-					$sOrderBys .= (string) "`{$sName}` ";
+					$sOrderBys .= (string) "{$this->quoteTableColumnName($sName)} ";
 				}
 				// Add the direction
 				$sOrderBys .= (string) self::DESCORD;
@@ -575,10 +606,10 @@ class FramsieDatabaseInterface {
 			// Check for a table name
 			if (empty($aData['sTable']) === false) {
 				// Add the table
-				$sFields .= (string) "`{$aData['sTable']}`.";
+				$sFields .= (string) "{$this->quoteTableColumnName($aData['sTable'])}.";
 			}
 			// Add the field
-			$sFields .= (string) (($sColumn === '*') ? "*" : "`{$sColumn}`");
+			$sFields .= (string) (($sColumn === '*') ? "*" : "{$this->quoteTableColumnName($sColumn)}");
 			// Check the iterator
 			if (($iIterator + 1) === count($this->mFields)) {
 				// Reset the iterator
@@ -627,16 +658,16 @@ class FramsieDatabaseInterface {
 			throw new Exception('No fieldsets present, fieldsets are needed to generate valid UPDATE statements.');
 		}
 		// Loop through the fields
-		foreach ($this->mFields as $sName => $sValue) {
+		foreach ($this->mFields as $sName => $aField) {
 			// Is this the last field
 			if (($iIterator + 1) === count($this->mFields)) {
 				// Append the field
-				$sFields .= (string) "`{$sName}` = {$this->quoteTrueFieldValue($sValue)}";
+				$sFields .= (string) "{$this->quoteTableColumnName($sName)} = {$this->quoteTrueFieldValue($aField['sValue'])}";
 				// Reset the iterator
 				$iIterator = 0;
 			} else {
 				// Append the field
-				$sFields .= (string) "`{$sName}` = {$this->quoteTrueFieldValue($sValue)}, ";
+				$sFields .= (string) "{$this->quoteTableColumnName($sName)} = {$this->quoteTrueFieldValue($aField['sValue'])}, ";
 				// Increment the iterator
 				$iIterator++;
 			}
@@ -671,10 +702,10 @@ class FramsieDatabaseInterface {
 				if ($iIterator === 0) {
 					// Check for a table
 					if (empty($aClause['sTable'])) {
-						$sWhere .= (string) "`{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
+						$sWhere .= (string) "{$this->quoteTableColumnName($aClause['sField'])} {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
 					} else {
 						// Set the clause
-						$sWhere .= (string) "`{$aClause['sTable']}`.`{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
+						$sWhere .= (string) "{$this->quoteTableColumnName($aClause['sTable'])}.{$this->quoteTableColumnName($aClause['sField'])} {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
 					}
 					// Increment the iterator
 					$iIterator++;
@@ -682,10 +713,10 @@ class FramsieDatabaseInterface {
 					// Check for a table
 					if (empty($aClause['sTable'])) {
 						// Set the clause
-						$sWhere .= (string) "{$aClause['sConditional']} `{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
+						$sWhere .= (string) "{$aClause['sConditional']} {$this->quoteTableColumnName($aClause['sField'])} {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
 					} else {
 						// Set the clause
-						$sWhere .= (string) "{$aClause['sConditional']} `{$aClause['sTable']}`.`{$aClause['sField']}` {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
+						$sWhere .= (string) "{$aClause['sConditional']} {$this->quoteTableColumnName($aClause['sTable'])}.{$this->quoteTableColumnName($aClause['sField'])} {$aClause['sOperator']} {$this->quoteTrueFieldValue($aClause['sValue'])} ";
 					}
 					// Increment the iterator
 					$iIterator++;
@@ -697,6 +728,24 @@ class FramsieDatabaseInterface {
 	}
 
 	/**
+	 * This method properly wraps table and column names based on the chosen interface
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @access protected
+	 * @param string $sEntity
+	 * @return string
+	 */
+	protected function quoteTableColumnName($sEntity) {
+		// Determine the interface type
+		switch ($this->mInterface) {
+			// MySQL
+			case self::INTERFACE_MYSQL : return (self::MYSQL_WRAPPER.$sEntity.self::MYSQL_WRAPPER); break;
+			// PostgreSQL
+			case self::INTERFACE_PGSQL : return (self::PGSQL_WRAPPER.$sEntity.self::PGSQL_WRAPPER); break;
+		}
+	}
+
+	/**
 	 * This method checks the value for SQL functions and quotes accordingly
 	 * @package FramsieDatabaseInterface
 	 * @access protected
@@ -705,7 +754,7 @@ class FramsieDatabaseInterface {
 	 */
 	protected function quoteTrueFieldValue($sValue) {
 		// Check for SQL functions
-		if (preg_match('/^([a-zA-Z]+\(\))$/', $sValue)) { // A SQL function exists
+		if (preg_match('/^([a-zA-Z]+\([a-zA-Z0-9_-`]+\))$/', $sValue)) { // A SQL function exists
 			// Simply return the value as is
 			return $sValue;
 		}
@@ -752,33 +801,33 @@ class FramsieDatabaseInterface {
 		$sJoinQuery = (string) self::FULLJOINQUERY;
 		// Set the JOIN table, the JOIN field and the from field
 		$sJoinQuery = (string) str_replace(array(
-				':sJoinTable', ':sJoinField', ':sFromField'                       // Keys
+				':sJoinTable', ':sJoinField', ':sFromField'                                                                                            // Keys
 		), array(
-				"`{$sJoinTable}`", "`{$sJoinTableField}`", "`{$sFromTableField}`" // Values
+				$this->quoteTableColumnName($sJoinTable), $this->quoteTableColumnName($sJoinTableField), $this->quoteTableColumnName($sFromTableField) // Values
 		), $sJoinQuery);
 		// Check for a JOIN table alias
 		if (empty($sJoinTableAlias) === false) {
 			// Set the alias
 			$sJoinQuery = (string) str_replace(array(
-					':sAsAlias', ':sJoinAlias'                        // Keys
+					':sAsAlias', ':sJoinAlias'                                                                          // Keys
 			), array(
-					"AS `{$sJoinTableAlias}`", "`{$sJoinTableAlias}`" // Values
+					"AS {$this->quoteTableColumnName($sJoinTableAlias)}", $this->quoteTableColumnName($sJoinTableAlias) // Values
 			), $sJoinQuery);
 		} else { // No alias was provided, so we use the table name
 			// Set the table name
 			$sJoinQuery = (string) str_replace(array(
-					':sAsAlias', ':sJoinAlias' // Keys
+					':sAsAlias', ':sJoinAlias'                     // Keys
 			), array(
-					null, "`{$sJoinTable}`"    // Values
+					null, $this->quoteTableColumnName($sJoinTable) // Values
 			), $sJoinQuery);
 		}
 		// Check for a from table alias
 		if (empty($this->mTableAlias)) { // No alias was provided
 			// Set the alias as the table name
-			$sJoinQuery = (string) str_replace(':sFromAlias', "`{$this->mTable}`", $sJoinQuery);
+			$sJoinQuery = (string) str_replace(':sFromAlias', $this->quoteTableColumnName($this->mTable), $sJoinQuery);
 		} else {                         // An alias exists
 			// Set the alias
-			$sJoinQuery = (string) str_replace(':sFromAlias', "`{$this->mTableAlias}`", $sJoinQuery);
+			$sJoinQuery = (string) str_replace(':sFromAlias', $this->quoteTableColumnName($this->mTableAlias), $sJoinQuery);
 		}
 		// Set the JOIN statement in to the system
 		array_push($this->mJoins['aFull'], $sJoinQuery);
@@ -816,33 +865,33 @@ class FramsieDatabaseInterface {
 		$sJoinQuery = (string) self::INNERJOINQUERY;
 		// Set the JOIN table, the JOIN field and the from field
 		$sJoinQuery = (string) str_replace(array(
-				':sJoinTable', ':sJoinField', ':sFromField'                       // Keys
+				':sJoinTable', ':sJoinField', ':sFromField'                                                                                            // Keys
 		), array(
-				"`{$sJoinTable}`", "`{$sJoinTableField}`", "`{$sFromTableField}`" // Values
+				$this->quoteTableColumnName($sJoinTable), $this->quoteTableColumnName($sJoinTableField), $this->quoteTableColumnName($sFromTableField) // Values
 		), $sJoinQuery);
 		// Check for a JOIN table alias
 		if (empty($sJoinTableAlias) === false) {
 			// Set the alias
 			$sJoinQuery = (string) str_replace(array(
-					':sAsAlias', ':sJoinAlias'                        // Keys
+					':sAsAlias', ':sJoinAlias'                                                                          // Keys
 			), array(
-					"AS `{$sJoinTableAlias}`", "`{$sJoinTableAlias}`" // Values
+					"AS {$this->quoteTableColumnName($sJoinTableAlias)}", $this->quoteTableColumnName($sJoinTableAlias) // Values
 			), $sJoinQuery);
 		} else { // No alias was provided, so we use the table name
 			// Set the table name
 			$sJoinQuery = (string) str_replace(array(
-					':sAsAlias', ':sJoinAlias' // Keys
+					':sAsAlias', ':sJoinAlias'                     // Keys
 			), array(
-					null, "`{$sJoinTable}`"    // Values
+					null, $this->quoteTableColumnName($sJoinTable) // Values
 			), $sJoinQuery);
 		}
 		// Check for a from table alias
 		if (empty($this->mTableAlias)) { // No alias was provided
 			// Set the alias as the table name
-			$sJoinQuery = (string) str_replace(':sFromAlias', "`{$this->mTable}`", $sJoinQuery);
+			$sJoinQuery = (string) str_replace(':sFromAlias', $this->quoteTableColumnName($this->mTable), $sJoinQuery);
 		} else {                         // An alias exists
 			// Set the alias
-			$sJoinQuery = (string) str_replace(':sFromAlias', "`{$this->mTableAlias}`", $sJoinQuery);
+			$sJoinQuery = (string) str_replace(':sFromAlias', $this->quoteTableColumnName($this->mTableAlias), $sJoinQuery);
 		}
 		// Set the JOIN statement in to the system
 		array_push($this->mJoins['aInner'], $sJoinQuery);
@@ -866,33 +915,33 @@ class FramsieDatabaseInterface {
 		$sJoinQuery = (string) self::LEFTJOINQUERY;
 		// Set the JOIN table, the JOIN field and the from field
 		$sJoinQuery = (string) str_replace(array(
-				':sJoinTable', ':sJoinField', ':sFromField'                       // Keys
+				':sJoinTable', ':sJoinField', ':sFromField'                                                                                            // Keys
 		), array(
-				"`{$sJoinTable}`", "`{$sJoinTableField}`", "`{$sFromTableField}`" // Values
+				$this->quoteTableColumnName($sJoinTable), $this->quoteTableColumnName($sJoinTableField), $this->quoteTableColumnName($sFromTableField) // Values
 		), $sJoinQuery);
 		// Check for a JOIN table alias
 		if (empty($sJoinTableAlias) === false) {
 			// Set the alias
 			$sJoinQuery = (string) str_replace(array(
-					':sAsAlias', ':sJoinAlias'                        // Keys
+					':sAsAlias', ':sJoinAlias'                                                                          // Keys
 			), array(
-					"AS `{$sJoinTableAlias}`", "`{$sJoinTableAlias}`" // Values
+					"AS {$this->quoteTableColumnName($sJoinTableAlias)}", $this->quoteTableColumnName($sJoinTableAlias) // Values
 			), $sJoinQuery);
 		} else { // No alias was provided, so we use the table name
 			// Set the table name
 			$sJoinQuery = (string) str_replace(array(
-					':sAsAlias', ':sJoinAlias' // Keys
+					':sAsAlias', ':sJoinAlias'                     // Keys
 			), array(
-					null, "`{$sJoinTable}`"    // Values
+					null, $this->quoteTableColumnName($sJoinTable) // Values
 			), $sJoinQuery);
 		}
 		// Check for a from table alias
 		if (empty($this->mTableAlias)) { // No alias was provided
 			// Set the alias as the table name
-			$sJoinQuery = (string) str_replace(':sFromAlias', "`{$this->mTable}`", $sJoinQuery);
+			$sJoinQuery = (string) str_replace(':sFromAlias', $this->quoteTableColumnName($this->mTable), $sJoinQuery);
 		} else {                         // An alias exists
 			// Set the alias
-			$sJoinQuery = (string) str_replace(':sFromAlias', "`{$this->mTableAlias}`", $sJoinQuery);
+			$sJoinQuery = (string) str_replace(':sFromAlias', $this->quoteTableColumnName($this->mTableAlias), $sJoinQuery);
 		}
 		// Set the JOIN statement in to the system
 		array_push($this->mJoins['aLeft'], $sJoinQuery);
@@ -931,33 +980,33 @@ class FramsieDatabaseInterface {
 		$sJoinQuery = (string) self::RIGHTJOINQUERY;
 		// Set the JOIN table, the JOIN field and the from field
 		$sJoinQuery = (string) str_replace(array(
-				':sJoinTable', ':sJoinField', ':sFromField'                       // Keys
+				':sJoinTable', ':sJoinField', ':sFromField'                                                                                            // Keys
 		), array(
-				"`{$sJoinTable}`", "`{$sJoinTableField}`", "`{$sFromTableField}`" // Values
+				$this->quoteTableColumnName($sJoinTable), $this->quoteTableColumnName($sJoinTableField), $this->quoteTableColumnName($sFromTableField) // Values
 		), $sJoinQuery);
 		// Check for a JOIN table alias
 		if (empty($sJoinTableAlias) === false) {
 			// Set the alias
 			$sJoinQuery = (string) str_replace(array(
-					':sAsAlias', ':sJoinAlias'                        // Keys
+					':sAsAlias', ':sJoinAlias'                                                                          // Keys
 			), array(
-					"AS `{$sJoinTableAlias}`", "`{$sJoinTableAlias}`" // Values
+					"AS {$this->quoteTableColumnName($sJoinTableAlias)}", $this->quoteTableColumnName($sJoinTableAlias) // Values
 			), $sJoinQuery);
 		} else { // No alias was provided, so we use the table name
 			// Set the table name
 			$sJoinQuery = (string) str_replace(array(
-					':sAsAlias', ':sJoinAlias' // Keys
+					':sAsAlias', ':sJoinAlias'                     // Keys
 			), array(
-					null, "`{$sJoinTable}`"    // Values
+					null, $this->quoteTableColumnName($sJoinTable) // Values
 			), $sJoinQuery);
 		}
 		// Check for a from table alias
 		if (empty($this->mTableAlias)) { // No alias was provided
 			// Set the alias as the table name
-			$sJoinQuery = (string) str_replace(':sFromAlias', "`{$this->mTable}`", $sJoinQuery);
+			$sJoinQuery = (string) str_replace(':sFromAlias', $this->quoteTableColumnName($this->mTable), $sJoinQuery);
 		} else {                         // An alias exists
 			// Set the alias
-			$sJoinQuery = (string) str_replace(':sFromAlias', "`{$this->mTableAlias}`", $sJoinQuery);
+			$sJoinQuery = (string) str_replace(':sFromAlias', $this->quoteTableColumnName($this->mTableAlias), $sJoinQuery);
 		}
 		// Set the JOIN statement in to the system
 		array_push($this->mJoins['aRight'], $sJoinQuery);
@@ -1003,14 +1052,14 @@ class FramsieDatabaseInterface {
 		// Grab the query type
 		$sQueryType   = (string) $this->mQuery;
 		// Set the table name
-		$this->mQuery = (string) str_replace(':sTable', "`{$this->mTable}`", $this->mQuery);
+		$this->mQuery = (string) str_replace(':sTable', $this->quoteTableColumnName($this->mTable), $this->mQuery);
 		// Check for a table alias
 		if (empty($this->mTableAlias)) {
 			// Remove the table alias
 			$this->mQuery = (string) str_replace(':sAsAlias', null, $this->mQuery);
 		} else {
 			// Set the table alias
-			$this->mQuery = (string) str_replace(':sAsAlias', "AS `{$this->mTableAlias}`", $this->mQuery);
+			$this->mQuery = (string) str_replace(':sAsAlias', "AS {$this->quoteTableColumnName($this->mTableAlias)}", $this->mQuery);
 		}
 		// Determine the query type
 		switch($sQueryType) {
@@ -1026,6 +1075,24 @@ class FramsieDatabaseInterface {
 	///////////////////////////////////////////////////////////////////////////
 	/// Getters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method fetches the column names from the database table
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @access public
+	 * @return array
+	 */
+	public function getColumns() {
+		// Setup the query
+		$sQuery = (string) "DESCRIBE {$this->quoteTableColumnName($this->mTable)};";
+		// Setup the query
+		$oTableDescription = $this->mConnection->prepare($sQuery);
+		// Execute the statement
+		$oTableDescription->execute();
+		// Return the columns
+		return $oTableDescription->fetchAll(PDO::FETCH_COLUMN);
+	}
 
 	/**
 	 * This method returns the current database connection in the system
@@ -1049,6 +1116,18 @@ class FramsieDatabaseInterface {
 	public function getFields() {
 		// Return the current field set
 		return $this->mFields;
+	}
+
+	/**
+	 * This method returns the interface that the current instance is using
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @access public
+	 * @return integer
+	 */
+	public function getInterface() {
+		// Return the interface
+		return $this->mInterface;
 	}
 
 	/**
@@ -1191,6 +1270,21 @@ class FramsieDatabaseInterface {
 	public function setFields(array $aFields) {
 		// Set the fields into the system
 		$this->mFields = $aFields;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets the interface (the database architecture) into the system
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @access public
+	 * @param integer $iInterface
+	 * @return FramsieDatabaseInterface $this
+	 */
+	public function setInterface($iInterface) {
+		// Set the interface type into the system
+		$this->mInterface = (integer) $iInterface;
 		// Return the instance
 		return $this;
 	}

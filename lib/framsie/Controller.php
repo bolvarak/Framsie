@@ -216,16 +216,77 @@ abstract class FramsieController {
 	 * @package Framsie
 	 * @subpackage FramsieController
 	 * @access public
-	 * @param FramsieRequestObject $oRequest
 	 * @return FramsieController $this
 	 */
-	public final function __construct(FramsieRequestObject $oRequest) {
-		// Set the request object
-		$this->mRequest    = $oRequest;
+	public function __construct() {
 		// Reset the page values
 		$this->mPageValues = new stdClass();
 		// Return the instance
 		return $this;
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Protected Methods ////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method redirects the current request
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access protected
+	 * @param string $sUrl
+	 * @return void
+	 */
+	protected function redirectRequest($sUrl) {
+		// Check to see if there should be a new controller
+		if (substr($sUrl, 0, 1) === '/') {
+			// We will redirect the a new controller
+			header("Location:  {$sUrl}");
+		} else {
+			// Set the controller name
+			$sController = (string) strtolower(str_replace('Controller', null, __CLASS__));
+			// Redirect to the view
+			header("Location:  {$sController}/{$sUrl}");
+		}
+	}
+
+	/**
+	 * This method encodes and sends an HTTP Query String response for AJAX method endpoints
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access protected
+	 * @param multitype $mResponse
+	 * @return void
+	 */
+	protected function sendHttpQueryEndpointResponse($mResponse) {
+		// Encode and send the response
+		die(http_build_query($mResponse));
+	}
+
+	/**
+	 * This method encodes and sends a JSON response for AJAX method endpoints
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access protected
+	 * @param multitype $mResponse
+	 * @return void
+	 */
+	protected function sendJsonEndpointResponse($mResponse) {
+		// Encode and send the response
+		die(json_encode($mResponse));
+	}
+
+	/**
+	 * This method encodes and sends an XML response for AJAX method endpoints
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access protected
+	 * @param multitype $mResponse
+	 * @return void
+	 */
+	protected function sendXmlEndpointResponse($mResponse) {
+		// Encode and send the response
+		// die(FramsieXml::getInstance()->Encode($mResponse));
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -660,7 +721,34 @@ abstract class FramsieController {
 
 	/**
 	 * This method turns the current controller into a
-	 * JSON RMP endpoint for AJAX or REST services
+	 * HTML RPC endpoint for AJAX or REST services
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param boolean $bDisableView
+	 * @param boolean $bDisableLayout
+	 * @return FramsieController $this
+	 */
+	public function setEndpointHtml($bDisableView = false, $bDisableLayout = true) {
+		// Check to see if we need to disable the view
+		if ($bDisableView === true) {
+			// Disable the view
+			$this->getView()->setDisableView();
+		}
+		// Check to see if we need to disable the layout
+		if ($bDisableLayout === true) {
+			// Disable the layout
+			$this->setDisableLayout();
+		}
+		// Set the header
+		$this->setHeaderContentType(self::HEADER_HTML);
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method turns the current controller into a
+	 * JSON RPC endpoint for AJAX or REST services
 	 * @package Framsie
 	 * @subpackage FramsieController
 	 * @access public
@@ -677,6 +765,29 @@ abstract class FramsieController {
 		$this->setDisableLayout();
 		// Set the header
 		$this->setHeaderContentType(self::HEADER_JSON);
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method turns the current controller into a
+	 * TXT RPC endpoint for AJAX or REST services
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param boolean $bDisableView
+	 * @return FramsieController $this
+	 */
+	public function setEndpointText($bDisableView = false) {
+		// Check to see if we need to disable the view
+		if ($bDisableView === true) {
+			// Disable the view
+			$this->getView()->setDisableView();
+		}
+		// Disable the layout
+		$this->setDisableLayout();
+		// Set the header
+		$this->setHeaderContentType(self::HEADER_TEXT);
 		// Return the instance
 		return $this;
 	}
@@ -756,7 +867,7 @@ abstract class FramsieController {
 	 * @param FramsieRequestObject $oRequest
 	 * @return FramsieController $this
 	 */
-	public function setRequest($oRequest) {
+	public function setRequest(FramsieRequestObject $oRequest) {
 		// Set the request object into the instance
 		$this->mRequest = $oRequest;
 		// Return the instance
