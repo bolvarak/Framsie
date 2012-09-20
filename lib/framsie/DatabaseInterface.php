@@ -74,16 +74,28 @@ class FramsieDatabaseInterface {
 	const INSERTQUERY     = 'INSERT INTO :sTable (:aFields) VALUES (:aValues);';
 
 	/**
+	 * This constant contains the definitions for Microsoft SQL interactions
+	 * @var integer
+	 */
+	const INTERFACE_MSSQL = 1;
+
+	/**
 	 * This constant contains the definition for MySQL interactions
 	 * @var integer
 	 */
-	const INTERFACE_MYSQL = 1;
+	const INTERFACE_MYSQL = 2;
+
+	/**
+	 * This constant contains the definitions for Oracle interactions
+	 * @var integer
+	 */
+	const INTERFACE_OCI   = 3;
 
 	/**
 	 * This constant contains the definition for PostgreSQL interactions
 	 * @var integer
 	 */
-	const INTERFACE_PGSQL = 2;
+	const INTERFACE_PGSQL = 4;
 
 	/**
 	 * This constant defines the skeleton of a LEFT JOIN statement
@@ -110,16 +122,28 @@ class FramsieDatabaseInterface {
 	const LTOP            = '<';
 
 	/**
+	 * This constant contains the Microsoft SQL column and table name wrapper
+	 * @var string
+	 */
+	const MSSQL_WRAPPER   = '[:sTableColumn]';
+
+	/**
 	 * This constant contains the MySQL column and table name wrapper
 	 * @var string
 	 */
-	const MYSQL_WRAPPER   = '`';
+	const MYSQL_WRAPPER   = '`:sTableColumn`';
 
 	/**
 	 * This constant defines the <> (!= or not equal to) operator
 	 * @var string
 	 */
 	const NEQOP           = '<>';
+
+	/**
+	 * This constant contains the Oracle column and table name wrapper
+	 * @var string
+	 */
+	const OCI_WRAPPER     = ':sTableColumn';
 
 	/**
 	 * This constant defines the OR conditional keyword
@@ -131,7 +155,7 @@ class FramsieDatabaseInterface {
 	 * This constant contains the PostgreSQL column and table name wrapper
 	 * @var string
 	 */
-	const PGSQL_WRAPPER   = '"';
+	const PGSQL_WRAPPER   = '":sTableColumn"';
 
 	/**
 	 * This constant defines the skeleton of a RIGHT JOIN statement
@@ -738,10 +762,14 @@ class FramsieDatabaseInterface {
 	protected function quoteTableColumnName($sEntity) {
 		// Determine the interface type
 		switch ($this->mInterface) {
+			// Oracle
+			case self::INTERFACE_OCI   : return str_replace(':sTableColumn', $sEntity, self::OCI_WRAPPER);   break;
+			// Microsoft SQL
+			case self::INTERFACE_MSSQL : return str_replace(':sTableColumn', $sEntity, self::MSSQL_WRAPPER); break;
 			// MySQL
-			case self::INTERFACE_MYSQL : return (self::MYSQL_WRAPPER.$sEntity.self::MYSQL_WRAPPER); break;
+			case self::INTERFACE_MYSQL : return str_replace(':sTableColumn', $sEntity, self::MYSQL_WRAPPER); break;
 			// PostgreSQL
-			case self::INTERFACE_PGSQL : return (self::PGSQL_WRAPPER.$sEntity.self::PGSQL_WRAPPER); break;
+			case self::INTERFACE_PGSQL : return str_replace(':sTableColumn', $sEntity, self::PGSQL_WRAPPER); break;
 		}
 	}
 
@@ -754,7 +782,7 @@ class FramsieDatabaseInterface {
 	 */
 	protected function quoteTrueFieldValue($sValue) {
 		// Check for SQL functions
-		if (preg_match('/^([a-zA-Z]+\([a-zA-Z0-9_-`]+\))$/', $sValue)) { // A SQL function exists
+		if (preg_match('/^([a-zA-Z]+\([a-zA-Z0-9_-`"\.]+\))$/', $sValue)) { // A SQL function exists
 			// Simply return the value as is
 			return $sValue;
 		}
