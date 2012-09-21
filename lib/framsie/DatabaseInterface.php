@@ -1105,19 +1105,52 @@ class FramsieDatabaseInterface {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This method fetches a column's meta data
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @param string $sColumn
+	 * @return object
+	 */
+	public function getColumnMeta($sColumn) {
+		// Setup the query
+		$sQuery      = (string) "SHOW COLUMNS FROM {$this->quoteTableColumnName($this->mTable)} WHERE {$this->quoteTableColumnName('Field')} = :sColumn;";
+		// Prepare the statement
+		$oColumnMeta = $this->mConnection->prepare($sQuery);
+		// Bind the column name
+		$oColumnMeta->bindValue(':sColumn', $sColumn);
+		// Execute the statement
+		$oColumnMeta->execute();
+		// Return the fetched results
+		return $oColumnMeta->fetch(PDO::FETCH_OBJ);
+	}
+
+	/**
 	 * This method fetches the column names from the database table
 	 * @package Framsie
 	 * @subpackage FramsieDatabaseInterface
 	 * @access public
+	 * @param boolean $bIncludeMeta
 	 * @return array
 	 */
-	public function getColumns() {
+	public function getColumns($bIncludeMeta = true) {
 		// Setup the query
-		$sQuery = (string) "DESCRIBE {$this->quoteTableColumnName($this->mTable)};";
+		$sQuery            = (string) "DESCRIBE {$this->quoteTableColumnName($this->mTable)};";
 		// Setup the query
 		$oTableDescription = $this->mConnection->prepare($sQuery);
 		// Execute the statement
 		$oTableDescription->execute();
+		// Check to see if we need to include the meta data
+		if ($bIncludeMeta === true) {
+			// Create an array placeholder
+			$aColumns = array();
+			// Loop through the columns
+			foreach ($oTableDescription->fetchAll(PDO::FETCH_COLUMN) as $sColumn) {
+				// Set the column into the array
+				$aColumns[$sColumn] = $this->getColumnMeta($sColumn);
+			}
+			// Return the columns array
+			return $aColumns;
+		}
 		// Return the columns
 		return $oTableDescription->fetchAll(PDO::FETCH_COLUMN);
 	}

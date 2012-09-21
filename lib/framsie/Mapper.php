@@ -66,6 +66,86 @@ abstract class FramsieMapper {
 	}
 
 	///////////////////////////////////////////////////////////////////////////
+	/// Magic Methods ////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method magically creates getters and setters to get and set properties
+	 * and throws an exception if the method does not exist or is not publically
+	 * accessible to the caller
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @access public
+	 * @param string $sMethod
+	 * @param array $aArguments
+	 * @throws Exception
+	 * @return multitype
+	 */
+	public function __call($sMethod, $aArguments) {
+		// Check to see if this is a getter
+		if (substr(strtolower($sMethod), 0, 3) === 'get') {
+			// Set the property name
+			$sProperty = (string) lcfirst(str_replace('get', null, $sMethod));
+			// Return the property
+			return $this->{$sProperty};
+		}
+		// Check to see if this is a setter
+		if (substr(strtolower($sMethod), 0, 3) === 'set') {
+			// Set the property name
+			$sProperty = (string) ucwords(str_replace('set', null, $sMethod));
+			// Set the property
+			$this->{$sProperty} = $aArguments[0];
+			// Return the instance
+			return $this;
+		}
+		// If the script gets to this point, throw an exception
+		throw new Exception("The method \"{$sMethod}\" does not exist or is not publically accessible.");
+	}
+
+	/**
+	 * This method throws an exception if a property does not exist or is not
+	 * publically accessible to the caller
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @access public
+	 * @param string $sProperty
+	 * @throws Exception
+	 * @return void
+	 */
+	public function __get($sProperty) {
+		// Throw an exception because the property does not exist
+		throw new Exception("The property \"{$sProperty}\" does not exist or is not publically accessible.");
+	}
+
+	/**
+	 * This method throws an exception if a property does not exist or is not
+	 * publically accessible to the caller
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @param string $sProperty
+	 * @param multitype $sValue
+	 * @throws Exception
+	 * @return void
+	 */
+	public function __set($sProperty, $sValue) {
+		// Throw an exception because the property does not exist
+		throw new Exception("The property \"{$sProperty}\" does not exist or is not publically accessible.");
+	}
+
+	/**
+	 * This method converts the this instance to a string and into JSON
+	 * to make it usable across different languages
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @access public
+	 * @return string
+	 */
+	public function __toString() {
+		// Convert the class to JSON
+		return json_encode($this);
+	}
+
+	///////////////////////////////////////////////////////////////////////////
 	/// Protected Methods ////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
@@ -135,86 +215,6 @@ abstract class FramsieMapper {
 			// Throw an exception because the caller needs a primay key column
 			throw new Exception('A primary key column name is needed and not set.');
 		}
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-	/// Magic Methods ////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-
-	/**
-	 * This method magically creates getters and setters to get and set properties
-	 * and throws an exception if the method does not exist or is not publically
-	 * accessible to the caller
-	 * @package Framsie
-	 * @subpackage FramsieMapper
-	 * @access public
-	 * @param string $sMethod
-	 * @param multitype $sValue
-	 * @throws Exception
-	 * @return multitype
-	 */
-	public function __call($sMethod, $sValue) {
-		// Check to see if this is a getter
-		if (strpos($sMethod, 'get') !== false) {
-			// Set the property name
-			$sProperty = (string) lcfirst(str_replace('get', null, $sMethod));
-			// Return the property
-			return $this->{$sProperty};
-		}
-		// Check to see if this is a setter
-		if (strpos($sMethod, 'set') !== false) {
-			// Set the property name
-			$sProperty = (string) ucwords(str_replace('set', null, $sMethod));
-			// Set the property
-			$this->{$sProperty} = $sValue;
-			// Return the instance
-			return $this;
-		}
-		// If the script gets to this point, throw an exception
-		throw new Exception("The method \"{$sMethod}\" does not exist or is not publically accessible.");
-	}
-
-	/**
-	 * This method throws an exception if a property does not exist or is not
-	 * publically accessible to the caller
-	 * @package Framsie
-	 * @subpackage FramsieMapper
-	 * @access public
-	 * @param string $sProperty
-	 * @throws Exception
-	 * @return void
-	 */
-	public function __get($sProperty) {
-		// Throw an exception because the property does not exist
-		throw new Exception("The property \"{$sProperty}\" does not exist or is not publically accessible.");
-	}
-
-	/**
-	 * This method throws an exception if a property does not exist or is not
-	 * publically accessible to the caller
-	 * @package Framsie
-	 * @subpackage FramsieMapper
-	 * @param string $sProperty
-	 * @param multitype $sValue
-	 * @throws Exception
-	 * @return void
-	 */
-	public function __set($sProperty, $sValue) {
-		// Throw an exception because the property does not exist
-		throw new Exception("The property \"{$sProperty}\" does not exist or is not publically accessible.");
-	}
-
-	/**
-	 * This method converts the this instance to a string and into JSON
-	 * to make it usable across different languages
-	 * @package Framsie
-	 * @subpackage FramsieMapper
-	 * @access public
-	 * @return string
-	 */
-	public function __toString() {
-		// Convert the class to JSON
-		return json_encode($this);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
