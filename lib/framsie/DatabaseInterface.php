@@ -222,6 +222,13 @@ class FramsieDatabaseInterface {
 	protected $mCurrentResults   = null;
 
 	/**
+	 * This property contains the name of the database
+	 * @access protected
+	 * @var string
+	 */
+	protected $mDatabase         = null;
+
+	/**
 	 * This property contains the field/value pairs associated
 	 * with the current query
 	 * @access protected
@@ -374,6 +381,8 @@ class FramsieDatabaseInterface {
 					FramsieConfiguration::Load('database.user'), // Username
 					FramsieConfiguration::Load('database.pass')   // Password
 			);
+			// Set the database name
+			$this->mDatabase = (string) FramsieConfiguration::Load('database.dbname');
 		} catch (PDOException $oException) {
 			// Do something with the exception
 		}
@@ -1139,16 +1148,16 @@ class FramsieDatabaseInterface {
 		$oTableDescription = $this->mConnection->prepare($sQuery);
 		// Execute the statement
 		$oTableDescription->execute();
-		// Check to see if we need to include the meta data
+		// Determine if we need the meta data
 		if ($bIncludeMeta === true) {
-			// Create an array placeholder
+			// Create a column placeholder
 			$aColumns = array();
-			// Loop through the columns
-			foreach ($oTableDescription->fetchAll(PDO::FETCH_COLUMN) as $sColumn) {
-				// Set the column into the array
-				$aColumns[$sColumn] = $this->getColumnMeta($sColumn);
+			// Loop through the results
+			foreach ($oTableDescription->fetchAll(PDO::FETCH_OBJ) as $oColumn) {
+				// Add the column to the system
+				$aColumns[$oColumn->Field] = $oColumn;
 			}
-			// Return the columns array
+			// Return the column map
 			return $aColumns;
 		}
 		// Return the columns
@@ -1165,6 +1174,18 @@ class FramsieDatabaseInterface {
 	public function getConnection() {
 		// Return the current database connection
 		return $this->mConnection;
+	}
+
+	/**
+	 * This method returns the database name
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @access public
+	 * @return string
+	 */
+	public function getDatabase() {
+		// Return the database name
+		return $this->mDatabase;
 	}
 
 	/**
@@ -1316,9 +1337,44 @@ class FramsieDatabaseInterface {
 		return $this->mTableAlias;
 	}
 
+	/**
+	 * This method returns the current database table's meta information
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @access public
+	 * @return object
+	 */
+	public function getTableMeta() {
+		// Setup the query
+		$sQuery     = (string) "SELECT * FROM {$this->quoteTableColumnName('information_schema')}.{$this->quoteTableColumnName('tables')} WHERE {$this->quoteTableColumnName('table_schema')} = :sDatabaseName AND {$this->quoteTableColumnName('table_name')} = {$this->quoteTableColumnName($this->mTable)};";
+		// Setup the statement
+		$oTableMeta = $this->mConnection->prepare($sQuery);
+		// Set the database name
+		$oTableMeta->bindParam(':sDatabaseName', $this->mDatabase);
+		// Execute the statement
+		$oTableMeta->execute();
+		// Return the results
+		return $oTableMeta->fetchAll(PDO::FETCH_OBJ);
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Setters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method sets the database name into the system
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @access public
+	 * @param string $sDatabase
+	 * @return FramsieDatabaseInterface $this
+	 */
+	public function setDatabase($sDatabase) {
+		// Set the database into the system
+		$this->mDatabase = (string) $sDatabase;
+		// Return the instance
+		return $this;
+	}
 
 	/**
 	 * This method sets the fields for the query into the system all at once

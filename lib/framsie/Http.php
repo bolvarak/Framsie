@@ -17,49 +17,157 @@ abstract class FramsieHttp {
 	 * This constant contains the HTML type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_HTML      = 1;
+	const DATA_TYPE_HTML                   = 1;
 
 	/**
 	 * This constant contains the JSON type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_JSON      = 2;
+	const DATA_TYPE_JSON                   = 2;
 
 	/**
 	 * This constant contains the QUERY_STRING type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_QUERY_STR = 3;
+	const DATA_TYPE_QUERY_STR              = 3;
 
 	/**
 	 * This constant contains the SCRIPT type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_SCRIPT    = 4;
+	const DATA_TYPE_SCRIPT                 = 4;
 
 	/**
 	 * This constant contains the TEXT type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_TEXT      = 5;
+	const DATA_TYPE_TEXT                   = 5;
 
 	/**
 	 * This constant contains the XML type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_XML       = 6;
+	const DATA_TYPE_XML                    = 6;
+
+	/**
+	 * This constant contains the definition for the JSON format
+	 * @var string
+	 */
+	const FORMAT_JSON                      = 'json';
+
+	/**
+	 * This constant contains the definition for the XML format
+	 * @var string
+	 */
+	const FORMAT_XML                       = 'xml';
+
+	/**
+	 * This constant contains the definition for the HMAC-SHA1 signature algorithm
+	 * @var string
+	 */
+	const OAUTH_SIGNATURE_METHOD_HMAC_SHA1 = 'HMAC-SHA1';
+
+	/**
+	 * This constant contains the version number for OAuth v1.0
+	 * @var string
+	 */
+	const OAUTH_VERSION_1_0                = '1.0';
+
+	/**
+	 * This constant contains the parameter name for the OAuth callback function
+	 * @var string
+	 */
+	const OAUTH_PARAM_CALLBACK             = 'oauth_callback';
+
+	/**
+	 * This constant contains the parameter name for the OAuth consumer key
+	 * @var string
+	 */
+	const OAUTH_PARAM_CONSUMER_KEY         = 'oauth_consumer_key';
+
+	/**
+	 * This constant contains the parameter name for the OAuth nonce
+	 * @var string
+	 */
+	const OAUTH_PARAM_NONCE                = 'oauth_nonce';
+
+	/**
+	 * This contant contains the parameter name for the OAuth signature
+	 * @var string
+	 */
+	const OAUTH_PARAM_SIGNATURE            = 'oauth_signature';
+
+	/**
+	 * This constant contains the parameter name for the OAuth signature method
+	 * @var string
+	 */
+	const OAUTH_PARAM_SIGNATURE_METHOD     = 'oauth_signature_method';
+
+	/**
+	 * This constant contains the parameter name for the OAuth timestamp
+	 * @var string
+	 */
+	const OAUTH_PARAM_TIMESTAMP            = 'oauth_timestamp';
+
+	/**
+	 * This constant contains the parameter name for the OAuth token
+	 * @var string
+	 */
+	const OAUTH_PARAM_TOKEN                = 'oauth_token';
+
+	/**
+	 * This constant contains the parameter name for the OAuth token secret
+	 * @var string
+	 */
+	const OAUTH_PARAM_TOKEN_SECRET         = 'oauth_token_secret';
+
+	/**
+	 * This constant contains the parameter name for the OAuth version
+	 * @var string
+	 */
+	const OAUTH_PARAM_VERSION              = 'oauth_version';
+
+	/**
+	 * This constant contains the OAuth parameter name prefix
+	 * @var string
+	 */
+	const OAUTH_PARAMETER_PREFIX       = 'oauth_';
+
+	/**
+	 * This constant contains the OpenSocial parameter name prefix
+	 * @var string
+	 */
+	const OPEN_SOCIAL_PARAMETER_PREFIX = 'opensocial_';
 
 	/**
 	 * This constant contains the GET type definition
 	 * @var integer
 	 */
-	const REQUEST_METHOD_GET  = 1;
+	const REQUEST_METHOD_GET               = 1;
+
+	/**
+	 * This constant contains the actual string for a GET request
+	 * @var string
+	 */
+	const REQUEST_METHOD_GET_NAME          = 'GET';
 
 	/**
 	 * This constant contains the POST type definition
 	 * @var integer
 	 */
-	const REQUEST_METHOD_POST = 2;
+	const REQUEST_METHOD_POST              = 2;
+
+	/**
+	 * This constant contains the actual string for a POST request
+	 * @var string
+	 */
+	const REQUEST_METHOD_POST_NAME         = 'POST';
+
+	/**
+	 * This constant contains the XOAuth parameter name prefix
+	 * @var string
+	 */
+	const XOAUTH_PARAMETER_PREFIX      = 'xoauth_';
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
@@ -70,91 +178,153 @@ abstract class FramsieHttp {
 	 * @access protected
 	 * @staticvar FramsieHttp
 	 */
-	protected static $mInstance   = null;
+	protected static $mInstance      = null;
 
 	/**
 	 * This property contains the data for the request
 	 * @access protected
 	 * @var array
 	 */
-	protected $mData          = array();
+	protected $mData                 = array();
+
+	/**
+	 * This property contains the hooks that should be executed when the data is encoded
+	 * @access protected
+	 * @var array
+	 */
+	protected $mDataEncodeHooks      = array();
 
 	/**
 	 * This property contains the data type
 	 * @access protected
 	 * @var string
 	 */
-	protected $mDataType      = null;
+	protected $mDataType             = null;
 
 	/**
 	 * This property contains the request headers
 	 * @access protected
 	 * @var array
 	 */
-	protected $mHeaders       = array();
+	protected $mHeaders              = array();
 
 	/**
 	 * This property contains the last sent request
 	 * @access protected
 	 * @var stdClass
 	 */
-	protected $mLastRequest   = null;
+	protected $mLastRequest          = null;
 
 	/**
 	 * This property contains the last server response
 	 * @access protected
 	 * @var stdClass
 	 */
-	protected $mLastResponse  = null;
+	protected $mLastResponse         = null;
+
+	/**
+	 * This method contains the local instance of OAuth
+	 * @var OAuth
+	 */
+	protected $mOauth                = null;
+
+	/**
+	 * This property contains the OAuth consumer key
+	 * @access protected
+	 * @var string
+	 */
+	protected $mOauthConsumerKey     = null;
+
+	/**
+	 * This property contains the OAuth consumer secret
+	 * @access protected
+	 * @var string
+	 */
+	protected $mOauthConsumerSecret  = null;
+
+	/**
+	 * This property contains the OAuth signature method
+	 * @access protected
+	 * @var string
+	 */
+	protected $mOauthSignatureMethod = self::OAUTH_SIGNATURE_METHOD_HMAC_SHA1;
+
+	/**
+	 * This property contains the OAuth token
+	 * @access protected
+	 * @var string
+	 */
+	protected $mOauthToken           = null;
+
+	/**
+	 * This property contains the OAuth token secret
+	 * @access protected
+	 * @var string
+	 */
+	protected $mOauthTokenSecret     = null;
+
+	/**
+	 * This property contains the OAuth version that should be used
+	 * @access protected
+	 * @var string
+	 */
+	protected $mOauthVersion         = self::OAUTH_VERSION_1_0;
 
 	/**
 	 * This property contains the HTTP password
 	 * @access protected
 	 * @var string
 	 */
-	protected $mPassword      = null;
+	protected $mPassword             = null;
 
 	/**
 	 * This property contains hooks that should be executed before the request is made
 	 * @access protected
 	 * @var arrau
 	 */
-	protected $mRequestHooks  = array();
+	protected $mRequestHooks         = array();
 
 	/**
 	 * This property contains the request method
 	 * @access protected
-	 * @var string
+	 * @var integer
 	 */
-	protected $mRequestMethod = null;
+	protected $mRequestMethod        = null;
 
 	/**
 	 * This property contains the decoded response from the server
 	 * @access protected
 	 * @var array
 	 */
-	protected $mResponse      = array();
+	protected $mResponse             = array();
 
 	/**
 	 * This property contains the hooks that should be executed upon response
 	 * @access protected
 	 * @var array
 	 */
-	protected $mResponseHooks = array();
+	protected $mResponseHooks        = array();
+
+	/**
+	 * This property tells the system whether or not to use OAuth
+	 * @access protected
+	 * @var boolean
+	 */
+	protected $mUseOauth             = false;
 
 	/**
 	 * This property contains the request url
 	 * @access protected
 	 * @var string
 	 */
-	protected $mUrl           = null;
+	protected $mUrl                  = null;
 
 	/**
 	 * This property contains the HTTP username
 	 * @access protected
 	 * @var string
 	 */
-	protected $mUsername      = null;
+	protected $mUsername             = null;
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
@@ -227,11 +397,59 @@ abstract class FramsieHttp {
 	protected function encodeDataParams($aParameters = array()) {
 		// Check to see if we need to encode a custom data set
 		if (empty($aParameters) === false) {
-			// Encode the custom data array
-			return http_build_query($aParameters);
+			// Check to see if we are using OAuth
+			if ($this->mUseOauth === true) {
+				// Encode the parameters into OAuth compliance
+				return $this->encodeDataParamsOauth($aParameters);
+			} else {
+				// Encode the custom data array
+				return http_build_query($aParameters);
+			}
 		}
-		// Return the Query String version of the parameters in the system
-		return http_build_query($this->mData);
+		// Determine if we are using OAuth
+		if ($this->mUseOauth === true) {
+			// Build an OAuth compliant query string
+			$sParams = (string) $this->encodeDataParamsOAuth($this->mData);
+		} else {
+			// Build a default query string
+			$sParams = (string) http_build_query($this->mData);
+		}
+		// Execute any data encoding hooks
+		foreach ($this->mDataEncodeHooks as $mHook) {
+			// Determine if the hook is an array
+			if (is_array($mHook) === true) {
+				// Call the object and method
+				$sParams = (string) call_user_func_array($mHook, array($sParams));
+			} else {
+				// Call the method on this object
+				$sParams = (string) call_user_func_array(array($this, $mHook), array($sParams));
+			}
+		}
+		// Return the parameters
+		return $sParams;
+	}
+
+	/**
+	 * This method encodes the data parameters into OAuth compliant query strings
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param array $aParams
+	 * @return string
+	 */
+	protected function encodeDataParamsOauth($aParams) {
+		// Create a parameter placeholder
+		$aEncodedParams = array();
+		// Loop through the parameters
+		foreach ($aParams as $sKey => $sValue) {
+			// Make sure the value is not empty
+			if ((empty($sValue) === false) && (isset($sValue))) {
+				// Combine the parameters and add them to the array
+				array_push($aEncodedParams, $sKey.'='.oauth_urlencode($sValue));
+			}
+		}
+		// Return the query string
+		return implode('&', $aEncodedParams);
 	}
 
 	/**
@@ -292,6 +510,29 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method loops through the response hooks and executes them
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @return FramsieHttp $this
+	 */
+	protected function executeResponseHooks() {
+		// Loop through the response hooks and execute them
+		foreach ($this->mResponseHooks as $sMethod) {
+			// Check to see if the method has an object associated with it
+			if (is_array($sMethod) === true) {
+				// Execute the hook
+				call_user_func($sMethod);
+			} else {
+				// Execute the method
+				$this->{$sMethod}();
+			}
+		}
+		// Return the instance
+		return $this;
+	}
+
+	/**
 	 * This method parses a Query string into the response or into an array
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -316,32 +557,27 @@ abstract class FramsieHttp {
 		return $this;
 	}
 
-	/**
-	 * This method loops through the response hooks and executes them
-	 * @package Framsie
-	 * @subpackage FramsieHttp
-	 * @access protected
-	 * @return FramsieHttp $this
-	 */
-	protected function executeResponseHooks() {
-		// Loop through the response hooks and execute them
-		foreach ($this->mResponseHooks as $sMethod) {
-			// Check to see if the method has an object associated with it
-			if (is_array($sMethod) === true) {
-				// Execute the hook
-				call_user_func($sMethod);
-			} else {
-				// Execute the method
-				$this->{$sMethod}();
-			}
-		}
-		// Return the instance
-		return $this;
-	}
-
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method adds a hook method to the data encoding
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param multitype $mMethod
+	 * @throws Exception
+	 * @return FramsieHttp $this
+	 */
+	public function addDataEncodeHook($mMethod) {
+		// Make sure the method exists
+		$this->ensureHookMethod($mMethod);
+		// Add the method
+		array_push($this->mDataEncodeHooks, $mMethod);
+		// Return the instance
+		return $this;
+	}
 
 	/**
 	 * This method adds a header to the system
@@ -451,6 +687,9 @@ abstract class FramsieHttp {
 		if (!empty($this->mHeaders)) {
 			// Set the headers
 			curl_setopt($rHandle, CURLOPT_HTTPHEADER, $this->mHeaders);
+		} else {
+			// Turn headers off
+			curl_setopt($rHandle, CURLOPT_HEADER, false);
 		}
 		// Tell the handle that we want to return the data
 		curl_setopt($rHandle, CURLOPT_RETURNTRANSFER, true);
@@ -505,6 +744,33 @@ abstract class FramsieHttp {
 		curl_close($rHandle);
 		// Process the response hooks
 		$this->executeResponseHooks();
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets up the system for OAuth
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return FramsieHttp $this
+	 */
+	public function setupOauth() {
+		// Tell the system to use OAuth
+		$this->mUseOauth = true;
+		// Add the required parameters
+		$this->addParam(self::OAUTH_PARAM_VERSION,          $this->mOauthVersion)         // Send the version
+			->addParam (self::OAUTH_PARAM_NONCE,            $this->getOauthNonce())       // Send the nonce
+			->addParam (self::OAUTH_PARAM_TIMESTAMP,        $this->getOauthTimestamp())   // Send the timestamp
+			->addParam (self::OAUTH_PARAM_SIGNATURE_METHOD, $this->mOauthSignatureMethod) // Send the signature method
+			->addParam (self::OAUTH_PARAM_CONSUMER_KEY,     $this->mOauthConsumerKey);    // Send the consumer key
+		// Check for a token
+		if (empty($this->mOauthToken) === false) {
+			// Set the token into the request
+			$this->addParam (self::OAUTH_PARAM_TOKEN, $this->mOauthToken);
+		}
+		// Set the signature
+		$this->addParam(self::OAUTH_PARAM_SIGNATURE, $this->getOauthSignature());
 		// Return the instance
 		return $this;
 	}
@@ -598,6 +864,78 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method is simply a helper that generates an MD5 hash or a unique id
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return string
+	 */
+	public function getOauthNonce() {
+		// Return the hash
+		return md5(uniqid());
+	}
+
+	/**
+	 * This method returns the OAuth secret key
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return string
+	 */
+	public function getOauthSecretKey() {
+		// Generate and the secret key
+		$sSecret = (string) implode('&', array(
+			rawurlencode($this->mOauthConsumerSecret), // Set the consumer secret
+			rawurlencode($this->mOauthTokenSecret)     // Set the token secret
+		));
+		// Return the secret key
+		return $sSecret;
+	}
+
+	/**
+	 * This method returns the OAuth signature for the request
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return string
+	 */
+	public function getOauthSignature() {
+		// Set the signature placeholder
+		$sSignature = (string) null;
+		// Set the method placeholder
+		$sMethod    = (string) null;
+		// Determine the method
+		switch ($this->mRequestMethod) {
+			// GET
+			case self::REQUEST_METHOD_GET  : $sMethod = self::REQUEST_METHOD_GET_NAME;  break;
+			// POST
+			case self::REQUEST_METHOD_POST : $sMethod = self::REQUEST_METHOD_POST_NAME; break;
+		}
+		$sSignature = (string) implode('&', array(
+			$sMethod,
+			rawurlencode($this->mUrl),
+			$this->encodeDataParamsOauth($this->mData)
+		));
+		// Determine the encryption to run
+		switch ($this->mOauthSignatureMethod) {
+			// HMAC-SHA1
+			case self::OAUTH_SIGNATURE_METHOD_HMAC_SHA1 : return base64_encode(hash_hmac('sha1', $sSignature, $this->mOauthConsumerSecret, true)); break;
+		}
+	}
+
+	/**
+	 * This method returns the current seconds since epoch
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return integer
+	 */
+	public function getOauthTimestamp() {
+		// Return the timestamp
+		return time();
+	}
+
+	/**
 	 * This method returns a specific parameter from the data object
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -620,7 +958,7 @@ abstract class FramsieHttp {
 	 * @package Framsie
 	 * @subpackage FramsieHttp
 	 * @access public
-	 * @return string
+	 * @return integer
 	 */
 	public function getRequestMethod() {
 		// Return the request method
@@ -731,6 +1069,96 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method sets the OAuth consumer key into the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param string $sConsumerKey
+	 * @return FramsieHttp $this
+	 */
+	public function setOauthConsumerKey($sConsumerKey) {
+		// Set the OAuth consumer key
+		$this->mOauthConsumerKey = (string) $sConsumerKey;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets the OAuth consumer secret into the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param string $sConsumerSecret
+	 * @return FramsieHttp $this
+	 */
+	public function setOauthConsumerSecret($sConsumerSecret) {
+		// Set the OAuth consumer secret
+		$this->mOauthConsumerSecret = (string) $sConsumerSecret;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets the OAuth signature method into the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param string $sMethod
+	 * @return FramsieHttp $this
+	 */
+	public function setOauthSignatureMethod($sMethod) {
+		// Set the OAuth signature method
+		$this->mOauthSignatureMethod = (string) $sMethod;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets the OAuth token into the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param string $sToken
+	 * @return FramsieHttp $this
+	 */
+	public function setOauthToken($sToken) {
+		// Set the OAuth token
+		$this->mOauthToken = (string) $sToken;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets the OAuth token secret into the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param string $sTokenSecret
+	 * @return FramsieHttp $this
+	 */
+	public function setOauthTokenSecret($sTokenSecret) {
+		// Set the OAuth token secret
+		$this->mOauthTokenSecret = (string) $sTokenSecret;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets the OAuth version into the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param string $sVersion
+	 * @return FramsieHttp $this
+	 */
+	public function setOauthVersion($sVersion) {
+		// Set the OAuth version
+		$this->mOauthVersion = (string) $sVersion;
+		// Return the instance
+		return $this;
+	}
+
+	/**
 	 * This method sets the request method into the system
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -741,6 +1169,21 @@ abstract class FramsieHttp {
 	public function setRequestMethod($iRequestMethod) {
 		// Set the request method into the system
 		$this->mRequestMethod = (integer) $iRequestMethod;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method tells the system whether or not to use OAuth
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param boolean $bUseOauth
+	 * @return FramsieHttp $this
+	 */
+	public function setUseOauth($bUseOauth) {
+		// Set the OAuth enabler
+		$this->mUseOauth = (boolean) $bUseOauth;
 		// Return the instance
 		return $this;
 	}
