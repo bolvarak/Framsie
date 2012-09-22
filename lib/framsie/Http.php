@@ -593,7 +593,7 @@ abstract class FramsieHttp {
 	 */
 	public function addHeader($sName, $sValue) {
 		// Add the header to the system
-		$this->mHeaders[$sName] = (string) $sValue;
+		array_push($this->mHeaders, "{$sName}:  {$sValue}\n");
 		// Return the instance
 		return $this;
 	}
@@ -774,6 +774,8 @@ abstract class FramsieHttp {
 		}
 		// Set the signature
 		$this->addParam(self::OAUTH_PARAM_SIGNATURE, $this->getOauthSignature());
+		// Set the authorization header
+		$this->addHeader('Authorization', $this->getOauthAuthorizationHeader());
 		// Return the instance
 		return $this;
 	}
@@ -867,6 +869,55 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method generates an OAuth authorization header
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return string
+	 */
+	public function getOauthAuthorizationHeader() {
+		// Begin the header
+		$sHeader      = (string) "OAuth realm=\"{$this->mUrl}\"";
+		// Grab the query string
+		$sQueryString = (string) $this->encodeDataParamsOauth($this->mData);
+		// Explode the query string
+		$aQuery       = explode('&', $sQueryString);
+		// Loop throug the query
+		foreach ($aQuery as $sQueryPair) {
+			// Explode the pair
+			$aPair = explode('=', $sQueryPair);
+			// Append to the header
+			$sHeader .= (string) ",{$aPair[0]}=\"{$aPair[1]}\"";
+		}
+		// Return the header
+		return $sHeader;
+	}
+
+	/**
+	 * This method returns the OAuth consumer key
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return string
+	 */
+	public function getOauthConsumerKey() {
+		// Return the OAuth consumer key
+		return $this->mOauthConsumerKey;
+	}
+
+	/**
+	 * This method returns the OAuth consumer secret
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return string
+	 */
+	public function getOauthConsumerSecret() {
+		// Return the OAuth consumer secret
+		return $this->mOauthConsumerSecret;
+	}
+
+	/**
 	 * This method is simply a helper that generates an MD5 hash or a unique id
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -888,8 +939,8 @@ abstract class FramsieHttp {
 	public function getOauthSecretKey() {
 		// Generate and the secret key
 		$sSecret = (string) implode('&', array(
-			rawurlencode($this->mOauthConsumerSecret), // Set the consumer secret
-			rawurlencode($this->mOauthTokenSecret)     // Set the token secret
+			$this->mOauthConsumerSecret, // Set the consumer secret
+			$this->mOauthTokenSecret     // Set the token secret
 		));
 		// Return the secret key
 		return $sSecret;
@@ -914,10 +965,11 @@ abstract class FramsieHttp {
 			// POST
 			case self::REQUEST_METHOD_POST : $sMethod = self::REQUEST_METHOD_POST_NAME; break;
 		}
+		// Create the signature base
 		$sSignature = (string) implode('&', array(
 			$sMethod,
 			rawurlencode($this->mUrl),
-			$this->encodeDataParamsOauth($this->mData)
+			rawurlencode($this->encodeDataParamsOauth($this->mData))
 		));
 		// Determine the encryption to run
 		switch ($this->mOauthSignatureMethod) {
