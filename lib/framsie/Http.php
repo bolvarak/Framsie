@@ -922,7 +922,7 @@ abstract class FramsieHttp {
 		// Determine the encryption to run
 		switch ($this->mOauthSignatureMethod) {
 			// HMAC-SHA1
-			case self::OAUTH_SIGNATURE_METHOD_HMAC_SHA1 : return base64_encode(hash_hmac('sha1', $sSignature, $this->mOauthConsumerSecret, true)); break;
+			case self::OAUTH_SIGNATURE_METHOD_HMAC_SHA1 : return base64_encode(hash_hmac('sha1', $sSignature, $this->getOauthSecretKey(), true)); break;
 		}
 	}
 
