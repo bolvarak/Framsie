@@ -438,6 +438,8 @@ abstract class FramsieHttp {
 	 * @return string
 	 */
 	protected function encodeDataParamsOauth($aParams) {
+		// Sort the parameters
+		ksort($aParams);
 		// Create a parameter placeholder
 		$aEncodedParams = array();
 		// Loop through the parameters
