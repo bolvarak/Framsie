@@ -445,7 +445,10 @@ abstract class FramsieHttp {
 			// Make sure the value is not empty
 			if ((empty($sValue) === false) && (isset($sValue))) {
 				// Combine the parameters and add them to the array
-				array_push($aEncodedParams, $sKey.'='.oauth_urlencode($sValue));
+				array_push($aEncodedParams, implode('=', array(
+					rawurlencode($sKey),  // Set the parameter name
+					rawurlencode($sValue) // Set the parameter value
+				)));
 			}
 		}
 		// Return the query string
