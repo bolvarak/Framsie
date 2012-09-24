@@ -344,7 +344,7 @@ class Framsie {
 			$sFilename .= (string) "{$sFilename}.phtml";
 		}
 		// Make sure the file exists
-		if (!file_exists(BLOCK_PATH."/{$sFilename}")) {
+		if (!file_exists(BLOCK_PATH.DIRECTORY_SEPARATOR.$sFilename)) {
 			// Throw an exception because if this method is called, obviously
 			// the block is needed to continue
 			throw new Exception("The block file \"{$sFilename}\" does not exist as it was called, nor does it exist in the blocks directory");
@@ -352,7 +352,7 @@ class Framsie {
 		// Start the capture of the output buffer stream
 		ob_start();
 		// Load the block
-		require_once(BLOCK_PATH."/{$sFilename}");
+		require_once(BLOCK_PATH.DIRECTORY_SEPARATOR.$sFilename);
 		// Depending on the print notification either return the buffer
 		// or simply print the buffer directly to the screen
 		return ob_get_clean();

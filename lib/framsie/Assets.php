@@ -151,11 +151,11 @@ class FramsieAssets {
 			// Loop through the stylesheets
 			foreach ($sStylesheet as $sSheet) {
 				// Append the stylesheet
-				$sCss .= (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH."/{$sSheet}");
+				$sCss .= (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATHDIRECTORY_SEPARATOR.$sSheet);
 			}
 		} else {
 			// Set the stylesheet
-			$sCss = (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH."/{$sStylesheet}");
+			$sCss = (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH.DIRECTORY_SEPARATOR.$sStylesheet);
 		}
 		// Return the CSS
 		return (($bMinify === true) ? $this->minifyAsset($sCss, $sName) : $this->loadAsset($sCss, $sName));
@@ -174,7 +174,7 @@ class FramsieAssets {
 		// Start the output buffer
 		ob_start();
 		// Load the image file
-		readfile(BLOCK_PATH.'/'.IMG_ASSETS_PATH."/{$sImage}");
+		readfile(BLOCK_PATH.DIRECTORY_SEPARATOR.IMG_ASSETS_PATH.DIRECTORY_SEPARATOR.$sImage);
 		// Return the cached asset
 		return ob_get_clean(); // $this->loadAsset($sImage, $sName);
 	}
@@ -197,11 +197,11 @@ class FramsieAssets {
 			// Loop through the javascript
 			foreach ($sJavascript as $sScript) {
 				// Append the script
-				$sJs .= (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH."/{$sScript}");
+				$sJs .= (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH.DIRECTORY_SEPARATOR.$sScript);
 			}
 		} else {                      // Only one script
 			// Set the JS
-			$sJs = (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH."/{$sJavascript}");
+			$sJs = (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH.DIRECTORY_SEPARATOR.$sJavascript);
 		}
 		// Return the JS
 		return (($bMinify === true) ? $this->minifyAsset($sJs, $sName) : $this->loadAsset($sJs, $sName));

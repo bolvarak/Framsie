@@ -1,1 +1,1 @@
-{"bIsEncrypted":true,"sSeparator":"}::{","sHash":"QaP1Wk2AgSoibRIThXs9gPlbIP0=","aIndices":{"Users":["iUserId","sUsername","sPassword"]}}
+{"bIsEncrypted":true,"sSeparator":"}::{","sHash":"Gj+y9e7++Sn9AlV+NT9FrLzmfSA=","aTables":{"Users":{"iUserId":0,"sUsername":1,"sPassword":2,"sFirstName":3,"sLastName":4}},"aIndices":{"Users":["iUserId","sUsername","sPassword"]}}

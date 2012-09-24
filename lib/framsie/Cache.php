@@ -9,88 +9,88 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 class FramsieCache {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Constants ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This constant contains the number of seconds for a 30 second expire
 	 * @var integer
 	 */
 	const EXPIRE_30_SEC     = 30;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 1 minute expire
 	 * @var integer
 	 */
 	const EXPIRE_1_MIN      = 60;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 5 minute expire
 	 * @var integer
 	 */
 	const EXPIRE_5_MIN      = 300;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 10 minute expire
 	 * @var integer
 	 */
 	const EXPIRE_10_MIN     = 600;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 30 minute expire
 	 * @var integer
 	 */
 	const EXPIRE_30_MIN     = 1800;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 1 hour expire
 	 * @var integer
 	 */
 	const EXPIRE_1_HOUR     = 3600;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 1 day expire
 	 * @var integer
 	 */
 	const EXPIRE_1_DAY      = 86400;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 1 business week expire
 	 * @var integer
 	 */
 	const EXPIRE_1_BUS_WEEK = 432000;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 1 calendar week expire
 	 * @var integer
 	 */
 	const EXPIRE_1_CAL_WEEK = 604800;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 1 month expire
 	 * @var integer
 	 */
 	const EXPIRE_1_MONTH    = 2592000;
-	
+
 	/**
 	 * This constant contains the number of seconds for a 1 year expire
 	 * @var integer
 	 */
 	const EXPIRE_1_YEAR     = 31536000;
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This property contains the singleton instane of the class
 	 * @access protected
 	 * @staticvar FramsieCache
 	 */
 	protected static $mInstance = null;
-	
+
 	/**
 	 * This property contains the time until the cache expires, the default
 	 * is five minutes
@@ -98,11 +98,11 @@ class FramsieCache {
 	 * @var integer
 	 */
 	protected $mExpire          = 300;
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method provides access to the singleton instance of this class
 	 * @package Framsie
@@ -121,7 +121,7 @@ class FramsieCache {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	/**
 	 * This method sets an external instance into the class, it is generally
 	 * only used in testing and primarily with phpUnit
@@ -138,13 +138,13 @@ class FramsieCache {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * The constructor simply returns the instance of the class and is 
+	 * The constructor simply returns the instance of the class and is
 	 * protected to enforce the singleton pattern
 	 * @package Framsie
 	 * @subpackage FramsieCache
@@ -155,11 +155,11 @@ class FramsieCache {
 		// Return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method loads a cache file from the system, validates it and returns
 	 * its content if validation is successful
@@ -172,12 +172,12 @@ class FramsieCache {
 	 */
 	public function loadFromCache($sName) {
 		// Set the cache filename
-		$sCacheFilename = (string) CACHE_DIRECTORY."/{$sName}.cache";
+		$sCacheFilename = (string) CACHE_DIRECTORY.DIRECTORY_SEPARATOR.$sName.'.cache';
 		// Set the cache file info container
-		$sInfoFilename  = (string) CACHE_DIRECTORY."/{$sName}.info";
+		$sInfoFilename  = (string) CACHE_DIRECTORY.DIRECTORY_SEPARATOR.$sName.'.info';
 		// Make sure the cache directory exists
 		if (!file_exists(CACHE_DIRECTORY)) {
-			// Throw an exception because this directory must exist in order to 
+			// Throw an exception because this directory must exist in order to
 			// utilize caching throughout the framework
 			throw new Exception('The defined cache directory "'.CACHE_DIRECTORY.'" does not exist.');
 		}
@@ -199,7 +199,7 @@ class FramsieCache {
 		// will return prior to this point
 		return false;
 	}
-	
+
 	/**
 	 * This method saves a cache file and information file to the system
 	 * @package Framsie
@@ -213,7 +213,7 @@ class FramsieCache {
 	public function saveToCache($sName, $sContent) {
 		// Define an information array
 		$aInformation   = array(
-			'bSerialized' => (boolean) false, 
+			'bSerialized' => (boolean) false,
 			'iTime'       => (integer) time()
 		);
 		// Make sure the cache directory exists
@@ -223,9 +223,9 @@ class FramsieCache {
 			throw new Exception('The defined cache directory "'.CACHE_DIRECTORY.'" does not exist.');
 		}
 		// Set the name of the cache file
-		$sCacheFilename = (string) CACHE_DIRECTORY."/{$sName}.cache";
+		$sCacheFilename = (string) CACHE_DIRECTORY.DIRECTORY_SEPARATOR.$sName.'.cache';
 		// Set the name of the cache file info container
-		$sInfoFilename  = (string) CACHE_DIRECTORY."/{$sName}.info";
+		$sInfoFilename  = (string) CACHE_DIRECTORY.DIRECTORY_SEPARATOR.$sName.'.info';
 		// Check the content type for php specific data
 		if (is_array($sContent) || is_object($sContent)) {
 			// Serialize the content
@@ -240,13 +240,13 @@ class FramsieCache {
 		// Return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Getters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
-	 * This method returns the current number of second until a cache file 
+	 * This method returns the current number of second until a cache file
 	 * should expire and become invalid
 	 * @package Framsie
 	 * @subpackage FramsieCache
@@ -257,11 +257,11 @@ class FramsieCache {
 		// Return the current expire time
 		return $this->mExpire;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Setters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method sets the number of seconds until the cache should expire
 	 * @package Framsie

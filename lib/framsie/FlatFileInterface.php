@@ -99,6 +99,8 @@ class FramsieFlatFileInterface {
 		$this->mFramsieEncryption = new FramsieEncryption();
 		// Set the number of passes for this module
 		$this->mFramsieEncryption->setPasses(50);
+		// Load the databases from the filesystem
+		$this->loadDatabaseSystem();
 		// Return the instance
 		return $this;
 	}
@@ -117,7 +119,7 @@ class FramsieFlatFileInterface {
 	 */
 	protected function createFolder($sDatabase) {
 		// Create the folder
-		mkdir(FLAT_FILE_DB_PATH."/{$sDatabase}", 0755, true);
+		mkdir(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase, 0755, true);
 		// Return the instance
 		return $this;
 	}
@@ -132,7 +134,7 @@ class FramsieFlatFileInterface {
 	 */
 	protected function createIndexFile($sDatabase) {
 		// Create the index file
-		$rIndexFile = fopen(FLAT_FILE_DB_PATH."/{$sDatabase}/indices.db", 'w');
+		$rIndexFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'indices.db', 'w');
 		// Close the file as we do not need it right now
 		fclose($rIndexFile);
 		// Return the instance
@@ -149,7 +151,7 @@ class FramsieFlatFileInterface {
 	 */
 	protected function createMetaFile($sDatabase) {
 		// Create the meta file
-		$rMetaFile = fopen(FLAT_FILE_DB_PATH."/{$sDatabase}/.meta.db", 'w');
+		$rMetaFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'.meta.db', 'w');
 		// Close the file as we do not need it right now
 		fclose($rMetaFile);
 		// Return the instance
@@ -167,7 +169,7 @@ class FramsieFlatFileInterface {
 	 */
 	protected function createTableFile($sDatabase, $sTable) {
 		// Create the table file
-		$rTableFile = fopen(FLAT_FILE_DB_PATH."/{$sDatabase}/{$sTable}.db", 'w');
+		$rTableFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.$sTable.'.db', 'w');
 		// Close the file as we do not need it right now
 		fclose($rTableFile);
 		// Return the instnance
@@ -251,6 +253,72 @@ class FramsieFlatFileInterface {
 	}
 
 	/**
+	 * This method loads the databases into the system
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access protected
+	 * @return FramsieFlatFileInterface $this
+	 */
+	protected function loadDatabaseSystem() {
+		// Open and scan the DB container
+		$aDatabases = scandir(FLAT_FILE_DB_PATH);
+		// Remove the parent and relative paths
+		array_shift($aDatabases); // Relative path
+		array_shift($aDatabases); // Parent path
+		// Loop through the container contents
+		foreach ($aDatabases as $sDatabase) {
+			// Check to see if the current entity is a directory
+			if (is_dir(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase) === true) {
+				// Load the meta file
+				$aDatabase = $this->loadMetaFile($sDatabase);
+				// Remove the hash as it's a secret
+				unset($aDatabase['sHash']);
+				// Check for indices
+				if (empty($aDatabase['aIndices']) === false) {
+					// Set the indices
+					$this->mIndices[$sDatabase] = $aDatabase['aIndices'];
+					// Remove the indices from the database array
+					unset($aDatabase['aIndices']);
+				}
+				// Check for tables
+				if (empty($aDatabase['aTables']) === false) {
+					// Set the tables
+					$this->mTables[$sDatabase] = $aDatabase['aTables'];
+					// Remove the tables from the database array
+					unset($aDatabase['aTables']);
+				}
+				// Add the last of the meta data to the global database array
+				$this->mDatabases[$sDatabase] = $aDatabase;
+			}
+		}
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method loads a database meta file into the system
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access protected
+	 * @param string $sDatabase
+	 * @throws Exception
+	 * @return array
+	 */
+	protected function loadMetaFile($sDatabase) {
+		// Make sure the file exists
+		$this->verifyDatabaseMetaFile($sDatabase);
+		// Load the meta file
+		$aDatabase = json_decode(file_get_contents(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'.meta.db'), true);
+		// Check to see if the data is present
+		if (empty($aDatabase)) {
+			// Throw an exception
+			throw new Exception("Unable to load \"{$sDatabase}\" meta file.");
+		}
+		// Return the database meta file
+		return $aDatabase;
+	}
+
+	/**
 	 * This method replaces any illegal characters with an underscore
 	 * @package Framsie
 	 * @subpackage FramsieFlatFileInterface
@@ -310,7 +378,7 @@ class FramsieFlatFileInterface {
 	 */
 	protected function verifyDatabaseFolder($sDatabase) {
 		// Check for the database folder
-		if (file_exists(FLAT_FILE_DB_PATH."/{$sDatabase}") === false) {
+		if (file_exists(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase) === false) {
 			// Create the folder
 			$this->createFolder($sDatabase);
 		}
@@ -328,7 +396,7 @@ class FramsieFlatFileInterface {
 	 */
 	protected function verifyDatabaseIndexFile($sDatabase) {
 		// Check for the index file
-		if (file_exists(FLAT_FILE_DB_PATH."/{$sDatabase}/indices.db") === false) {
+		if (file_exists(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'indices.db') === false) {
 			// Create the index file
 			$this->createIndexFile($sDatabase);
 		}
@@ -346,7 +414,7 @@ class FramsieFlatFileInterface {
 	 */
 	protected function verifyDatabaseMetaFile($sDatabase) {
 		// Check for the meta file
-		if (file_exists(FLAT_FILE_DB_PATH."/{$sDatabase}/.meta.db") === false) {
+		if (file_exists(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'.meta.db') === false) {
 			// Create the meta file
 			$this->createMetaFile($sDatabase);
 		}
@@ -376,15 +444,30 @@ class FramsieFlatFileInterface {
 	}
 
 	/**
-	 * This method ensures that the table index exists
+	 * This method runs a check to see if the index exists
 	 * @package Framsie
 	 * @subpackage FramsieFlatFileInterface
 	 * @access protected
+	 * @param string $sDatabase
 	 * @param string $sTable
-	 * @return void
+	 * @param string $sField
+	 * @param boolean $bThrowException
+	 * @throws Exception
+	 * @return boolean
 	 */
-	protected function verifyIndex($sTable) {
-
+	protected function verifyIndex($sDatabase, $sTable, $sField, $bThrowException = true) {
+		// Check to see if the index field exists
+		if (in_array($sField, $this->mIndices[$sDatabase][$sTable])) {
+			// We're done
+			return true;
+		}
+		// Check to see if we need to throw an exception
+		if ($bThrowException === true) {
+			// Throw the exception
+			throw new Exception("The index \"{$sDatabase}.{$sTable}[{$sField}]\" does not exist.");
+		}
+		// Elsewise, return false
+		return false;
 	}
 
 	/**
@@ -418,7 +501,7 @@ class FramsieFlatFileInterface {
 	 */
 	protected function verifyTableFile($sDatabase, $sTable) {
 		// Check for the table file
-		if (file_exists(FLAT_FILE_DB_PATH."/{$sDatabase}/{$sTable}.db") === false) {
+		if (file_exists(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.$sTable.'.db') === false) {
 			// Create the table file
 			$this->createTableFile($sDatabase, $sTable);
 		}
@@ -444,9 +527,9 @@ class FramsieFlatFileInterface {
 			->verifyTable    ($sDatabase, $sTable)
 			->verifyField    ($sDatabase, $sTable, $sField);
 		// Make sure the field is in the indices
-		if (in_array($sField, $this->mIndices[$sDatabase][$sTable])) {
+		if ($this->verifyIndex($sDatabase, $sTable, $sField, false)) {
 			// Open the indices file for appending
-			$rIndexFile = fopen(FLAT_FILE_DB_PATH."/{$sDatabase}/indices.db", 'a');
+			$rIndexFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'indices.db', 'a');
 			// Create the row
 			$sRow = (string) implode($this->getDatabaseMetaProperty('sSeparator'), array(
 				$sTable,
@@ -486,7 +569,7 @@ class FramsieFlatFileInterface {
 		// Localize the database data
 		$aDatabase = $this->mDatabases[$sDatabase];
 		// Try to get the file's contents
-		$aStoredDatabase = json_decode(file_get_contents(FLAT_FILE_DB_PATH."/{$sDatabase}/.meta.db"), true);
+		$aStoredDatabase = json_decode(file_get_contents(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'.meta.db'), true);
 		// Check the load attempt
 		if (is_null($aStoredDatabase) === false) {
 			// Set the encryption hash on the table to its original state
@@ -494,7 +577,7 @@ class FramsieFlatFileInterface {
 			$aDatabase['sHash']                    = $aStoredDatabase['sHash']; // Localized
 		}
 		// Check to see if the tables have been set
-		if (empty($this->mTables[$sDatabase])) {
+		if (empty($this->mTables[$sDatabase]) === false) {
 			// Add the tables to the local database data
 			$aDatabase['aTables'] = $this->mTables[$sDatabase];
 		}
@@ -504,7 +587,7 @@ class FramsieFlatFileInterface {
 			$aDatabase['aIndices'] = $this->mIndices[$sDatabase];
 		}
 		// Open the meta file
-		$rMetaFile = fopen(FLAT_FILE_DB_PATH."/{$sDatabase}/.meta.db", 'w');
+		$rMetaFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'.meta.db', 'w');
 		// Write the meta data
 		fwrite($rMetaFile, json_encode($aDatabase), strlen(json_encode($aDatabase)));
 		// Close the file
@@ -536,13 +619,13 @@ class FramsieFlatFileInterface {
 			$sRow = (string) $this->mFramsieEncryption->Encrypt($sRow);
 		}
 		// Open the table file for appending
-		$rTableFile = fopen(FLAT_FILE_DB_PATH."/{$sDatabase}/{$sTable}.db", 'a');
+		$rTableFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.$sTable.'.db', 'a');
 		// Write the row
 		fwrite($rTableFile, $sRow.PHP_EOL, strlen($sRow.PHP_EOL));
 		// Close the file
 		fclose($rTableFile);
 		// Return the line count
-		return $this->getLineCount(FLAT_FILE_DB_PATH."/{$sDatabase}/{$sTable}.db");
+		return $this->getLineCount(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.$sTable.'.db');
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -680,11 +763,29 @@ class FramsieFlatFileInterface {
 			// Add the field
 			$this->addField($sDatabase, $sName, $sFieldName, $iPosition);
 		}
+		// Write the meta data one last time
+		$this->writeMetaData($sDatabase);
 		// Return the instance
 		return $this;
 	}
 
 
+	public function find($sTable, $aFields, $aWhere = array()) {
+		// Verify current database
+		$this->verifyCurrentDatabase();
+		// Verify the table
+		$this->verifyTable($this->mCurrentDatabase, $sTable);
+	}
+
+	/**
+	 * This method inserts a record into a database and adds the index values if any exist
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access public
+	 * @param string $sTable
+	 * @param array $aFields
+	 * @return FramsieFlatFileInterface $this
+	 */
 	public function insert($sTable, $aFields) {
 		// Verify current database
 		$this->verifyCurrentDatabase();
@@ -709,9 +810,13 @@ class FramsieFlatFileInterface {
 			// Write the index
 			$this->writeIndexValue($this->mCurrentDatabase, $sTable, $sField, $this->determineInsertValue($mValue), $iLine);
 		}
-
 		// We're done, return the instance
 		return $this;
+	}
+
+
+	public function update($sTable, $aFields, $aWhere) {
+
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -740,12 +845,7 @@ class FramsieFlatFileInterface {
 				->verifyDatabaseMetaFile($sDatabase);
 		}
 		// Load the meta file
-		$aDatabase = json_decode(file_get_contents(FLAT_FILE_DB_PATH."/{$sDatabase}/.meta.db"), true);
-		// Check to see if the data is present
-		if (empty($aDatabase)) {
-			// Throw an exception
-			throw new Exception("Unable to load \"{$sDatabase}\" meta file.");
-		}
+		$aDatabase = $this->loadMetaFile($sDatabase);
 		// Check to see if the property exists
 		if (empty($aDatabase[$sProperty]) && is_null($aDatabase[$sProperty])) {
 			// Throw an exception

@@ -93,33 +93,33 @@ class Bootstrap {
 			$this->setErrorReporting(false);
 		}
 		// Define the static file path
-		define('STATIC_FILE_PATH',        dirname(__FILE__).'/../public');
+		define('STATIC_FILE_PATH',        dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'public');
 		// Define the library path
 		define('LIBRARY_PATH',            dirname(__FILE__));
 		// Define the Frames path
-		define('FRAMSIE_PATH',            LIBRARY_PATH.'/framsie');
+		define('FRAMSIE_PATH',            LIBRARY_PATH.DIRECTORY_SEPARATOR.'framsie');
 		// Define the application path
-		define('APPLICATION_PATH',        LIBRARY_PATH.'/../application');
+		define('APPLICATION_PATH',        LIBRARY_PATH.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'application');
 		// Define the model path
-		define('MODEL_PATH',              APPLICATION_PATH.'/models');
+		define('MODEL_PATH',              APPLICATION_PATH.DIRECTORY_SEPARATOR.'models');
 		// Define the controller path
-		define('CONTROLLER_PATH',         APPLICATION_PATH.'/controllers');
+		define('CONTROLLER_PATH',         APPLICATION_PATH.DIRECTORY_SEPARATOR.'controllers');
 		// Define the block path
-		define('BLOCK_PATH',              APPLICATION_PATH.'/blocks');
+		define('BLOCK_PATH',              APPLICATION_PATH.DIRECTORY_SEPARATOR.'blocks');
 		// Define the JS assets path
-		define('JAVASCRIPT_ASSETS_PATH',  'assets/js');
+		define('JAVASCRIPT_ASSETS_PATH',  'assets'.DIRECTORY_SEPARATOR.'js');
 		// Define the CSS assets path
-		define('CSS_ASSETS_PATH',         'assets/css');
+		define('CSS_ASSETS_PATH',         'assets'.DIRECTORY_SEPARATOR.'css');
 		// Define the Image assets path
-		define('IMG_ASSETS_PATH',         'assets/img');
+		define('IMG_ASSETS_PATH',         'assets'.DIRECTORY_SEPARATOR.'img');
 		// Define the include path
-		define('INCLUDE_PATH',            dirname(__FILE__).'/../includes');
+		define('INCLUDE_PATH',            dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'includes');
 		// Define the cache path
-		define('CACHE_DIRECTORY',         INCLUDE_PATH.'/cache');
+		define('CACHE_DIRECTORY',         INCLUDE_PATH.DIRECTORY_SEPARATOR.'cache');
 		// Define the configuration path
-		define('CONFIGURATION_FILE_PATH', APPLICATION_PATH.'/configs/application.ini');
+		define('CONFIGURATION_FILE_PATH', APPLICATION_PATH.DIRECTORY_SEPARATOR.'configs'.DIRECTORY_SEPARATOR.'application.ini');
 		// Define the flat file database path
-		define('FLAT_FILE_DB_PATH',       APPLICATION_PATH.'/db');
+		define('FLAT_FILE_DB_PATH',       APPLICATION_PATH.DIRECTORY_SEPARATOR.'db');
 		// Setup the autoloader
 		spl_autoload_register(array($this, 'autoLoader'));
 		// Setup the error handler
@@ -202,7 +202,7 @@ class Bootstrap {
 			// Replace the class name
 			$sClassName = (string) str_replace('Mapper', null, $sClassName);
 			// Set the directory
-			$sClassName = (string) "mappers/{$sClassName}";
+			$sClassName = (string) 'mappers'.DIRECTORY_SEPARATOR.$sClassName;
 		}
 
 		// Check for a form
@@ -210,11 +210,11 @@ class Bootstrap {
 			// Replace the class name
 			$sClassName = (string) str_replace('Form', null, $sClassName);
 			// Set the directory
-			$sClassName = (string) "forms/{$sClassName}";
+			$sClassName = (string) 'forms'.DIRECTORY_SEPARATOR.$sClassName;
 		}
 
 		// First we check in the library path, so set the filename
-		$sFilename = (string) LIBRARY_PATH."/{$sClassName}.php";
+		$sFilename = (string) LIBRARY_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
 		// Check for the file
 		if (file_exists($sFilename)) {
 			// Load the file
@@ -224,7 +224,7 @@ class Bootstrap {
 		}
 
 		// Next we check the Framesie framework path
-		$sFilename = (string) FRAMSIE_PATH."/{$sClassName}.php";
+		$sFilename = (string) FRAMSIE_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
 		// Check for the file
 		if (file_exists($sFilename)) {
 			// Load the file
@@ -234,7 +234,7 @@ class Bootstrap {
 		}
 
 		// Next we check in the application path, so set the filename
-		$sFilename = (string) APPLICATION_PATH."/{$sClassName}.php";
+		$sFilename = (string) APPLICATION_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
 		// Check for the file
 		if (file_exists($sFilename)) {
 			// Load the file
@@ -244,7 +244,7 @@ class Bootstrap {
 		}
 
 		// Next we check in the model path, so set the filename
-		$sFilename = (string) MODEL_PATH."/{$sClassName}.php";
+		$sFilename = (string) MODEL_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
 		// Check for the file
 		if (file_exists($sFilename)) {
 			// Load the file
@@ -254,7 +254,7 @@ class Bootstrap {
 		}
 
 		// Finally we check in the controller path, so set the filename
-		$sFilename = (string) CONTROLLER_PATH."/{$sClassName}.php";
+		$sFilename = (string) CONTROLLER_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
 		// Check for the file
 		if (file_exists($sFilename)) {
 			// Load the file
