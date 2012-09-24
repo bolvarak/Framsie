@@ -118,6 +118,8 @@ class Bootstrap {
 		define('CACHE_DIRECTORY',         INCLUDE_PATH.'/cache');
 		// Define the configuration path
 		define('CONFIGURATION_FILE_PATH', APPLICATION_PATH.'/configs/application.ini');
+		// Define the flat file database path
+		define('FLAT_FILE_DB_PATH',       APPLICATION_PATH.'/db');
 		// Setup the autoloader
 		spl_autoload_register(array($this, 'autoLoader'));
 		// Setup the error handler

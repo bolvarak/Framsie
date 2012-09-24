@@ -8,43 +8,43 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  */
 class FramsieEncryption {
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This property contains our singleton instance
 	 * @staticvar FramsieEncryption
 	 */
 	protected static $mInstance = null;
-	
+
 	/**
 	 * This property contains the cipher text
 	 * @access protected
 	 * @var string
 	 */
 	protected $mCipher          = null;
-	
+
 	/**
 	 * This property tells the system what hashing method to use
 	 * @access protected
 	 * @var string
 	 */
 	protected $mEncryptionHash  = MCRYPT_RIJNDAEL_256;
-	
+
 	/**
-	 * This property holds how many times the algorithm will recurse 
+	 * This property holds how many times the algorithm will recurse
 	 * through the hash and encryption
 	 * @access protected
 	 * @var integer
 	 */
 	protected $mPasses          = 7;
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method is responsible for maintaining a single existing instance
 	 * of this class throughout the application
@@ -63,7 +63,7 @@ class FramsieEncryption {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	/**
 	 * This method sets a custom or external instance into this class and
 	 * instance, this is generally only used for phpUnit
@@ -79,11 +79,11 @@ class FramsieEncryption {
 		// Return the instance
 		return self::$mInstance;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods  //////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method recursively decrypts a hash that was encrypted by this class
 	 * @package Framsie
@@ -111,7 +111,7 @@ class FramsieEncryption {
 		// Return the clear text
 		return trim($sText);
 	}
-	
+
 	/**
 	 * This method runs an encryption algorithm on the provided text and hashes it
 	 * @package Framsie
@@ -131,7 +131,7 @@ class FramsieEncryption {
 				$sHash,                 // Set the data to be encrypted
 				MCRYPT_MODE_ECB,        // Set the encryption mode
 				mcrypt_create_iv(       // Create the algorithm
-					mcrypt_get_iv_size($this->mEncryptionHash, MCRYPT_MODE_ECB), 
+					mcrypt_get_iv_size($this->mEncryptionHash, MCRYPT_MODE_ECB),
 					MCRYPT_RAND
 				)
 			);
@@ -139,11 +139,11 @@ class FramsieEncryption {
 		// Make the hash storable and readable
 		return rtrim(base64_encode($sHash), '\0');
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Setters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * This method sets the secret key or cipher to be used for encrypting
 	 * the data, this key is sacred so keep it safe
@@ -159,7 +159,7 @@ class FramsieEncryption {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets the flavor of encryption hashing we should use
 	 * @package Framsie
@@ -174,7 +174,7 @@ class FramsieEncryption {
 		// Return the instance
 		return $this;
 	}
-	
+
 	/**
 	 * This method sets how recursive the encryption is
 	 * @package Framsie
