@@ -181,14 +181,22 @@ class Bootstrap {
 	 * @return void
 	 */
 	public function autoLoader($sClassName) {
+		// Create an array of reserved class names
+		$aReservedClassNames = array(
+			'Form',
+			'Framsie',
+			'HttpResponseMapper',
+			'Mapper',
+			'TableMapper'
+		);
 		// Check for a Framsie package class
-		if ((strpos($sClassName, 'Framsie') !== false) && ($sClassName !== 'Framsie')) {
+		if ((strpos($sClassName, 'Framsie') !== false) && (in_array($sClassName, $aReservedClassNames) === false)) {
 			// Replace the the class name
 			$sClassName = (string) str_replace('Framsie', null, $sClassName);
 		}
 
 		// Check for a mapper
-		if ((strpos($sClassName, 'Mapper') !== false) && ($sClassName !== 'Mapper') && ($sClassName !== 'TableMapper')) {
+		if ((strpos($sClassName, 'Mapper') !== false) && (in_array($sClassName, $aReservedClassNames) === false)) {
 			// Replace the class name
 			$sClassName = (string) str_replace('Mapper', null, $sClassName);
 			// Set the directory
@@ -196,7 +204,7 @@ class Bootstrap {
 		}
 
 		// Check for a form
-		if ((strpos($sClassName, 'Form') !== false) && ($sClassName !== 'Form')) {
+		if ((strpos($sClassName, 'Form') !== false) && (in_array($sClassName, $aReservedClassNames) === false)) {
 			// Replace the class name
 			$sClassName = (string) str_replace('Form', null, $sClassName);
 			// Set the directory

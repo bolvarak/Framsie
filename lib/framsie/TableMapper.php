@@ -47,14 +47,21 @@ abstract class FramsieTableMapper {
 	 * @access protected
 	 * @var array
 	 */
-	protected $mColumns    = array();
+	protected $mColumns       = array();
 
 	/**
 	 * This property contains the database table name associated with this map
 	 * @access protected
 	 * @var string
 	*/
-	protected $mDbTable    = null;
+	protected $mDbTable       = null;
+
+	/**
+	 * This property tells the system whether or not this is a lookup table and thus to ignore the primary key
+	 * @access protected
+	 * @var boolean
+	 */
+	protected $mIsLookupTable = false;
 
 	/**
 	 * This property contains the database table's primary key column
@@ -62,7 +69,7 @@ abstract class FramsieTableMapper {
 	 * @access protected
 	 * @var string
 	 */
-	protected $mPrimaryKey = null;
+	protected $mPrimaryKey    = null;
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
@@ -76,7 +83,7 @@ abstract class FramsieTableMapper {
 	 */
 	public function __construct($sTableName, $sPrimaryKey) {
 		// Set the table name
-		$this->mDbTable = (string) $sTableName;
+		$this->mDbTable    = (string) $sTableName;
 		// Set the primary key column name
 		$this->mPrimaryKey = (string) $sPrimaryKey;
 		// Load the columns and properties
@@ -84,6 +91,10 @@ abstract class FramsieTableMapper {
 		// Return the instance
 		return $this;
 	}
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Magic Methods ////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * This method magically creates getters and setters to get and set properties
@@ -139,8 +150,13 @@ abstract class FramsieTableMapper {
 	 * @return void
 	 */
 	public function __get($sProperty) {
-		// Throw an exception because the property does not exist
-		throw new Exception("The property \"{$sProperty}\" does not exist or is not publically accessible.");
+		// Make sure the column exists
+		if (empty($this->mColumns[substr($sProperty, 1)])) {
+			// Throw an exception
+			throw new Exception("The column \"".substr($sProperty, 1)."\" does not exist in the table \"{$this->mDbTable}\".");
+		}
+		// Return the property
+		return $this->{$sProperty};
 	}
 
 	/**
@@ -149,13 +165,20 @@ abstract class FramsieTableMapper {
 	 * @package Framsie
 	 * @subpackage FramsieTableMapper
 	 * @param string $sProperty
-	 * @param multitype $sValue
+	 * @param multitype $mValue
 	 * @throws Exception
 	 * @return void
 	 */
-	public function __set($sProperty, $sValue) {
-		// Throw an exception because the property does not exist
-		throw new Exception("The property \"{$sProperty}\" does not exist or is not publically accessible.");
+	public function __set($sProperty, $mValue) {
+		// Make sure the column exists
+		if (empty($this->mColumns[substr($sProperty, 1)])) {
+			// Throw an exception
+			throw new Exception("The column \"".substr($sProperty, 1)."\" does not exist in the table \"{$this->mDbTable}\".");
+		}
+		// Set the property
+		$this->{$sProperty} = $this->determineValueType(substr($sProperty, 1), $mValue);
+		// Return the instance
+		return $this;
 	}
 
 	/**
@@ -265,8 +288,44 @@ abstract class FramsieTableMapper {
 			->getColumns();               // Load the column data
 		// Loop through the columns
 		foreach ($this->mColumns as $sColumn => $oColumn) {
+			// Set the global name
+			$sGlobal = (string) "m{$sColumn}";
 			// Set the property
-			$this->{'m'.$sColumn} = $this->determineDefaultValueType($oColumn);
+			$this->{$sGlobal} = $this->determineDefaultValueType($oColumn);
+		}
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method loops through the column to property map and adds the fields
+	 * and values to the database interface
+	 * @package Framsie
+	 * @subpackage FramsieTableMapper
+	 * @param boolean $bInsertUpdate
+	 * @return FramsieTableMapper $this
+	 */
+	protected function setColumnMapIntoInterface($bInsertUpdate = false) {
+		// Check to see if this is an INSERT or UPDATE query
+		if ($bInsertUpdate === true) {
+			// Loop through the columns and add the fields
+			foreach ($this->mColumns as $sColumn => $oColumn) {
+				// Make sure this column isn't the primary key and that the property has a value
+				if (($sColumn !== $this->mPrimaryKey) || (($this->mIsLookupTable === true) && (empty($this->{'m'.$sColumn}) === false))) {
+					// Add the field to the interface
+					FramsieDatabaseInterface::getInstance()->addField($sColumn, $this->{'m'.$sColumn});
+				}
+			}
+			// Return the instance
+			return $this;
+		}
+		// Loop through the columns and add the fields
+		foreach ($this->mColumns as $sColumn => $oColumn) {
+			// Make sure this column isnt't the primary key
+			if ($sColumn !== $this->mPrimaryKey) {
+				// Add the field
+				FramsieDatabaseInterface::getInstance()->addField($sColumn);
+			}
 		}
 		// Return the instance
 		return $this;
@@ -300,9 +359,172 @@ abstract class FramsieTableMapper {
 	 */
 	protected function verifyPrimaryKey() {
 		// Check for a primary key column name
-		if (empty($this->mPrimaryKey)) {
+		if (empty($this->mPrimaryKey) && ($this->mIsLookupTable === false)) {
 			// Throw an exception because the caller needs a primay key column
 			throw new Exception('A primary key column name is needed and not set.');
 		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Public Methods ///////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method maps a database table to the mapper
+	 * @package Framsie
+	 * @subpackage FramieTableMapper
+	 * @access public
+	 * @throws Exception
+	 * @param integer $iUniqueIdentifier
+	 * @param array $aWhere
+	 * @return FramsieMapper $this
+	 */
+	public function load($iUniqueIdentifier = null, $aWhere = array()) {
+		// Check for a database table
+		$this->verifyDbTable();
+		// Check for a primary key
+		$this->verifyPrimaryKey();
+		// Check for to see if this is a lookup table
+		if ($this->mIsLookupTable === false) {
+			// Set the primary key
+			$this->{'m'.$this->mPrimaryKey} = (integer) $iUniqueIdentifier;
+		}
+		// Setup the database interface
+		FramsieDatabaseInterface::getInstance(true)       // Instantiate the interface
+		->setQuery(FramsieDatabaseInterface::SELECTQUERY) // We want a SELECT query
+		->setTable($this->mDbTable);                      // Set the table
+		// Check to see if we are simply loading by ID
+		if (empty($iUniqueIdentifier) && empty($aWhere)) {
+			// Throw an exception
+			throw new Exception('You must provide either a primary key unique identifier or at least one additional WHERE clause.');
+		}
+		// Check to see if the unique identifier is empty
+		if ((empty($iUniqueIdentifier) === false) && (is_null($iUniqueIdentifier) === false)) {
+			// Set the unique ID
+			FramsieDatabaseInterface::getInstance()->addWhereClause($this->mPrimaryKey, $iUniqueIdentifier);
+		}
+		// Loop through the additional WHERE clauses
+		foreach ($aWhere as $sColumn => $mValue) {
+			// Add the WHERE clause
+			FramsieDatabaseInterface::getInstance()->addWhereClause($sColumn, $mValue);
+		}
+		// Add the fields to the interface
+		$this->setColumnMapIntoInterface(false);
+		// Loop through the additional where clauses
+		// Generate the query
+		FramsieDatabaseInterface::getInstance()->generateQuery();
+		// Grab the row
+		$oMapRow = (object) FramsieDatabaseInterface::getInstance()->getRow(PDO::FETCH_OBJ);
+		// Loop through the object
+		foreach ($oMapRow as $sColumn => $mValue) {
+			// Set the property
+			$this->{'m'.$sColumn} = $this->determineValueType($sColumn, $mValue);
+		}
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method saves the instance of this class back into the database
+	 * @package Framsie
+	 * @subpackage FramsieTableMapper
+	 * @access public
+	 * @throws Exception
+	 * @param array $aWhere
+	 * @return FramsieMapper $this
+	 */
+	public function save($aWhere = array()) {
+		// Check for a database table
+		$this->verifyDbTable();
+		// Check for a primary key
+		$this->verifyPrimaryKey();
+		// Check to see if we have a primary key value
+		if (empty($this->{'m'.$this->mPrimaryKey}) || ($this->mIsLookupTable === true)) { // Run an INSERT
+			// Setup the database interface
+			FramsieDatabaseInterface::getInstance(true)           // Instantiate the interface
+			->setQuery(FramsieDatabaseInterface::INSERTQUERY) // We want an INSERT query
+			->setTable($this->mDbTable);                      // Set the table
+			// Add the fields to the insterface
+			$this->setColumnMapIntoInterface(true);
+			// Loop through the where clause
+			foreach ($aWhere as $sColumn => $mValue) {
+				// Add the where clause
+				FramsieDatabaseInterface::getInstance()->addWhereClause($sColumn, $mValue);
+			}
+			// Generate the query
+			FramsieDatabaseInterface::getInstance()->generateQuery();
+			// Execute the statement
+			if (!FramsieDatabaseInterface::getInstance()->getQueryExecutionStatus()) {
+				// Throw an exception
+				throw new Exception('Could not insert instance of '.get_class($this)." into database table {$this->mDbTable}.");
+			}
+			// Check to see if this is a lookup table
+			if ($this->mIsLookupTable === false) {
+				// Set the global name
+				$sGlobal = (string) "m{$this->mPrimaryKey}";
+				// Set the primary key into the object
+				$this->{$sGlobal} = (integer) FramsieDatabaseInterface::getInstance()->getLastInsertId();
+			}
+			// Return the instane
+			return $this;
+		}
+		// We're running an UPDATE query
+		FramsieDatabaseInterface::getInstance(true)           // Instantiate the interface
+			->setQuery(FramsieDatabaseInterface::UPDATEQUERY)     // We want an UPDATE query
+			->setTable($this->mDbTable);                          // Set the table
+		// Add the fields to the interface
+		$this->setColumnMapIntoInterface(true);
+		// Add the WHERE clause
+		FramsieDatabaseInterface::getInstance()
+			->addWhereClause($this->mPrimaryKey, $this->{'m'.$this->mPrimaryKey});
+		// Loop through the where clauses
+		foreach ($aWhere as $sColumn => $mValue) {
+			// Add the where clause
+			FramsieDatabaseInterface::getInstance()->addWhereClause($sColumn, $mValue);
+		}
+		// Generate the query
+		FramsieDatabaseInterface::getInstance()->generateQuery();
+		// Execute the statement
+		if (!FramsieDatabaseInterface::getInstance()->getQueryExecutionStatus()) {
+			// Throw an exception
+			throw new Exception('Could not update instance of '.get_class($this)." into database table {$this->mDbTable}.");
+		}
+		// Return the instance
+		return $this;
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Getters //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method returns the current lookup table identifier
+	 * @package Framsie
+	 * @subpackage FramsieTableMapper
+	 * @access public
+	 * @return boolean
+	 */
+	public function getIsLookupTable() {
+		// Return the current lookup table identifier
+		return $this->mIsLookupTable;
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Setters //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method sets the lookup table identifier into the system
+	 * @package Framsie
+	 * @subpackage FramsieLookupTable
+	 * @access public
+	 * @param boolean $bIsLookupTable
+	 * @return FramsieTableMapper $this
+	 */
+	public function setIsLookupTable($bIsLookupTable) {
+		// Set the lookup table identifier
+		$this->mIsLookupTable = (boolean) $bIsLookupTable;
+		// Return the instance
+		return $this;
 	}
 }
