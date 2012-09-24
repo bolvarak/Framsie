@@ -134,7 +134,7 @@ class FramsieFlatFileInterface {
 	 */
 	protected function createIndexFile($sDatabase) {
 		// Create the index file
-		$rIndexFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'indices.db', 'w');
+		$rIndexFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'Indices.db', 'w');
 		// Close the file as we do not need it right now
 		fclose($rIndexFile);
 		// Return the instance
@@ -177,6 +177,47 @@ class FramsieFlatFileInterface {
 	}
 
 	/**
+	 * This method decrypts, separates and converts rows to their true PHP value
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access protected
+	 * @param string $sDatabase
+	 * @param string $sTable
+	 * @param string $sRow
+	 * @param array $aFields
+	 * @param boolean $bIsEncrypted
+	 * @return array
+	 */
+	protected function decodeRow($sDatabase, $sTable, $sRow, $aFields = array(), $bIsEncrypted = true) {
+		// Verify
+		$this->verifyDatabase($sDatabase)           // Database
+			->verifyTable    ($sDatabase, $sTable); // Table
+		// First off remove the EOL notation
+		$sRow = (string) str_replace(PHP_EOL, null, $sRow);
+		// Determine if we need to decrypt the row or not
+		if (($this->getDatabaseMetaProperty('bIsEncrypted', $sDatabase) === true) && ($bIsEncrypted === true)) {
+			// Set the hash into the encryption instance
+			$this->mFramsieEncryption->setCipher($this->getDatabaseMetaProperty('sHash', $sDatabase));
+			// Decrypt the row
+			$sRow = (string) $this->mFramsieEncryption->Decrypt($sRow);
+		}
+		// Filter the row
+		$aColumns = $this->filterRow(explode($this->getDatabaseMetaProperty('sSeparator', $sDatabase), $sRow));
+		// Create the return array placeholder
+		$aReturn  = array();
+		// Loop through the fields in the table
+		foreach ($this->mTables[$sDatabase][$sTable] as $sName => $iIndex) {
+			// Check to see if the field should be added
+			if (((empty($aFields) === false) &&  in_array($sName, $aFields)) || ($aFields === '*')) {
+				// Set the column into the array
+				$aReturn[$sName] = $aColumns[$iIndex];
+			}
+		}
+		// Return the columns
+		return new FramsieFlatFileRecord($aReturn);
+	}
+
+	/**
 	 * This method determines the insert value of a field
 	 * @package Framsie
 	 * @subpackage FramsieFlatFileInterface
@@ -194,6 +235,11 @@ class FramsieFlatFileInterface {
 		if (is_bool($mValue)) {
 			// Set and return the value
 			return (($mValue === true) ? 'true' : 'false');
+		}
+		// Check for a null
+		if (is_null($mValue) || empty($mValue)) {
+			// Set and return the value
+			return (string) 'NULL';
 		}
 		// Check for an object
 		if (is_object($mValue)) {
@@ -219,17 +265,22 @@ class FramsieFlatFileInterface {
 			return unserialize($aArrayMatches[1]);
 		}
 		// Check the variable type
-		if (is_bool($sValue) || preg_match('/^false|true$/', $sValue)) { // Boolean
+		if (is_bool($sValue) || preg_match('/^false|true$/', $sValue)) {
 			// Return the variable as a boolean
 			return (boolean) (($sValue === 'true') ? true : false);
 		}
-		if (is_float($sValue) || preg_match('/^\d+\.\d+$/', $sValue)) {  // Floating point
+		if (is_float($sValue) || preg_match('/^\d+\.\d+$/', $sValue)) {
 			// Return the variable as a floating point
 			return (float) $sValue;
 		}
-		if (is_int($sValue) || preg_match('/^\d+$/', $sValue)) {         // Integer
+		if (is_int($sValue) || preg_match('/^\d+$/', $sValue)) {
 			// Return the variable as an integer
 			return (integer) $sValue;
+		}
+		// Check for null
+		if (is_null($sValue) || preg_match('/^null|nil$/i', $sValue)) {
+			// Return the variable as a null
+			return null;
 		}
 		// Check for an object
 		if (preg_match('/^object\((.*)\)$/i', $sValue, $aObjectMatches)) {
@@ -238,6 +289,18 @@ class FramsieFlatFileInterface {
 		}
 		// By default return a string
 		return (string) $sValue;
+	}
+
+	/**
+	 * This method takes a database row and determines each of the columns return value
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access protected
+	 * @param array $aRow
+	 */
+	protected function filterRow($aRow) {
+		// Return the filtered row
+		return array_map(array($this, 'determineReturnValue'), $aRow);
 	}
 
 	/**
@@ -250,6 +313,34 @@ class FramsieFlatFileInterface {
 	protected function generateEncryptionHash() {
 		// Return the encryption hash
 		return base64_encode(sha1(microtime().uniqid().time(), uniqid().time().microtime()));
+	}
+
+	/**
+	 * This method runs a batch set of index searches
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access protected
+	 * @param string $sDatabase
+	 * @param string $sTable
+	 * @param string $aFields
+	 * @param string $aValues
+	 * @return array
+	 */
+	protected function loadBatchIndexLineNumber($sDatabase, $sTable, $aFields, $aValues) {
+		// Create an array for the lines
+		$aLines = array();
+		// Loop through the keys
+		for ($iKey = 0; $iKey < count($aFields); $iKey++) {
+			// Load the lines
+			$aIndexLines = $this->loadIndexLineNumber($sDatabase, $sTable, $aFields[$iKey], $aValues[$iKey]);
+			// Check for no lines
+			if (empty($aIndexLines) === false) {
+				// Merge the arrays
+				$aLines = array_merge($aLines, $aIndexLines);
+			}
+		}
+		// Return an array of unique line numbers
+		return array_unique($aLines, SORT_NUMERIC);
 	}
 
 	/**
@@ -296,6 +387,53 @@ class FramsieFlatFileInterface {
 	}
 
 	/**
+	 * This method grabs the line number from the indices file for quick record searching
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access protected
+	 * @param string $sDatabase
+	 * @param string $sTable
+	 * @param string $sField
+	 * @param multitype $mValue
+	 * @return array|boolean
+	 */
+	protected function loadIndexLineNumber($sDatabase, $sTable, $sField, $mValue) {
+		// Verify the database
+		$this->verifyDatabase($sDatabase)                    // Database
+			->verifyTable    ($sDatabase, $sTable);          // Table
+		// Check to see if the index exists
+		if ($this->verifyIndex($sDatabase, $sTable, $sField, false) === false) {
+			// We're done
+			return false;
+		}
+		// Open the index file for reading
+		$rIndexFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'Indices.db', 'r');
+		// Create a lines placeholder
+		$aLines     = array();
+		// Loop through the file lines
+		while (!feof($rIndexFile)) {
+			// Grab the line
+			$sLine = (string) fgets($rIndexFile);
+			// Determine if we need to decrypt the line
+			if ($this->getDatabaseMetaProperty('bIsEncrypted', $sDatabase) === true) {
+				// Set the hash into the encryption instance
+				$this->mFramsieEncryption->setCipher($this->getDatabaseMetaProperty('sHash', $sDatabase));
+				// Decrypt the line
+				$sLine = (string) $this->mFramsieEncryption->Decrypt($sLine);
+			}
+			// Separate the columns and filter them
+			$aColumns = $this->filterRow(explode($this->getDatabaseMetaProperty('sSeparator', $sDatabase), $sLine));
+			// Check for the index
+			if (($aColumns[0] === $sTable) && ($aColumns[1] === $sField) && ($aColumns[2] === $mValue)) {
+				// Add the line number
+				array_push($aLines, $aColumns[3]);
+			}
+		}
+		// Return
+		return (empty($aLines) ? false : array_unique($aLines, SORT_NUMERIC));
+	}
+
+	/**
 	 * This method loads a database meta file into the system
 	 * @package Framsie
 	 * @subpackage FramsieFlatFileInterface
@@ -316,6 +454,95 @@ class FramsieFlatFileInterface {
 		}
 		// Return the database meta file
 		return $aDatabase;
+	}
+
+
+	/**
+	 * This method searches a tables that has no indexed fields or none that were specified
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access protected
+	 * @param string $sDatabase
+	 * @param string $sTable
+	 * @param array $aWhereColumns
+	 * @param array $aWhereValues
+	 * @return array
+	 */
+	protected function loadNoIndexSearchResults($sDatabase, $sTable, $aWhereColumns, $aWhereValues) {
+		// Verify
+		$this->verifyDatabase($sDatabase)          // Database
+			->verifyTable   ($sDatabase, $sTable); // Table
+		// Setup a lines placeholder
+		$aLines = array();
+		// Open the table file
+		$rTableFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.$sTable.'.db', 'r');
+		// Loop through the file lines
+		while (!feof($rTableFile)) {
+			// Set the current line
+			$sLine = fgets($rTableFile);
+			// Determine if we need to decrypt the line or not
+			if ($this->getDatabaseMetaProperty('bIsEncrypted', $sDatabase) === true) {
+				// Set the hash into the encryption instance
+				$this->mFramsieEncryption->setCipher($this->getDatabaseMetaProperty('sHash', $sDatabase));
+				// Decrypt the line
+				$sLine = $this->mFramsieEncryption->Decrypt($sLine);
+			}
+			// Separate and split the row
+			$aRow   = $this->filterRow(explode($this->getDatabaseMetaProperty('sSeparator', $sDatabase), $sLine));
+			// Setup a match notification
+			$bMatch = true;
+			// Loop through the where columns
+			for ($iKey = 0; $iKey < count($aWhereColumns); $iKey++) {
+				// Check the row
+				if ($aRow[$this->mTables[$sDatabase][$sTable][$aWhereColumns[$iKey]]] !== $aWhereValues[$iKey]) {
+					// Set the match notification
+					$bMatch = (boolean) false;
+				}
+			}
+			// Check the notification
+			if ($bMatch === true) {
+				// Add the line
+				array_push($aLines, $sLine);
+			}
+		}
+		// Return the lines
+		return $aLines;
+	}
+
+	/**
+	 * This method looks for a specific line number in a file and returns the row at that line
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access protected
+	 * @param string $sDatabase
+	 * @param string $sTable
+	 * @param integer $iDesiredLine
+	 * @return boolean|string
+	 */
+	protected function loadRowByLineNumber($sDatabase, $sTable, $iDesiredLine) {
+		// Verify
+		$this->verifyDatabase($sDatabase)           // Database
+			->verifyTable    ($sDatabase, $sTable); // Table
+		// Open the table file
+		$rTableFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.$sTable.'.db', 'r');
+		// Create a line iterator
+		$iLine      = (integer) 0;
+		// Loop through the lines
+		while (!feof($rTableFile)) {
+			// Set the current line
+			$sLine = fgets($rTableFile);
+			// Set the line count
+			$iLine = (integer) ($iLine + substr_count($sLine, PHP_EOL));
+			// Check to see if this is the property line
+			if ($iLine === $iDesiredLine) {
+				// Close the file handle
+				fclose($rTableFile);
+				// Return the line
+				return $sLine;
+			}
+		}
+		// If we get to this point, the line number is invalid
+		return false;
 	}
 
 	/**
@@ -529,18 +756,18 @@ class FramsieFlatFileInterface {
 		// Make sure the field is in the indices
 		if ($this->verifyIndex($sDatabase, $sTable, $sField, false)) {
 			// Open the indices file for appending
-			$rIndexFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'indices.db', 'a');
+			$rIndexFile = fopen(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'Indices.db', 'a');
 			// Create the row
-			$sRow = (string) implode($this->getDatabaseMetaProperty('sSeparator'), array(
+			$sRow = (string) implode($this->getDatabaseMetaProperty('sSeparator', $sDatabase), array(
 				$sTable,
 				$sField,
 				$sValue,
 				$iLine
 			));
 			// Determine if we need to encrypt the row
-			if ($this->getDatabaseMetaProperty('bIsEncrypted') === true) {
+			if ($this->getDatabaseMetaProperty('bIsEncrypted', $sDatabase) === true) {
 				// Set the hash into the encryption instance
-				$this->mFramsieEncryption->setCipher($this->getDatabaseMetaProperty('sHash'));
+				$this->mFramsieEncryption->setCipher($this->getDatabaseMetaProperty('sHash', $sDatabase));
 				// Encrypt the row
 				$sRow = (string) $this->mFramsieEncryption->Encrypt($sRow);
 			}
@@ -571,7 +798,7 @@ class FramsieFlatFileInterface {
 		// Try to get the file's contents
 		$aStoredDatabase = json_decode(file_get_contents(FLAT_FILE_DB_PATH.DIRECTORY_SEPARATOR.$sDatabase.DIRECTORY_SEPARATOR.'.meta.db'), true);
 		// Check the load attempt
-		if (is_null($aStoredDatabase) === false) {
+		if (is_null($aStoredDatabase) === false && ($aDatabase['bIsEncrypted'] === true)) {
 			// Set the encryption hash on the table to its original state
 			$this->mDatabases[$sDatabase]['sHash'] = $aStoredDatabase['sHash']; // Globalized
 			$aDatabase['sHash']                    = $aStoredDatabase['sHash']; // Localized
@@ -612,9 +839,9 @@ class FramsieFlatFileInterface {
 			->verifyTable    ($sDatabase, $sTable)
 			->verifyTableFile($sDatabase, $sTable);
 		// Determine if we need to encrypt the data or not
-		if ($this->getDatabaseMetaProperty('bIsEncrypted') === true) {
+		if ($this->getDatabaseMetaProperty('bIsEncrypted', $sDatabase) === true) {
 			// Set the cipher to the database's hash
-			$this->mFramsieEncryption->setCipher($this->getDatabaseMetaProperty('sHash'));
+			$this->mFramsieEncryption->setCipher($this->getDatabaseMetaProperty('sHash', $sDatabase));
 			// Encrypt the row
 			$sRow = (string) $this->mFramsieEncryption->Encrypt($sRow);
 		}
@@ -769,12 +996,51 @@ class FramsieFlatFileInterface {
 		return $this;
 	}
 
-
+	/**
+	 * This method is the public interface into searching the databases
+	 * @package Framsie
+	 * @subpackage FramsieFlatFileInterface
+	 * @access protected
+	 * @param string $sTable
+	 * @param array $aFields
+	 * @param array $aWhere
+	 * @return array|FramsieFlatFileRecord
+	 */
 	public function find($sTable, $aFields, $aWhere = array()) {
 		// Verify current database
 		$this->verifyCurrentDatabase();
 		// Verify the table
 		$this->verifyTable($this->mCurrentDatabase, $sTable);
+		// Try to grab the line number(s) from the index
+		$aLines = $this->loadBatchIndexLineNumber($this->mCurrentDatabase, $sTable, array_keys($aWhere), array_values($aWhere));
+		// Check for line numbers
+		if (empty($aLines)) {
+			// Create a row placeholder
+			$aRows = array();
+			// Run the search
+			foreach ($this->loadNoIndexSearchResults($this->mCurrentDatabase, $sTable, array_keys($aWhere), array_values($aWhere)) as $sRow) {
+				// Decode the row and append it
+				array_push($aRows, $this->decodeRow($this->mCurrentDatabase, $sTable, $sRow, $aFields, false));
+			}
+			// Return the array
+			return $aRows;
+		} else {
+			// Check to see if there is more than one line
+			if (count($aLines) === 1) {
+				// Return the line
+				return $this->decodeRow($this->mCurrentDatabase, $sTable, $this->loadRowByLineNumber($this->mCurrentDatabase, $sTable, $aLines[0]), $aFields);
+			} else {
+				// Create a row placeholder
+				$aRows = array();
+				// Loop through the lines
+				foreach ($aLines as $iLine) {
+					// Load the row
+					array_push($aRows, $this->decodeRow($this->mCurrentDatabase, $sTable, $this->loadRowByLineNumber($this->mCurrentDatabase, $sTable, $iLine)), $aFields);
+				}
+				// Return the rows
+				return $aRows;
+			}
+		}
 	}
 
 	/**
@@ -884,7 +1150,7 @@ class FramsieFlatFileInterface {
 		// Close the file
 		fclose($rFileHandle);
 		// Return the line count
-		return ($iLines - 1);
+		return $iLines;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
