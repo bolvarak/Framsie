@@ -309,7 +309,7 @@ class FramsieConverter {
 	 */
 	public static function CentimetersToInches($iCentimeters, $iDecimals = 2) {
 		// Return the converted value
-		return round(($iData / self::CENTIMETERS_IN_INCH), $iDecimals);
+		return round(($iCentimeters / self::CENTIMETERS_IN_INCH), $iDecimals);
 	}
 
 	/**
