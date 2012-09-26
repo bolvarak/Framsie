@@ -84,42 +84,62 @@ class Bootstrap {
 	 * @return Bootstrap
 	 */
 	protected function __construct() {
-		// Check the application environment
-		if (APPLICATION_ENVIRONMENT == 'development') {
-			// Turn error reporting on, you can't fix things if you can't see errors
-			$this->setErrorReporting(true);
-		} else {
-			// Turn error reporting off, don't want to give any of our secrets away
-			$this->setErrorReporting(false);
-		}
 		// Define the static file path
-		define('STATIC_FILE_PATH',        dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'public');
+		if (defined('STATIC_FILE_PATH') === false) {
+			define('STATIC_FILE_PATH',        dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'public');
+		}
 		// Define the library path
-		define('LIBRARY_PATH',            dirname(__FILE__));
+		if (defined('LIBRARY_PATH') === false) {
+			define('LIBRARY_PATH',            dirname(__FILE__));
+		}
 		// Define the Frames path
-		define('FRAMSIE_PATH',            LIBRARY_PATH.DIRECTORY_SEPARATOR.'framsie');
+		if (defined('FRAMSIE_PATH') === false) {
+			define('FRAMSIE_PATH',            LIBRARY_PATH.DIRECTORY_SEPARATOR.'framsie');
+		}
 		// Define the application path
-		define('APPLICATION_PATH',        LIBRARY_PATH.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'application');
+		if (defined('APPLICATION_PATH') === false) {
+			define('APPLICATION_PATH',        LIBRARY_PATH.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'application');
+		}
 		// Define the model path
-		define('MODEL_PATH',              APPLICATION_PATH.DIRECTORY_SEPARATOR.'models');
+		if (defined('MODEL_PATH') === false) {
+			define('MODEL_PATH',              APPLICATION_PATH.DIRECTORY_SEPARATOR.'models');
+		}
 		// Define the controller path
-		define('CONTROLLER_PATH',         APPLICATION_PATH.DIRECTORY_SEPARATOR.'controllers');
+		if (defined('CONTROLLER_PATH') === false) {
+			define('CONTROLLER_PATH',         APPLICATION_PATH.DIRECTORY_SEPARATOR.'controllers');
+		}
 		// Define the block path
-		define('BLOCK_PATH',              APPLICATION_PATH.DIRECTORY_SEPARATOR.'blocks');
+		if (defined('BLOCK_PATH') === false) {
+			define('BLOCK_PATH',              APPLICATION_PATH.DIRECTORY_SEPARATOR.'blocks');
+		}
 		// Define the JS assets path
-		define('JAVASCRIPT_ASSETS_PATH',  'assets'.DIRECTORY_SEPARATOR.'js');
+		if (defined('JAVASCRIPT_ASSETS_PATH') === false) {
+			define('JAVASCRIPT_ASSETS_PATH',  'assets'.DIRECTORY_SEPARATOR.'js');
+		}
 		// Define the CSS assets path
-		define('CSS_ASSETS_PATH',         'assets'.DIRECTORY_SEPARATOR.'css');
+		if (defined('CSS_ASSETS_PATH') === false) {
+			define('CSS_ASSETS_PATH',         'assets'.DIRECTORY_SEPARATOR.'css');
+		}
 		// Define the Image assets path
-		define('IMG_ASSETS_PATH',         'assets'.DIRECTORY_SEPARATOR.'img');
+		if (defined('IMG_ASSETS_PATH') === false) {
+			define('IMG_ASSETS_PATH',         'assets'.DIRECTORY_SEPARATOR.'img');
+		}
 		// Define the include path
-		define('INCLUDE_PATH',            dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'includes');
+		if (defined('INCLUDE_PATH') === false) {
+			define('INCLUDE_PATH',            dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'includes');
+		}
 		// Define the cache path
-		define('CACHE_DIRECTORY',         INCLUDE_PATH.DIRECTORY_SEPARATOR.'cache');
+		if (defined('CACHE_DIRECTORY') === false) {
+			define('CACHE_DIRECTORY',         INCLUDE_PATH.DIRECTORY_SEPARATOR.'cache');
+		}
 		// Define the configuration path
-		define('CONFIGURATION_FILE_PATH', APPLICATION_PATH.DIRECTORY_SEPARATOR.'configs'.DIRECTORY_SEPARATOR.'application.ini');
+		if (defined('CONFIGURATION_FILE_PATH') === false) {
+			define('CONFIGURATION_FILE_PATH', APPLICATION_PATH.DIRECTORY_SEPARATOR.'configs'.DIRECTORY_SEPARATOR.'application.ini');
+		}
 		// Define the flat file database path
-		define('FLAT_FILE_DB_PATH',       APPLICATION_PATH.DIRECTORY_SEPARATOR.'db');
+		if (defined('FLAT_FILE_DB_PATH') === false) {
+			define('FLAT_FILE_DB_PATH',       APPLICATION_PATH.DIRECTORY_SEPARATOR.'db');
+		}
 		// Setup the autoloader
 		spl_autoload_register(array($this, 'autoLoader'));
 		// Setup the error handler
@@ -276,6 +296,11 @@ class Bootstrap {
 	 * @return Bootstrap $this
 	 */
 	public function dispatch() {
+		// Check to see if an application environment has been set
+		if (defined('APPLICATION_ENVIRONMENT') === false) {
+			// Define it
+			$this->setEnvironment(Framsie::ENV_PRODUCTION);
+		}
 		// Load the redirects
 		$this->loadRedirects();
 		// Instantiate and execute Framsie
@@ -287,6 +312,28 @@ class Bootstrap {
 	///////////////////////////////////////////////////////////////////////////
 	/// Setters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method sets the application environment into the system
+	 * @package Bootstrap
+	 * @access public
+	 * @param string $sEnvironment
+	 * @return Bootstrap
+	 */
+	public function setEnvironment($sEnvironment) {
+		// Set the applicaiton environment
+		define('APPLICATION_ENVIRONMENT', $sEnvironment);
+		// Check the environment
+		if (APPLICATION_ENVIRONMENT == (Framsie::ENV_DEVELOPMENT || Framsie::ENV_STAGING)) {
+			// Turn errors on
+			$this->setErrorReporting(true);
+		} else {
+			// Turn errors off
+			$this->setErrorReporting(false);
+		}
+		// Return the instance
+		return $this;
+	}
 
 	/**
 	 * This method turns error reporting and display on and off

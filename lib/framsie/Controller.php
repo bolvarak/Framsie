@@ -216,9 +216,15 @@ abstract class FramsieController {
 	 * @package Framsie
 	 * @subpackage FramsieController
 	 * @access public
+	 * @param string $sLayout
 	 * @return FramsieController $this
 	 */
-	public function __construct() {
+	public function __construct($sLayout = null) {
+		// Check to see if a layout has been specified
+		if (empty($sLayout) === false) {
+			// Set the layout
+			$this->mLayout = (string) $sLayout;
+		}
 		// Reset the page values
 		$this->mPageValues = new stdClass();
 		// Return the instance
@@ -384,7 +390,7 @@ abstract class FramsieController {
 		// Make sure a layout should be rendered
 		if ($this->mDisableLayout === false) {
 			// Set the filename
-			$sFilename = (string) (empty($this->mLayout) ? 'templates/layout.phtml' : $this->mLayout);
+			$sFilename = (string) (empty($this->mLayout) ? 'templates'.DIRECTORY_SEPARATOR.'layout.phtml' : $this->mLayout);
 			// Check for an extension
 			if (!preg_match('/\.css|js|php|phtml$/i', $sFilename)) {
 				// Append the file extension to the filename

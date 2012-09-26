@@ -11,6 +11,24 @@
 class ErrorController extends FramsieController {
 
 	///////////////////////////////////////////////////////////////////////////
+	/// Constructor //////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * The contructor sets the layout into the parent
+	 * @package Framsie
+	 * @subpackage ErrorController
+	 * @access public
+	 * @return ErrorController
+	 */
+	public function __construct() {
+		// Set the layout in the parent constructor
+		parent::__construct('templates'.DIRECTORY_SEPARATOR.'efs-layout.phtml');
+		// Return the instance
+		return $this;
+	}
+
+	///////////////////////////////////////////////////////////////////////////
 	/// View Methods /////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
@@ -25,5 +43,4 @@ class ErrorController extends FramsieController {
 		// Set the page title
 		$this->setPageTitle('Error!');
 	}
-
 }
