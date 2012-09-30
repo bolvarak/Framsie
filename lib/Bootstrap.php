@@ -321,8 +321,11 @@ class Bootstrap {
 	 * @return Bootstrap
 	 */
 	public function setEnvironment($sEnvironment) {
-		// Set the applicaiton environment
-		define('APPLICATION_ENVIRONMENT', $sEnvironment);
+		// Check to see if an application environment has been defined
+		if (defined('APPLICATION_ENVIROMENT') === false) {
+			// Set the applicaiton environment
+			define('APPLICATION_ENVIRONMENT', $sEnvironment);
+		}
 		// Check the environment
 		if (APPLICATION_ENVIRONMENT == (Framsie::ENV_DEVELOPMENT || Framsie::ENV_STAGING)) {
 			// Turn errors on

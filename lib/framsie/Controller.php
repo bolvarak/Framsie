@@ -236,27 +236,6 @@ abstract class FramsieController {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * This method redirects the current request
-	 * @package Framsie
-	 * @subpackage FramsieController
-	 * @access protected
-	 * @param string $sUrl
-	 * @return void
-	 */
-	protected function redirectRequest($sUrl) {
-		// Check to see if there should be a new controller
-		if (substr($sUrl, 0, 1) === '/') {
-			// We will redirect the a new controller
-			header("Location:  {$sUrl}");
-		} else {
-			// Set the controller name
-			$sController = (string) strtolower(str_replace('Controller', null, __CLASS__));
-			// Redirect to the view
-			header("Location:  {$sController}/{$sUrl}");
-		}
-	}
-
-	/**
 	 * This method encodes and sends an HTTP Query String response for AJAX method endpoints
 	 * @package Framsie
 	 * @subpackage FramsieController
@@ -336,12 +315,15 @@ abstract class FramsieController {
 	 * @access public
 	 * @param string $sSource
 	 * @param string $sType
-	 * @param boolean [$bSourceIsLink]
+	 * @param boolean $bSourceIsLink
+	 * @param boolean $bForHeader
 	 * @return FramsieController $this
 	 */
-	public function addScript($sSource, $sType = self::SCRIPT_TYPE_JS, $bSourceIsLink = true) {
+	public function addScript($sSource, $sType = self::SCRIPT_TYPE_JS, $bSourceIsLink = true, $bForHeader = true) {
 		// Create the script object
 		$oScript = new stdClass();
+		// Set the header/body notification
+		$oScript->bHeaderScript = (boolean) $bForHeader;
 		// Set the source
 		$oScript->sSource       = (string) $sSource;
 		// Set the source type
@@ -377,6 +359,27 @@ abstract class FramsieController {
 		array_push($this->mStylesheets, $oStylesheet);
 		// Return the instance
 		return $this;
+	}
+
+	/**
+	 * This method redirects the current request
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param string $sUrl
+	 * @return void
+	 */
+	public function redirectRequest($sUrl) {
+		// Check to see if there should be a new controller
+		if (substr($sUrl, 0, 1) === '/') {
+			// We will redirect the a new controller
+			header("Location:  {$sUrl}");
+		} else {
+			// Set the controller name
+			$sController = (string) strtolower(str_replace('Controller', null, __CLASS__));
+			// Redirect to the view
+			header("Location:  {$sController}/{$sUrl}");
+		}
 	}
 
 	/**
@@ -552,22 +555,26 @@ abstract class FramsieController {
 	 * @subpackage FramsieController
 	 * @access public
 	 * @param boolean $bAsHtml
+	 * @param boolean $bForHeader
 	 * @return multitype
 	 */
-	public function getScripts($bAsHtml = true) {
+	public function getScripts($bAsHtml = true, $bForHeader = true) {
 		// Check to see if we need to generate the HTML
 		if ($bAsHtml === true) {
 			// Create a scripts placeholder
 			$sScripts = (string) null;
 			// Loop through the scripts
 			foreach ($this->mScripts as $oScript) {
-				// Check for a source link
-				if ($oScript->bSourceIsLink === true) {
-					// Generate the script tag
-					$sScripts .= (string) FramsieHtml::getInstance()->getScript($oScript->sType, $oScript->sSource);
-				} else {
-					// Generate the script tag
-					$sScripts .= (string) FramsieHtml::getInstance()->getScript($oScript->sType, null, $oScript->sSource);
+				// Check to see if this needs to be for the header
+				if ($oScript->bHeaderScript === $bForHeader) {
+					// Check for a source link
+					if ($oScript->bSourceIsLink === true) {
+						// Generate the script tag
+						$sScripts .= (string) FramsieHtml::getInstance()->getScript($oScript->sType, $oScript->sSource);
+					} else {
+						// Generate the script tag
+						$sScripts .= (string) FramsieHtml::getInstance()->getScript($oScript->sType, null, $oScript->sSource);
+					}
 				}
 			}
 			// Return the scripts

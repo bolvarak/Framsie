@@ -243,6 +243,12 @@ class FramsieConverter {
 	const KILOGRAMS_IN_POUND                = 0.454;
 
 	/**
+	 * This constant contains the number of ounces in one cup
+	 * @var integer
+	 */
+	const OUNCES_IN_CUP                     = 8;
+
+	/**
 	 * This constant contains the number of pounds in one kilogram
 	 * @var float
 	 */
@@ -310,6 +316,21 @@ class FramsieConverter {
 	public static function CentimetersToInches($iCentimeters, $iDecimals = 2) {
 		// Return the converted value
 		return round(($iCentimeters / self::CENTIMETERS_IN_INCH), $iDecimals);
+	}
+
+	/**
+	 * This method converts cups into ounces
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param float $iCups
+	 * @param integer $iDecimals
+	 * @return float
+	 */
+	public static function CupsToOunces($iCups, $iDecimals = 2) {
+		// Return the converted value
+		return round(($iCups * self::OUNCES_IN_CUP), $iDecimals);
 	}
 
 	/**
@@ -427,6 +448,21 @@ class FramsieConverter {
 	public static function KilogramsToPounds($iKilograms, $iDecimals = 2) {
 		// Return the converted value
 		return round(($iKilograms / self::KILOGRAMS_IN_POUND), $iDecimals);
+	}
+
+	/**
+	 * This method converts ounces to cups
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param float $iOunces
+	 * @param integer $iDecimals
+	 * @return float
+	 */
+	public static function OuncesToCups($iOunces, $iDecimals = 2) {
+		// Return the converted value
+		return round(($iOunces / self::OUNCES_IN_CUP), $iDecimals);
 	}
 
 	/**

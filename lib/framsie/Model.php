@@ -28,43 +28,48 @@ class FramsieModel {
 	protected $mMapper            = null;
 
 	///////////////////////////////////////////////////////////////////////////
-	/// Singleton ////////////////////////////////////////////////////////////
+	/// Protected Methods ////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * This method provides access to the singleton instance of this class
+	 * This method loads all of the records in a table into their mappers
 	 * @package Framsie
 	 * @subpackage FramsieModel
-	 * @access public
-	 * @static
-	 * @param boolean $bReset
-	 * @return FramsieModel self::$mInstance
+	 * @access protected
+	 * @param string $sTable
+	 * @param string $sPrimaryKey
+	 * @param string $sMapper
+	 * @param array $aWhere
+	 * @param integer $iLimit
+	 * @return array
 	 */
-	public static function getInstance($bReset = false) {
-		// Check for an existing instance or a reset notification
-		if (empty(self::$mInstance) || ($bReset === true)) {
-			// Create a new instance
-			self::$mInstance = new self();
+	protected function loadTableMaps($sTable, $sPrimaryKey, $sMapper, $aWhere = array(), $iLimit = 0) {
+		// Create the return array placeholder
+		$aReturn = array();
+		// Setup the DBI
+		FramsieDatabaseInterface::getInstance(true)
+			->setTable($sTable)
+			->setQuery(FramsieDatabaseInterface::SELECTQUERY)
+			->addField($sPrimaryKey);
+		// Load the WHERE clauses
+		foreach ($aWhere as $sColumn => $mValue) {
+			// Add the WHERE clause
+			FramsieDatabaseInterface::getInstance()->addWhereClause($sColumn, $mValue);
 		}
-		// Return the instance
-		return self::$mInstance;
-	}
-
-	/**
-	 * This method sets an external instance into this class, it is primarily
-	 * only used in testing and generally with phpUnit
-	 * @package Framsie
-	 * @subpackage FramsieModel
-	 * @access public
-	 * @static
-	 * @param FramsieModel $oInstance
-	 * @return FramsieModel self::$mInstance
-	 */
-	public static function setInstance(FramsieModel $oInstance) {
-		// Set the external instance into the class
-		self::$mInstance = $oInstance;
-		// Return the instance
-		return self::$mInstance;
+		// Check for a limit
+		if (empty($iLimit) === false) {
+			// Set the limit
+			FramsieDatabaseInterface::getInstance()->setLimit($iLimit);
+		}
+		// Loop through the results
+		foreach (FramsieDatabaseInterface::getInstance()->generateQuery()->getRows(PDO::FETCH_OBJ) as $oRow) {
+			// Create the mapper
+			$oMapper = new $sMapper();
+			// Load the record into the map
+			array_push($aReturn, $oMapper->load($oRow->{$sPrimaryKey}));
+		}
+		// Return the array
+		return $aReturn;
 	}
 
 	///////////////////////////////////////////////////////////////////////////

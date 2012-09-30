@@ -1300,7 +1300,7 @@ class FramsieDatabaseInterface {
 	 * @access public
 	 * @param integer $iFetchType
 	 * @throws Exception
-	 * @return multitype
+	 * @return array
 	 */
 	public function getRows($iFetchType = PDO::FETCH_OBJ) {
 		// Grab the statement
