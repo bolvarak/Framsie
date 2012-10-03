@@ -243,6 +243,12 @@ class FramsieConverter {
 	const KILOGRAMS_IN_POUND                = 0.454;
 
 	/**
+	 * This constant contains the number of minutes in one hour
+	 * @var integer
+	 */
+	const MINUTES_IN_HOUR                   = 60;
+
+	/**
 	 * This constant contains the number of ounces in one cup
 	 * @var integer
 	 */
@@ -253,6 +259,12 @@ class FramsieConverter {
 	 * @var float
 	 */
 	const POUNDS_IN_KILOGRAM                = 2.205;
+
+	/**
+	 * This constant contains the number of seconds in one day
+	 * @var integer
+	 */
+	const SECONDS_IN_DAY                    = 84600;
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Static Methods ////////////////////////////////////////////////
@@ -334,6 +346,28 @@ class FramsieConverter {
 	}
 
 	/**
+	 * This method converts time() to days
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param integer $iTimeStamp
+	 * @return integer
+	 */
+	public static function EpochInDays($iTimeStamp = null) {
+		// Check for a timestamp
+		if (empty($iTimeStamp)) {
+			// Set the timestamp to the current time
+			$iTimeStamp = (integer) gmdate('U', time());
+		} else {
+			// Convert the timestamp to GMT
+			$iTimeStamp = (integer) gmdate('U', $iTimeStamp);
+		}
+		// Return the converted value
+		return floor($iTimeStamp / self::SECONDS_IN_DAY);
+	}
+
+	/**
 	 * This method converts feet into centimeters
 	 * @package Framsie
 	 * @subpackage FramsieConverter
@@ -389,6 +423,21 @@ class FramsieConverter {
 	public static function HexToBin($sHexadecimal) {
 		// Return the converted string
 		return pack('H*', $sHexadecimal);
+	}
+
+	/**
+	 * This method converts hours to minutes
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param float $iHours
+	 * @param integer $iDecimals
+	 * @return float
+	 */
+	public static function HoursToMinutes($iHours, $iDecimals = 2) {
+		// Return the converted value
+		return round(($iHours * self::MINUTES_IN_HOUR), $iDecimals);
 	}
 
 	/**
@@ -448,6 +497,21 @@ class FramsieConverter {
 	public static function KilogramsToPounds($iKilograms, $iDecimals = 2) {
 		// Return the converted value
 		return round(($iKilograms / self::KILOGRAMS_IN_POUND), $iDecimals);
+	}
+
+	/**
+	 * This method converts minutes into hours
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param float $iMinutes
+	 * @param integer $iDecimals
+	 * @return float
+	 */
+	public static function MinutesToHours($iMinutes, $iDecimals = 2) {
+		// Return the converted value
+		return round(($iMinutes / self::MINUTES_IN_HOUR), $iDecimals);
 	}
 
 	/**

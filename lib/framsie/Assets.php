@@ -113,16 +113,147 @@ class FramsieAssets {
 	 * @return string
 	 */
 	protected function minifyAsset($sSource, $sName) {
-		// Check the cache for the source
+		// Load from cache
 		$sCachedSource = (string) FramsieCache::getInstance()->loadFromCache($sName);
-		// Check for the minified source cache
+		// Check the cached source
 		if (empty($sCachedSource)) {
-			// Minify the source
-			$sMinifiedSource = (string) preg_replace('/(?|(\\s)+|(\\n)+|(\\r)+|(\\r\\n)+|(\\t))/', null, $sSource);
+			// Buffer the output
+			ob_start();
+			// Grab the time
+			$iTime     = microtime(true);
+			// Set the pointer
+			$iPointer  = 0;
+			// Set a RegEx identifier
+			$bRegEx    = false;
+			// Set a string placeholder
+			$sMinified = (string) null;
+			// Set a temporary string placeholder
+			$sString   = (string) null;
+			// Loop through the source character by character
+			while ($iPointer != strlen($sSource)) {
+				// Check the pointer for a forward slash
+				if ($sSource[$iPointer] === '/') {
+					// Assume RegEx
+					$bRegEx = true;
+					// Check the pointer
+					if ($iPointer > 0) {
+						// Set the offset
+						$iOffset = $iPointer;
+						// Loop through the backtrace
+						while ($iOffset > 0) {
+							// Decriment the offset
+							$iOffset--;
+							// Verify RegEx
+							if (($sSource[$iOffset] === '(') || ($sSource[$iOffset] === ':') || ($sSource[$iOffset] === '=')) { // Check for RegEx
+								// Loop back into the source
+								while ($iPointer <= strlen($sSource)) {
+									// Set a temporary string
+									$sString = strstr(substr($sSource, ($iPointer + 1)), '/', true);
+									// Check the temporary string
+									if (!strlen($sString) && ($sSource[($iPointer - 1)] !== '/') || strpos($sString, "\n")) {
+										// This is not a RegEx pattern
+										$bRegEx = false;
+										// Break the loop
+										break;
+									}
+									// Output the next section of the string
+									echo '/'.$sString;
+									// Increment the pointer
+									$iPointer += (strlen($sString) + 1);
+									// Continue pattern matching if "/" is preceded by "\"
+									if (($sSource[($iPointer - 1)] !== '\\') || ($sSource[($iPointer - 1)] === '\\')) {
+										// Output the next section of the string
+										echo '/';
+										// Increment the pointer
+										$iPointer++;
+										// Break the loop
+										break;
+									}
+								}
+								// Break the loop
+								break;
+							} elseif (($sSource[$iOffset] !== "\t") && ($sSource[$iOffset] !== ' ')) {                          // Make sure this isn't a tab or a space
+								// This is not a RegEx
+								$bRegEx = false;
+								// Break the loop
+								break;
+							}
+						}
+						// Check the offset
+						if ($bRegEx && ($iOffset < 1)) {
+							// This is not a RegEx
+							$bRegEx = false;
+						}
+					}
+					// Check the RegEx identifier and the pointer value
+					if (($bRegEx === false) || ($iPointer < 1)) {
+						// Check for a JavaScript DocBlocks
+						if (substr($sSource, ($iPointer + 1), 2) === '*@') { // Conditional DocBlock
+							// Set the temporary string
+							$sString = (string) strstr(substr($sSource, ($iPointer + 3)), '@*/', true);
+							// Output the next section of the string
+							echo '/*@'.$sString.$sSource[$iPointer].'@*/';
+							// Increment the pointer
+							$iPointer += (strlen($sString) + 6);
+						} elseif ($sSource[($iPointer + 1)] === '*') {       // Check for a comment block
+							// Set the temporary string
+							$sString = (string) strstr(substr($sSource, ($iPointer + 2)), '*/', true);
+							// Increment the pointer
+							$iPointer += (strlen($sString) + 4);
+						} elseif ($sSource[($iPointer + 1)] === '/') {       // Comment
+							// Set the temporary string
+							$sString = (string) strstr(substr($sSource, ($iPointer + 2)), "\n", true);
+							// Increment the pointer
+							$iPointer += (strlen($sString) + 2);
+						} else {                                             // Division Operator
+							// Output the next part of the string
+							echo $sSource[$iPointer];
+							// Increment the pointer
+							$iPointer++;
+						}
+					}
+					// Continue to the next iteration
+					continue;
+				} elseif (($sSource[$iPointer] === '\'') || ($sSource[$iPointer] === '"')) { // Strings
+					// Grab the match character
+					$sMatch = $sSource[$iPointer];
+					// Loop through the string
+					while ($iPointer <= strlen($sSource)) {
+						// Set the temporary string
+						$sString = (string) strstr(substr($sSource, ($iPointer + 1)), $sSource[$iPointer], true);
+						// Output the next part of the string
+						echo $sMatch.$sString;
+						// Increment the pointer
+						$iPointer += (strlen($sString) + 1);
+						// Check for escapes
+						if (($sSource[($iPointer - 1)] !== '\\') || ($sSource[($iPointer - 2)] === '\\')) {
+							// Output the next part of the string
+							echo $sMatch;
+							// Increment the pointer
+							$iPointer++;
+							// Break the loop
+							break;
+						}
+					}
+					// Continue to the next iteration
+					continue;
+				}
+				// Check for newlines, double spaces and tabs
+				if (($sSource[$iPointer] !== "\r") && ($sSource[$iPointer] !== "\n") && (($sSource[$iPointer] !== "\t") && ($sSource[$iPointer] !== ' ') || preg_match('/[\w\$]/', $sSource[($iPointer - 1)]) && preg_match('/[\w\$]/', $sSource[($iPointer + 1)]))) {
+					// Output the next part of the string
+					echo str_replace("\t", ' ', $sSource[$iPointer]);
+					// Increment the pointer
+					$iPointer++;
+				}
+			}
+			// Print the compression time
+			echo '/* Compressed By:  Framsie PHP Framework; Compressed In:  '.round((microtime(true) - $iTime), 4).'s */';
+			// Grab the minified source
+			$sMinified = (string) ob_get_clean();
 			// Cache the minified source
-			FramsieCache::getInstance()->saveToCache($sName, $sMinifiedSource);
-			// Return the source
-			return $sMinifiedSource;
+			FramsieCache::getInstance()->saveToCache($sName, $sMinified);
+			// Return the minified source
+			return $sMinified;
 		}
 		// Return the cache
 		return $sCachedSource;
@@ -158,7 +289,7 @@ class FramsieAssets {
 			$sCss = (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH.DIRECTORY_SEPARATOR.$sStylesheet);
 		}
 		// Return the CSS
-		return (($bMinify === true) ? $this->minifyAsset($sCss, $sName) : $this->loadAsset($sCss, $sName));
+		return (($bMinify === true) ? $this->minifyAsset($sCss, "{$sName}.min") : $this->loadAsset($sCss, $sName));
 	}
 
 	/**
@@ -204,6 +335,6 @@ class FramsieAssets {
 			$sJs = (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH.DIRECTORY_SEPARATOR.$sJavascript);
 		}
 		// Return the JS
-		return (($bMinify === true) ? $this->minifyAsset($sJs, $sName) : $this->loadAsset($sJs, $sName));
+		return (($bMinify === true) ? $this->minifyAsset($sJs, "{$sName}.min") : $this->loadAsset($sJs, $sName));
 	}
 }

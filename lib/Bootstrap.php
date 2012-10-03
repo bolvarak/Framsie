@@ -150,6 +150,10 @@ class Bootstrap {
 		return $this;
 	}
 
+	///////////////////////////////////////////////////////////////////////////
+	/// Protected Methods ////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
 	/**
 	 * This method loads redirect URLs into the framework
 	 * @package Framsie
@@ -164,15 +168,32 @@ class Bootstrap {
 		return $this;
 	}
 
+	/**
+	 * Put all of your Framsie calls here that aren't default so the system is
+	 * fully initialized to your application upon execution
+	 * @package Bootstrap
+	 * @access protected
+	 * @return Bootstrap $this
+	 */
+	protected function onBeforeDispatch() {
+		// Initialize FramsieError with the database
+		FramsieError::InitializeErrorsFromDatabase('ErrorLookup', 'Code', 'Message');
+		// Return the instance
+		return $this;
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Static Methods ////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
 	 * This method generates a singleton of any existing class passed to it
+	 * @package Bootstrap
+	 * @access public
+	 * @static
 	 * @param string $sClassName
 	 * @param boolean [$bReset]
-	 * @throws Eception
+	 * @throws FramsieException
 	 * @return instanceof $sClassName
 	 */
 	public static function Instantiate($sClassName, $bReset = false) {
@@ -187,7 +208,7 @@ class Bootstrap {
 			return self::$mInstances[$sClassName];
 		}
 		// We're done, something went awry
-		throw new Exception("We could not instantiate the class \"{$sClassName}.\"");
+		FramsieError::Trigger('FRAMINF', array($sClassName));
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -199,7 +220,7 @@ class Bootstrap {
 	 * @package Bootstrap
 	 * @access public
 	 * @param string $sClassName
-	 * @throws Exception
+	 * @throws FramsieException
 	 * @return void
 	 */
 	public function autoLoader($sClassName) {
@@ -285,7 +306,7 @@ class Bootstrap {
 
 		// If we have not returned by now, the class does not exist,
 		// so we will throw a new exception
-		throw new Exception("The class \"{$sClassName}\" could not be found.");
+		FramsieError::Trigger('FRAMCNF', array($sClassName));
 	}
 
 	/**
@@ -303,6 +324,8 @@ class Bootstrap {
 		}
 		// Load the redirects
 		$this->loadRedirects();
+		// Initialize the framework
+		$this->onBeforeDispatch();
 		// Instantiate and execute Framsie
 		Framsie::getInstance()->dispatch($_SERVER['SERVER_NAME'], $_SERVER['REQUEST_URI']);
 		// Return the instance

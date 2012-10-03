@@ -444,14 +444,11 @@ abstract class FramsieHttp {
 		$aEncodedParams = array();
 		// Loop through the parameters
 		foreach ($aParams as $sKey => $sValue) {
-			// Make sure the value is not empty
-			if ((empty($sValue) === false) && (isset($sValue))) {
-				// Combine the parameters and add them to the array
-				array_push($aEncodedParams, implode('=', array(
-					rawurlencode($sKey),  // Set the parameter name
-					rawurlencode($sValue) // Set the parameter value
-				)));
-			}
+			// Combine the parameters and add them to the array
+			array_push($aEncodedParams, implode('=', array(
+				rawurlencode($sKey),  // Set the parameter name
+				rawurlencode($sValue) // Set the parameter value
+			)));
 		}
 		// Return the query string
 		return implode('&', $aEncodedParams);
@@ -669,6 +666,11 @@ abstract class FramsieHttp {
 	 * @return FramsieHttp $this
 	 */
 	public function makeRequest() {
+		// Check to see if we need to initialize OAuth
+		if ($this->mUseOauth === true) {
+			// Setup OAuth
+			$this->setupOauth();
+		}
 		// Initialize the cURL handler
 		$rHandle = curl_init();
 		// Determine the request method
@@ -774,10 +776,15 @@ abstract class FramsieHttp {
 			// Set the token into the request
 			$this->addParam (self::OAUTH_PARAM_TOKEN, $this->mOauthToken);
 		}
+		// Check for a token secret
+		// if (empty($this->mOauthTokenSecret) === false) {
+		//	// Set the token secret into the request
+		//	$this->addParam(self::OAUTH_PARAM_TOKEN_SECRET, $this->mOauthTokenSecret);
+		// }
 		// Set the signature
 		$this->addParam(self::OAUTH_PARAM_SIGNATURE, $this->getOauthSignature());
 		// Set the authorization header
-		$this->addHeader('Authorization', $this->getOauthAuthorizationHeader());
+		// $this->addHeader('Authorization', $this->getOauthAuthorizationHeader());
 		// Return the instance
 		return $this;
 	}

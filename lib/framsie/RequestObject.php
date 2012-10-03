@@ -165,7 +165,7 @@ class FramsieRequestObject {
 	 * @package Framsie
 	 * @subpackage FramsieRequestObject
 	 * @access protected
-	 * @throws Exception
+	 * @throws FramsieException
 	 * @return FramsieRequestObject $this
 	 */
 	protected function processBlock() {
@@ -178,7 +178,7 @@ class FramsieRequestObject {
 			// Check for the view method in the controller
 			if (!method_exists($this->mController, $sBlock)) {
 				// Throw an exception because a block view is needed
-				throw new Exception("The block view action \"{$sBlock}\" does not exist in the controller \"{$this->mController}\".");
+				FramsieError::Trigger('FRAMVDE', array($sBlock, $this->mController));
 			}
 		} else {
 			// Shift the block from the query in processing
@@ -196,7 +196,7 @@ class FramsieRequestObject {
 	 * @package Framsie
 	 * @subpackage FramsieRequestObject
 	 * @access protected
-	 * @throws Exception
+	 * @throws FramsieException
 	 * @return FramsieRequestObject $this
 	 */
 	protected function processController() {
@@ -209,7 +209,7 @@ class FramsieRequestObject {
 			// Make sure the default controller exists
 			if (!class_exists($sController)) {
 				// Throw an exception because the controller is invalid
-				throw new Exception("The controller \"{$sController}\" does not exist and the default controller could not be found.");
+				FramsieError::Trigger('FRAMCNE', array($sController));
 			}
 		} else {
 			// Unset the controller from the request
@@ -253,7 +253,7 @@ class FramsieRequestObject {
 		// Loop through the GET request
 		foreach ($_GET as $sName => $sValue) {
 			// Set the request variable into the system
-			$this->mGetRequest->{$sName} = $sValue;
+			$this->mGetRequest->{$sName} = $this->convertToTrueType($sValue);
 		}
 		// We're done, return the instance
 		return $this;
@@ -272,7 +272,7 @@ class FramsieRequestObject {
 		// Loop through the POST request
 		foreach ($_POST as $sName => $sValue) {
 			// Set the request variable into the system
-			$this->mPostRequest->{$sName} = htmlspecialchars($sValue);
+			$this->mPostRequest->{$sName} = $this->convertToTrueType($sValue);
 		}
 		// We're done, return the instance
 		return $this;
@@ -293,11 +293,17 @@ class FramsieRequestObject {
 			// Loop through the parameters
 			for ($iParameter = 0; $iParameter < count($this->mQueryInProcessing); ($iParameter += 2)) {
 				// Make sure a valid key exists
-				if (!empty($this->mQueryInProcessing[$iParameter])) {
+				if ((empty($this->mQueryInProcessing[$iParameter]) === false) || (is_null($this->mQuery[$iParameter]) === false)) {
 					// Set the parameter name
 					$sName  = (string) urldecode($this->mQueryInProcessing[$iParameter]);
 					// Set the parameter value
-					$sValue = (empty($this->mQueryInProcessing[($iParameter + 1)]) ? null : $this->convertToTrueType($this->mQueryInProcessing[($iParameter + 1)]));
+					if (empty($this->mQueryInProcessing[($iParameter + 1)]) && (is_null($this->mQueryInProcessing[($iParameter + 1)]) === true)) { // NULL
+						// Set the value
+						$sValue = null;
+					} else {                                                                                                                       // True Type
+						// Set the value
+						$sValue = $this->convertToTrueType($this->mQueryInProcessing[($iParameter + 1)]);
+					}
 					// Set the parameter
 					$oQuery->{$sName} = $sValue;
 				}
@@ -390,20 +396,22 @@ class FramsieRequestObject {
 		// First off we need to decode the variable
 		$sVariable = urldecode($sVariable);
 		// Check the variable type
-		if (is_bool($sVariable) || preg_match('/^false|true$/', $sVariable)) { // Boolean
+		if (preg_match('/^false|true$/', $sVariable)) {                       // Boolean
 			// Return the variable as a boolean
 			return (boolean) (($sVariable === 'true') ? true : false);
-		}
-		if (is_float($sVariable) || preg_match('/^\d+\.\d+$/', $sVariable)) {  // Floating point
+		} elseif (preg_match('/^[0-9]+\.[0-9]+$/', $sVariable)) {                   // Floating Point
 			// Return the variable as a floating point
-			return (float) $sVariable;
-		}
-		if (is_int($sVariable) || preg_match('/^\d+$/', $sVariable)) {         // Integer
+			return (float) floatval($sVariable);
+		} elseif (preg_match('/^[0-9]+$/', $sVariable)) {                        // Integer
 			// Return the variable as an integer
-			return (integer) $sVariable;
+			return (integer) intval($sVariable);
+		} elseif (preg_match('/^null$/i', $sVariable) || empty($sVariable)) { // NULL
+			// Return null
+			return null;
+		} else {
+			// Return the variable as a string
+			return (string) $sVariable;
 		}
-		// Return the variable as a string
-		return (string) $sVariable;
 	}
 
 	/**
@@ -555,27 +563,27 @@ class FramsieRequestObject {
 	 */
 	public function getParam($sName) {
 		// Check for the parameter in the query
-		if (empty($this->mQuery->{$sName}) === false) {
+		if ((empty($this->mQuery) === false) && property_exists($this->mQuery, $sName)) {
 			// Return the query parameter
 			return $this->mQuery->{$sName};
 		}
 		// Check for the parameter in the POST request
-		if (empty($this->mPostRequest->{$sName}) === false) {
+		if ((empty($this->mPostRequest) === false) && property_exists($this->mPostRequest, $sName)) {
 			// Return the POST parameter
 			return $this->mPostRequest->{$sName};
 		}
 		// Check for the parameter in the GET request
-		if (empty($this->mGetRequest->{$sName}) === false) {
+		if ((empty($this->mGetRequest) === false) && property_exists($this->mGetRequest, $sName)) {
 			// Return the GET parameter
 			return $this->mGetRequest->{$sName};
 		}
 		// Check for the parameter in the SERVER request
-		if (empty($this->mServer->{$sName}) === false) {
+		if ((empty($this->mServer) === false) && property_exists($this->mServer, $sName)) {
 			// Return the SERVER parameter
 			return $this->mServer->{$sName};
 		}
 		// The parameter does not exist
-		return false;
+		return null;
 	}
 
 	/**

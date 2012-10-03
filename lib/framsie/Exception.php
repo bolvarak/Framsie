@@ -51,7 +51,7 @@ class FramsieException extends Exception {
 	 */
 	public function __construct($sMessage, $iFramsieCode) {
 		// Execute the parent constructor
-		parent::__construct($sMessage, $iFramsieCode);
+		parent::__construct($sMessage, (integer) bin2hex($iFramsieCode));
 		// Set the Framsie Exception Code
 		$this->mFramsieCode = (integer) $iFramsieCode;
 		// Return the instance

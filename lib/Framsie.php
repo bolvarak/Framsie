@@ -185,42 +185,38 @@ class Framsie {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * This method is simply a helper to the objects of Framsie to dynamically
-	 * load the singleton patterns of controllers and models
+	 * This method dynamically loads new instances of classes into the workflow
 	 * @package Framsie
 	 * @access public
 	 * @static
-	 * @param string $sClassName
-	 * @throws Exception
-	 * @return multitype
+	 * @param string $sClass
+	 * @param string $sArgument
+	 * @return object
 	 */
-	public static function Instance($sClassName) {
-		// Make sure the class exists
-		if (class_exists($sClassName)) {
-			// Return an instance
-			return $sClassName::getInstance();
+	public static function Loader() {
+		// Grab the arguments
+		$aArguments = func_get_args();
+		// Set the class name
+		$sClass     = (string) $aArguments[0];
+		// Create an instance placeholder
+		$oInstance  = null;
+		// Remove the class name
+		array_shift($aArguments);
+		// Check for an existing instance
+		if (empty(self::$mInstances[$sClass])) {
+			// Check for arguments to pass
+			if (empty($aArguments)) {
+				// Create a new instance
+				$oInstance = new $sClass();
+			} else {
+				// Create an instance of the reflection class
+				$oReflection = new ReflectionClass($sClass);
+				// Create a new instance
+				$oInstance = $oReflection->newInstanceArgs($aArguments);
+			}
 		}
-		// Throw a new exception
-		throw new Exception("The class \"{$sClassName}\" does not exist.");
-	}
-
-	/**
-	 * This method creates a new instance of a class
-	 * @package Framsie
-	 * @access public
-	 * @static
-	 * @param string $sClassName
-	 * @throws Exception
-	 * @return multitype
-	 */
-	public static function Instantiate($sClassName) {
-		// Make sure the class exists
-		if (class_exists($sClassName)) {
-			// Return a new instance
-			return new $sClassName();
-		}
-		// Throw a new exception
-		throw new Exception('The class \"{$sClassName}\" does not exist.');
+		// Return the instance
+		return $oInstance;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -317,13 +313,14 @@ class Framsie {
 	 * @param string $sHostName
 	 * @param string $sRequest
 	 * @param string [$sStaticBase]
+	 * @throws FramsieException
 	 * @return Framsie $this
 	 */
 	public function dispatch($sHostName, $sRequest, $sStaticBase = null) {
 		// Check for an invalid request
 		if ($this->isInvalidRequest($sRequest)) {
 			// Throw a new exception
-			throw new Exception('The request URL is invalid.');
+			FramsieError::Trigger('FRAMIRQ', array($sRequest));
 		}
 		// Process the request
 		FramsieRequestObject::getInstance()->process($this->matchRedirects($sRequest), $sStaticBase);
@@ -356,7 +353,7 @@ class Framsie {
 	 * @package Framsie
 	 * @access public
 	 * @param string $sFilename
-	 * @throws Exception
+	 * @throws FramsieException
 	 * @return string
 	 */
 	public function renderBlock($sFilename) {
@@ -369,7 +366,7 @@ class Framsie {
 		if (!file_exists(BLOCK_PATH.DIRECTORY_SEPARATOR.$sFilename)) {
 			// Throw an exception because if this method is called, obviously
 			// the block is needed to continue
-			throw new Exception("The block file \"{$sFilename}\" does not exist as it was called, nor does it exist in the blocks directory");
+			FramsieError::Trigger('FRAMBNE', array($sFilename));
 		}
 		// Start the capture of the output buffer stream
 		ob_start();
