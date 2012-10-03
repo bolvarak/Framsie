@@ -102,10 +102,10 @@ class FramsieError {
 				$sError = (string) str_replace($sVariableNotator, $sVariable, $sError);
 			}
 			// Return the proper error message
-			return $sError;
+			return $sError.' (Error:  '.$mCode.')';
 		}
 		// Elsewise return the default error
-		return self::$mErrors['FRAMUNK'];
+		return self::$mErrors['FRAMUNK'].' (Error:  FRAMUNK)';
 	}
 
 	/**
