@@ -41,13 +41,16 @@ class FramsieError {
 	 * @staticvar array
 	 */
 	protected static $mErrors = array(
-		'FRAMBNE' => 'The block file ":=" does not exist in the blocks directory.',
-		'FRAMCNE' => 'The controller ":=" does not exist and the default controller could not be found.',
-		'FRAMCNF' => 'The class ":=" could not be found.',
-		'FRAMINF' => 'Unable to instantiate the class ":=."',
-		'FRAMIRQ' => 'The request URI ":=" has been deemed invalid by the system.',
-		'FRAMUNK' => 'An unknown error has occurred.',
-		'FRAMVDE' => '"The block view action ":=" does not exist in the controller ":=."',
+		'FRAMBNE' => 'The block file ":=" does not exist in the blocks directory',
+		'FRAMCAC' => 'The defined cache directory ":=" does not exist',
+		'FRAMCNE' => 'The controller ":=" does not exist and the default controller could not be found',
+		'FRAMCNF' => 'The class ":=" could not be found',
+		'FRAMINF' => 'Unable to instantiate the class ":="',
+		'FRAMIPN' => ':= is an invalid property name, you must use "Section.Property"',
+		'FRAMIRQ' => 'The request URI ":=" has been deemed invalid by the system',
+		'FRAMPNE' => ':= does not exist in the configuration',
+		'FRAMUNK' => 'An unknown error has occurred',
+		'FRAMVDE' => '"The block view action ":=" does not exist in the controller ":="',
 
 	);
 

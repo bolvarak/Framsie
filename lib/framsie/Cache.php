@@ -167,7 +167,7 @@ class FramsieCache {
 	 * @subpackage FramsieCache
 	 * @access public
 	 * @param string $sName
-	 * @throws Exception
+	 * @throws FramsieException
 	 * @return multitype
 	 */
 	public function loadFromCache($sName) {
@@ -179,7 +179,7 @@ class FramsieCache {
 		if (!file_exists(CACHE_DIRECTORY)) {
 			// Throw an exception because this directory must exist in order to
 			// utilize caching throughout the framework
-			throw new Exception('The defined cache directory "'.CACHE_DIRECTORY.'" does not exist.');
+			FramsieError::Trigger('FRAMCAC', array(CACHE_DIRECTORY));
 		}
 		// Now make sure the cache and info file exists
 		if (!file_exists($sCacheFilename) || !file_exists($sInfoFilename)) {
@@ -207,7 +207,7 @@ class FramsieCache {
 	 * @access public
 	 * @param string $sName
 	 * @param multitype $sContent
-	 * @throws Exception
+	 * @throws FramsieException
 	 * @return FramsieCache $this
 	 */
 	public function saveToCache($sName, $sContent) {
@@ -220,7 +220,7 @@ class FramsieCache {
 		if (!file_exists(CACHE_DIRECTORY)) {
 			// Throw an exception, because we need this directore in order
 			// to utilize caching in the framework
-			throw new Exception('The defined cache directory "'.CACHE_DIRECTORY.'" does not exist.');
+			FramsieError::Trigger('FRAMCAC', array(CACHE_DIRECTORY));
 		}
 		// Set the name of the cache file
 		$sCacheFilename = (string) CACHE_DIRECTORY.DIRECTORY_SEPARATOR.$sName.'.cache';

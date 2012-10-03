@@ -54,13 +54,14 @@ class FramsieConfiguration {
 	 * @access public
 	 * @static
 	 * @param string $sProperty
-	 * @throws Exception
+	 * @throws FramsieException
+	 * @return multitype
 	 */
 	public static function DbLoad($sProperty) {
 		// Check for a proper section and property name
 		if (strpos($sProperty, '.') === false) {
 			// Throw an exception
-			throw new Exception("{$sProperty} is an invalid property name, you must use Section.Property");
+			FramsieError::Trigger('FRAMIPN', array($sProperty));
 		}
 		// Split the property name from the section name
 		$aProperty = explode('.', $sProperty);
@@ -78,7 +79,7 @@ class FramsieConfiguration {
 		// Check for a value
 		if (empty($oRow->Value) && (isset($oRow->Value) === false)) {
 			// Throw an exception
-			throw new Exception("{$sProperty} does not exist in the configuration.");
+			FramsieError::Trigger('FRAMPNE', array($sProperty));
 		}
 		// Return the value
 		return $oRow->Value;
@@ -90,7 +91,7 @@ class FramsieConfiguration {
 	 * @access public
 	 * @static
 	 * @param string [$sProperty]
-	 * @throws Exception
+	 * @throws FRamsieException
 	 * @return multitype
 	 */
 	public static function Load($sProperty = null) {
@@ -107,7 +108,7 @@ class FramsieConfiguration {
 			// Check for the configuration value
 			if (empty(self::$mConfiguration[$sProperty])) {
 				// Throw an exception
-				throw new Exception("The configuration section or property \"{$sProperty}\" does not exist.");
+				FramsieError::Trigger('FRAMPNE', array($sProperty));
 			}
 			// Return the property
 			return self::$mConfiguration[$sProperty];
@@ -122,7 +123,7 @@ class FramsieConfiguration {
 			// Check for the existance of the property
 			if (empty($aConfiguration[$sPropertyKey])) {
 				// Throw an exception
-				throw new Exception("The configuration section or property \"{$sPropertyKey}\" does not exist.");
+				FramsieError::Trigger('FRAMPNE', array($sPropertyKey));
 			}
 			// Reset the configuration
 			$aConfiguration = $aConfiguration[$sPropertyKey];
