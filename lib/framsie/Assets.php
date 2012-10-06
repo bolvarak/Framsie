@@ -81,8 +81,68 @@ class FramsieAssets {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * This method simply loads the cache and caches the source if it isn't
-	 * already cached or the the cache has expired, no minification is involved
+	 * This method generates a name for the asset to store in cache
+	 * @package Framsie
+	 * @subpackage FramsieAssets
+	 * @access protected
+	 * @param array|string $mAsset
+	 * @param boolean $bMinified
+	 * @return string
+	 */
+	protected function generateName($mAsset, $bMinified = true) {
+		// Asset type placeholder
+		$sType = (string) null;
+		// Asset name placeholder
+		$sName = (string) null;
+		// Determine if we have multiple assets
+		if (is_array($mAsset)) {
+			// Determine if this is a script or a style
+			if (preg_match('/\.css/', $mAsset[0])) {
+				// Set the asset type
+				$sType = (string) 'style';
+			} else {
+				// Set the asset type
+				$sType = (string) 'script';
+			}
+			// Loop through the assets
+			foreach ($mAsset as $iIndex => $sAsset) {
+				// Make sure the asset is not empty
+				if (empty($sAsset) === false) {
+					// Start the asset
+					$sName .= (string) '.';
+					// Append to the asset name
+					$sName .= $sAsset;
+				}
+			}
+			// Remove all slashes and extensions
+			$sName = (string) str_replace(array('/', '.css', '.js'), null, $sName);
+			// REmove all non-alphanumeric and non-period characters
+			$sName = (string) preg_replace('/[^a-zA-Z0-9\.]+/',      null, $sName);
+			// Encode the name
+			$sName = (string) sha1($sName);
+			// Return the name
+			return "asset.{$sType}{$sName}.combined".(($bMinified === true) ? '.min' : null);
+		}
+		// Determine is this is a script or a style
+		if (preg_match('/\.css/', $mAsset)) {
+		// Set the asset type
+			$sType = (string) 'style';
+		} else {
+			// Set the asset type
+			$sType = (string) 'script';
+		}
+		// Remove all slashes and extensions
+		$sName = (string) str_replace(array('/', '.css', '.js'), null, $mAsset);
+		// REmove all non-alphanumeric and non-period characters
+		$sName = (string) preg_replace('/[^a-zA-Z0-9\.]+/',      null, $sName);
+		// Encode the name
+		$sName = (string) sha1($sName);
+		// Return the name
+		return "asset.{$sType}.{$sName}".(($bMinified === true) ? '.min' : null);
+	}
+
+	/**
+	 * This method saves the asset into cache and returns
 	 * @package Framsie
 	 * @subpackage FramsieAssets
 	 * @access protected
@@ -91,21 +151,14 @@ class FramsieAssets {
 	 * @return string
 	 */
 	protected function loadAsset($sSource, $sName) {
-		// Check the cache for the source
-		$sCachedSource = (string) FramsieCache::getInstance()->loadFromCache($sName);
-		// Check for the source code
-		if (empty($sCachedSource)) {
-			// Cache the source
-			FramsieCache::getInstance()->saveToCache($sName, $sSource);
-			// Return the source
-			return $sSource;
-		}
-		// Return the cached source
-		return $sCachedSource;
+		// Cache the source
+		FramsieCache::getInstance()->saveToCache($sName, $sSource);
+		// Return the source
+		return $sSource;
 	}
 
 	/**
-	 * This method minifies a javascript or CSS source set
+	 * This method minifies a javascript or CSS source set and saves it into the cache
 	 * @package Framsie
 	 * @subpackage FramsieAssets
 	 * @access protected
@@ -113,40 +166,40 @@ class FramsieAssets {
 	 * @return string
 	 */
 	protected function minifyAsset($sSource, $sName, $bIsJs = true) {
-		// Load from cache
-		$sCachedSource = (string) FramsieCache::getInstance()->loadFromCache($sName);
-		// Check the cached source
-		if (empty($sCachedSource)) {
-			// Set a string placeholder
-			$sMinified = (string) $sSource;
-			// Check to see if we are minifying JS or CSS
-			if ($bIsJs === false) {
-				// Remove all single line comments
-				$sMinified = (string) preg_replace('/(\/\*[\w\'\s\r\n\*]*\*\/)|(\/\/[\w\s\']*)|(\<![\-\-\s\w\>\/]*\>)/', null, $sMinified);
-				// Remove Multi-Line Comments
-				$sMinified = (string) preg_replace('#/\*.*?\*/#s', null, $sMinified);
-				// Remove Unnecessary Whitespace
-				$sMinified = (string) preg_replace('/\s*([{}|:;,])\s+/', '$1', $sMinified);
-				// Remove Trailing whitespace
-				$sMinified = (string) preg_replace('/\s\s+(.*)/', '$1', $sMinified);
-				// Remove Unnecessary semi-colons
-				$sMinified = (string) str_replace(';}', '}', $sMinified);
-				// Remove all tabs
-				$sMinified = (string) preg_replace('/\t+/', ' ', $sMinified);
-				// Remove all double spaces
-				$sMinified = (string) preg_replace('/\s+/', ' ', $sMinified);
-				// Remove all new lines
-				$sMinified = (string) preg_replace('/'.PHP_EOL.'/', null, $sMinified);
-			} else {
-
-			}
-			// Cache the minified source
-			FramsieCache::getInstance()->saveToCache($sName, $sMinified);
-			// Return the minified source
-			return $sMinified;
+		// Set a string placeholder
+		$sMinified = (string) $sSource;
+		// Check to see if we are minifying JS or CSS
+		if ($bIsJs === false) {
+			// Remove all single line comments
+			$sMinified = (string) preg_replace('/(\/\*[\w\'\s\r\n\*]*\*\/)|(\/\/[\w\s\']*)|(\<![\-\-\s\w\>\/]*\>)/', null, $sMinified);
+			// Remove Multi-Line Comments
+			$sMinified = (string) preg_replace('#/\*.*?\*/#s', null, $sMinified);
+			// Remove Unnecessary Whitespace
+			$sMinified = (string) preg_replace('/\s*([{}|:;,])\s+/', '$1', $sMinified);
+			// Remove Trailing whitespace
+			$sMinified = (string) preg_replace('/\s\s+(.*)/', '$1', $sMinified);
+			// Remove Unnecessary semi-colons
+			$sMinified = (string) str_replace(';}', '}', $sMinified);
+			// Remove all tabs
+			$sMinified = (string) preg_replace('/\t+/', ' ', $sMinified);
+			// Remove all double spaces
+			$sMinified = (string) preg_replace('/\s+/', ' ', $sMinified);
+			// Remove all new lines
+			$sMinified = (string) preg_replace('/'.PHP_EOL.'/', null, $sMinified);
+		} else {
+			// Remove Multi-Line Comments
+			$sMinified = (string) preg_replace('#/\*.*?\*/#s', null, $sMinified);
+			// Remove multiple new lines
+			// $sMinified = (string) preg_replace('/\n(\s*\n)+/', "\n", $sMinified);
+			// Replace tabs with spaces
+			// $sMinified = (string) preg_replace('/\t+/',        ' ',  $sMinified);
+			// Replace double spaces with single spaces
+			// $sMinified = (string) preg_replace('/\s\s+/',      ' ',  $sMinified);
 		}
-		// Return the cache
-		return $sCachedSource;
+		// Cache the minified source
+		FramsieCache::getInstance()->saveToCache($sName, $sMinified);
+		// Return the minified source
+		return $sMinified;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -159,28 +212,31 @@ class FramsieAssets {
 	 * @package Framsie
 	 * @subpackage FramsieAssets
 	 * @access public
-	 * @param multitype $sStylesheet
-	 * @param string $sName
+	 * @param array|string $mStylesheet
 	 * @param boolean $bMinify
 	 * @return string
 	 */
-	public function getCss($sStylesheet, $sName, $bMinify = true) {
+	public function getCss($mStylesheet, $bMinify = true) {
 		// Create a CSS placeholder
 		$sCss = (string) null;
+		// Determine if we even need to load the asset
+		if (FramsieCache::getInstance()->cacheExists($this->generateName($mStylesheet, $bMinify))) {
+			// Return the cached version
+			return FramsieCache::getInstance()->loadFromCache($this->generateName($mStylesheet, $bMinify));
+		}
 		// Check to see if we are loading one stylesheet or batching them
-		if (is_array($sStylesheet)) {
+		if (is_array($mStylesheet)) {
 			// Loop through the stylesheets
-			foreach ($sStylesheet as $sSheet) {
+			foreach ($mStylesheet as $sSheet) {
 				// Append the stylesheet
 				$sCss .= (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH.DIRECTORY_SEPARATOR.$sSheet);
 			}
-			// Return the minified combined source
-			return (($bMinify === true) ? $this->minifyAsset($sCss, 'assets.styles.combined.min', false) : $this->loadAsset($sCss, 'assets.styles.combined'));
+		}  else {
+			// Set the stylesheet
+			$sCss = (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH.DIRECTORY_SEPARATOR.$mStylesheet);
 		}
-		// Set the stylesheet
-		$sCss = (string) Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH.DIRECTORY_SEPARATOR.$sStylesheet);
 		// Return the CSS
-		return (($bMinify === true) ? $this->minifyAsset($sCss, "{$sName}.min", false) : $this->loadAsset($sCss, $sName));
+		return (($bMinify === true) ? $this->minifyAsset($sCss, $this->generateName($mStylesheet, true), false) : $this->loadAsset($sCss, $this->generateName($mStylesheet, false)));
 	}
 
 	/**
@@ -189,10 +245,9 @@ class FramsieAssets {
 	 * @subpackage FramsieAssets
 	 * @access public
 	 * @param string $sImage
-	 * @param string $sName
 	 * @return string
 	 */
-	public function getImage($sImage, $sName) {
+	public function getImage($sImage) {
 		// Start the output buffer
 		ob_start();
 		// Load the image file
@@ -206,26 +261,30 @@ class FramsieAssets {
 	 * @package Framsie
 	 * @subpackage FramsieAssets
 	 * @access public
-	 * @param multitype $sJavascript
-	 * @param string $sName
+	 * @param array|string $mJavascript
 	 * @param boolean $bMinify
 	 * @return string
 	 */
-	public function getJavascript($sJavascript, $sName, $bMinify = true) {
+	public function getJavascript($mJavascript, $bMinify = true) {
 		// Create a javascript placeholder
 		$sJs = (string) null;
+		// Determine if we even need to load the asset
+		if (FramsieCache::getInstance()->cacheExists($this->generateName($mJavascript, $bMinify))) {
+			// Return the cached version
+			return FramsieCache::getInstance()->loadFromCache($this->generateName($mJavascript, $bMinify));
+		}
 		// Check to see if we are loading one script or batching them
-		if (is_array($sJavascript)) { // Batching the scripts
+		if (is_array($mJavascript)) { // Batching the scripts
 			// Loop through the javascript
-			foreach ($sJavascript as $sScript) {
+			foreach ($mJavascript as $sScript) {
 				// Append the script
 				$sJs .= (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH.DIRECTORY_SEPARATOR.$sScript);
 			}
 		} else {                      // Only one script
 			// Set the JS
-			$sJs = (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH.DIRECTORY_SEPARATOR.$sJavascript);
+			$sJs = (string) Framsie::getInstance()->renderBlock(JAVASCRIPT_ASSETS_PATH.DIRECTORY_SEPARATOR.$mJavascript);
 		}
 		// Return the JS
-		return (($bMinify === true) ? $this->minifyAsset($sJs, "{$sName}.min") : $this->loadAsset($sJs, $sName));
+		return (($bMinify === true) ? $this->minifyAsset($sJs, $this->generateName($mJavascript, true)) : $this->loadAsset($sJs, $this->generateName($mJavascript, false)));
 	}
 }

@@ -68,25 +68,23 @@ class AssetsController extends FramsieController {
 	 */
 	public function scriptView() {
 		// Set the header content
-		$this->setHeaderContentType(self::HEADER_JAVASCRIPT);
+		// $this->setHeaderContentType(self::HEADER_JAVASCRIPT);
 		// Disable the layout
 		$this->setDisableLayout();
 		// Decode the file
 		$sScript = (string) base64_decode($this->getRequest()->getParam('file'));
+		// Determine if this is a compressed array
+		if ($this->getRequest()->getParam('compressed') === true) {
+			// Decompress and deserialize the scripts
+			$sScript = FramsieCompression::getInstance()->decompressEntity($sScript);
+		}
 		// Check to see if we need to minify the source
 		if ($this->getRequest()->getParam('minify') !== false) { // The source should be minified
 			// Get the source
-			$sSource = (string) FramsieAssets::getInstance()->getJavascript( // Instantiate the assets manager
-				$sScript,                                                    // Send the block file
-				"assets.script.{$this->getRequest()->getParam('file')}"      // Send the cache file name
-			);
+			$sSource = (string) FramsieAssets::getInstance()->getJavascript($sScript, true);
 		} else {                                                  // The source should not be minified
 			// Get the source
-			$sSource = (string) FramsieAssets::getInstance()->getJavascript( // Instantiate the assets manager
-					$sScript,                                                // Send the block file
-					"assets.script.{$this->getRequest()->getParam('file')}", // Send the cache file name
-					false                                                    // Do not minify the source
-			);
+			$sSource = (string) FramsieAssets::getInstance()->getJavascript($sScript, false);
 		}
 		// Set the script source
 		$this->mView->sScriptSource = $sSource;
@@ -109,22 +107,15 @@ class AssetsController extends FramsieController {
 		// Determine if this is a compressed array
 		if ($this->getRequest()->getParam('compressed') === true) {
 			// Decompress and deserialize the styles
-			$sStyle = unserialize(gzuncompress($sStyle));
+			$sStyle = FramsieCompression::getInstance()->decompressEntity($sStyle);
 		}
 		// Check to see if we need to minify the source
 		if ($this->getRequest()->getParam('minify') !== false) { // The source should be minified
 			// Get the source
-			$sSource = (string) FramsieAssets::getInstance()->getCss(  // Instantiate the assets manager
-				$sStyle,                                               // Send the block file
-				"assets.style.{$this->getRequest()->getParam('file')}" // Send the cache name
-			);
+			$sSource = (string) FramsieAssets::getInstance()->getCss($sStyle, true);
 		} else {                                                 // The source should not be minified
 			// Get the source
-			$sSource = (string) FramsieAssets::getInstance()->getCss(       // Instantiate the assets manager
-					$sStyle,                                                // Send the block file
-					"assets.style.{$this->getRequest()->getParam('file')}", // Send the cache name
-					false                                                   // Do not minify the source
-			);
+			$sSource = (string) FramsieAssets::getInstance()->getCss($sStyle, false);
 		}
 		// Set the style source
 		$this->mView->sStyleSource = $sSource;

@@ -589,12 +589,21 @@ abstract class FramsieController {
 	 * @package Framsie
 	 * @subpackage FramsieController
 	 * @access public
-	 * @param string $sScript
+	 * @param array|string $mScript
+	 * @param string $sVersion
 	 * @return string
 	 */
-	public function getScriptUrl($sScript) {
+	public function getScriptUrl($mScript, $sVersion = null) {
+		// Check to see if we need more than one script
+		if (is_array($mScript)) {
+			// Generate the URL
+			$sUrl = (string) $this->getUrl('assets', 'script', 'compressed', 'true', 'file', base64_encode(FramsieCompression::getInstance()->compressEntity($mScript)));
+		} else {
+			// Generate the URL
+			$sUrl = (string) $this->getUrl('assets', 'script', 'file', base64_encode($mScript));
+		}
 		// Return the script URL
-		return $this->getUrl('assets', 'script', 'file', base64_encode($sScript));
+		return (empty($sVersion) ? $sUrl : "{$sUrl}?={$sVersion}");
 	}
 
 	/**
@@ -641,7 +650,7 @@ abstract class FramsieController {
 		// Check to see if we need more than one style
 		if (is_array($mStyle)) {
 			// Generate the URL
-			$sUrl = (string) $this->getUrl('assets', 'style', 'compressed', 'true', 'file', base64_encode(gzcompress(serialize($mStyle), 9)));
+			$sUrl = (string) $this->getUrl('assets', 'style', 'compressed', 'true', 'file', base64_encode(FramsieCompression::getInstance()->compressEntity($mStyle)));
 		} else {
 			// Generate the URL
 			$sUrl = (string) $this->getUrl('assets', 'style', 'file', base64_encode($mStyle));

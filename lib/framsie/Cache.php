@@ -161,16 +161,14 @@ class FramsieCache {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * This method loads a cache file from the system, validates it and returns
-	 * its content if validation is successful
+	 * This method checks the cache storage to see if a particular asset exists
 	 * @package Framsie
 	 * @subpackage FramsieCache
 	 * @access public
 	 * @param string $sName
-	 * @throws FramsieException
-	 * @return multitype
+	 * @return boolean
 	 */
-	public function loadFromCache($sName) {
+	public function cacheExists($sName) {
 		// Set the cache filename
 		$sCacheFilename = (string) CACHE_DIRECTORY.DIRECTORY_SEPARATOR.$sName.'.cache';
 		// Set the cache file info container
@@ -192,12 +190,39 @@ class FramsieCache {
 		$aInformation = (array) json_decode(file_get_contents($sInfoFilename), true);
 		// Check to see if the cache file is valid
 		if (($aInformation['iTime'] + $this->mExpire) >= time()) {
-			// Return the cache file contents
-			return (($aInformation['bSerialized'] === true) ? unserialize($sContent) : $sContent);
+			// The cache is valid, we're done
+			return true;
 		}
-		// Return false by default because if valid cache exists the method
-		// will return prior to this point
+		// Cache was present, but has expired
 		return false;
+	}
+
+	/**
+	 * This method loads a cache file from the system, validates it and returns
+	 * its content if validation is successful
+	 * @package Framsie
+	 * @subpackage FramsieCache
+	 * @access public
+	 * @param string $sName
+	 * @throws FramsieException
+	 * @return multitype
+	 */
+	public function loadFromCache($sName) {
+		// Check to see if cache even exists
+		if ($this->cacheExists($sName) === false) {
+			// Nothing to do, return
+			return false;
+		}
+		// Set the cache filename
+		$sCacheFilename = (string) CACHE_DIRECTORY.DIRECTORY_SEPARATOR.$sName.'.cache';
+		// Set the cache file info container
+		$sInfoFilename  = (string) CACHE_DIRECTORY.DIRECTORY_SEPARATOR.$sName.'.info';
+		// Load the cache file contents
+		$sContent       = (string) file_get_contents($sCacheFilename);
+		// Load the cache file info container contents
+		$aInformation   = (array) json_decode(file_get_contents($sInfoFilename), true);
+		// Return the cache file contents
+		return (($aInformation['bSerialized'] === true) ? unserialize($sContent) : $sContent);
 	}
 
 	/**
