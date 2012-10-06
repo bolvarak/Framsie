@@ -110,9 +110,9 @@ abstract class FramsieTableMapper {
 	 */
 	public function __call($sMethod, $aArguments) {
 		// Check to see if this is a getter
-		if (substr(strtolower($sMethod), 0, 3) === 'get') {
+		if (substr(strtolower($sMethod), 0, 3) == 'get') {
 			// Set the property name
-			$sColumn = (string) preg_replace('/get/i', null, $sMethod);
+			$sColumn = (string) substr_replace($sMethod, null, 0, 3);
 			// Make sure the column exists
 			if (empty($this->mColumns[$sColumn])) {
 				// Throw an exception
@@ -122,9 +122,9 @@ abstract class FramsieTableMapper {
 			return $this->{'m'.$sColumn};
 		}
 		// Check to see if this is a setter
-		if (substr(strtolower($sMethod), 0, 3) === 'set') {
+		if (substr(strtolower($sMethod), 0, 3) == 'set') {
 			// Set the property name
-			$sColumn = (string) preg_replace('/set/i', null, $sMethod);
+			$sColumn = (string) substr_replace($sMethod, null, 0, 3);
 			// Make sure the column exists
 			if (empty($this->mColumns[$sColumn])) {
 				// Throw an exception

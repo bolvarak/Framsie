@@ -346,6 +346,20 @@ class FramsieConverter {
 	}
 
 	/**
+	 * This method returns the UNIX timestamp of the number of days since Epoch
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param integer $iDays
+	 * @return integer
+	 */
+	public static function DaysInEpoch($iDays) {
+		// Return the converted value
+		return strtotime("January 1, 1970 + {$iDays} days");
+	}
+
+	/**
 	 * This method converts time() to days
 	 * @package Framsie
 	 * @subpackage FramsieConverter
@@ -358,13 +372,11 @@ class FramsieConverter {
 		// Check for a timestamp
 		if (empty($iTimeStamp)) {
 			// Set the timestamp to the current time
-			$iTimeStamp = (integer) gmdate('U', time());
-		} else {
-			// Convert the timestamp to GMT
-			$iTimeStamp = (integer) gmdate('U', $iTimeStamp);
+			$iTimeStamp = time();
 		}
+		// Grab the days
 		// Return the converted value
-		return floor($iTimeStamp / self::SECONDS_IN_DAY);
+		return strtotime('+'.($iTimeStamp / self::SECONDS_IN_DAY).' days', 0);
 	}
 
 	/**
@@ -542,5 +554,64 @@ class FramsieConverter {
 	public static function PoundsToKilograms($iPounds, $iDecimals = 2) {
 		// Return the converted value
 		return round(($iPounds / self::POUNDS_IN_KILOGRAM), $iDecimals);
+	}
+
+	/**
+	 * This method converts a string represented value to its actual PHP type
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param string $sValue
+	 * @return boolean|float|integer|null|string
+	 */
+	public static function StringToPhpType($sValue) {
+		// Make sure the value is of string type
+		if (is_string($sValue)) {
+			// Trim the value
+			$sValue = (string) trim($sValue);
+			// Check the variable type
+			if (preg_match('/^false|true$/', $sValue)) {
+				// Return the variable as a boolean
+				return (boolean) (($sValue === 'true') ? true : false);
+			}
+			if (preg_match('/^[0-9]+\.[0-9]+$/', $sValue)) {
+				// Return the variable as a floating point
+				return (float) floatval($sValue);
+			}
+			if (preg_match('/^[0-9]+$/', $sValue)) {
+				// Return the variable as an integer
+				return (integer) intval($sValue);
+			}
+			// Check for null
+			if (empty($sValue) || is_null($sValue) || preg_match('/^null|nil$/i', $sValue)) {
+				// Return the variable as a null
+				return null;
+			}
+			// Elsewise return a string
+			return (string) $sValue;
+		}
+		// Elsewise return the value
+		return $sValue;
+	}
+
+	/**
+	 * This method converts variable names to Hungarian Upper Camel Case notation
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param string $sVariableName
+	 * @return string
+	 */
+	public static function VariableNameToHungarianUpperCamelCase($sVariableName) {
+		// Lowercase the string and replace any special characters with spaces
+		$sVariableName = (string) preg_replace('/[^a-zA-Z0-9]+/', ' ',  strtolower($sVariableName));
+		// Upper case the first letter of each word and remove the spaces
+		$sVariableName = (string) preg_replace('/\s+/',           null, ucwords($sVariableName));
+		// Prepend the global hungarian notation
+		$sVariableName = (string) "m{$sVariableName}";
+		// Return the string
+		return $sVariableName;
 	}
 }

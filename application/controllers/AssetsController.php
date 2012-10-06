@@ -74,7 +74,7 @@ class AssetsController extends FramsieController {
 		// Decode the file
 		$sScript = (string) base64_decode($this->getRequest()->getParam('file'));
 		// Check to see if we need to minify the source
-		if ($this->getRequest()->getParam('minify') === true) { // The source should be minified
+		if ($this->getRequest()->getParam('minify') !== false) { // The source should be minified
 			// Get the source
 			$sSource = (string) FramsieAssets::getInstance()->getJavascript( // Instantiate the assets manager
 				$sScript,                                                    // Send the block file
@@ -106,10 +106,15 @@ class AssetsController extends FramsieController {
 		$this->setDisableLayout();
 		// Decode the file
 		$sStyle = (string) base64_decode($this->getRequest()->getParam('file'));
+		// Determine if this is a compressed array
+		if ($this->getRequest()->getParam('compressed') === true) {
+			// Decompress and deserialize the styles
+			$sStyle = unserialize(gzuncompress($sStyle));
+		}
 		// Check to see if we need to minify the source
-		if ($this->getRequest()->getParam('minify') === true) { // The source should be minified
+		if ($this->getRequest()->getParam('minify') !== false) { // The source should be minified
 			// Get the source
-			$sSource = (string) self::getInstance()->getCss(           // Instantiate the assets manager
+			$sSource = (string) FramsieAssets::getInstance()->getCss(  // Instantiate the assets manager
 				$sStyle,                                               // Send the block file
 				"assets.style.{$this->getRequest()->getParam('file')}" // Send the cache name
 			);

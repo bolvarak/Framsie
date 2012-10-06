@@ -85,14 +85,14 @@ abstract class FramsieMapper {
 		// Check to see if this is a getter
 		if (substr(strtolower($sMethod), 0, 3) === 'get') {
 			// Set the property name
-			$sProperty = (string) lcfirst(str_replace('get', null, $sMethod));
+			$sProperty = (string) lcfirst(substr_replace($sMethod, null, 0, 3));
 			// Return the property
 			return $this->{$sProperty};
 		}
 		// Check to see if this is a setter
 		if (substr(strtolower($sMethod), 0, 3) === 'set') {
 			// Set the property name
-			$sProperty = (string) ucwords(str_replace('set', null, $sMethod));
+			$sProperty = (string) lcfirst(substr_replace($sMethod, null, 0, 3));
 			// Set the property
 			$this->{$sProperty} = $aArguments[0];
 			// Return the instance

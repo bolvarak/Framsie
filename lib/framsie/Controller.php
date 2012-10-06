@@ -633,13 +633,19 @@ abstract class FramsieController {
 	 * @package Framsie
 	 * @subpackage FramsieController
 	 * @access public
-	 * @param string $sStyle
+	 * @param array|stringstring $mStyle
 	 * @param string $sVersion
 	 * @return string
 	 */
-	public function getStyleUrl($sStyle, $sVersion = null) {
-		// Generate the URL
-		$sUrl = (string) $this->getUrl('assets', 'style', 'file', base64_encode($sStyle));
+	public function getStyleUrl($mStyle, $sVersion = null) {
+		// Check to see if we need more than one style
+		if (is_array($mStyle)) {
+			// Generate the URL
+			$sUrl = (string) $this->getUrl('assets', 'style', 'compressed', 'true', 'file', base64_encode(gzcompress(serialize($mStyle), 9)));
+		} else {
+			// Generate the URL
+			$sUrl = (string) $this->getUrl('assets', 'style', 'file', base64_encode($mStyle));
+		}
 		// Return the URL
 		return (empty($sVersion) ? $sUrl : "{$sUrl}?v={$sVersion}");
 	}
@@ -662,7 +668,7 @@ abstract class FramsieController {
 			// Loop through the arguments
 			foreach (func_get_args() as $sArgument) {
 				// Append to the URL
-				$sUrl .= (string) str_replace('/', '%2f', urlencode($sArgument)).'/';
+				$sUrl .= (string) rawurlencode(rawurlencode($sArgument)).'/';
 			}
 			// Return the URL
 			return $sUrl;

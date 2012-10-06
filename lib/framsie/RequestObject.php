@@ -234,7 +234,7 @@ class FramsieRequestObject {
 		// Loop through the cookies
 		foreach ($_COOKIE as $sName => $sValue) {
 			// Set the cookie into the system
-			$this->mCookies->{$sName} = $sValue;
+			$this->mCookies->{$sName} = FramsieConverter::StringToPhpType($sValue);
 		}
 		// We're done, return the instance
 		return $this;
@@ -253,7 +253,7 @@ class FramsieRequestObject {
 		// Loop through the GET request
 		foreach ($_GET as $sName => $sValue) {
 			// Set the request variable into the system
-			$this->mGetRequest->{$sName} = $this->convertToTrueType($sValue);
+			$this->mGetRequest->{$sName} = FramsieConverter::StringToPhpType($sValue);
 		}
 		// We're done, return the instance
 		return $this;
@@ -272,7 +272,7 @@ class FramsieRequestObject {
 		// Loop through the POST request
 		foreach ($_POST as $sName => $sValue) {
 			// Set the request variable into the system
-			$this->mPostRequest->{$sName} = $this->convertToTrueType($sValue);
+			$this->mPostRequest->{$sName} = FramsieConverter::StringToPhpType($sValue);
 		}
 		// We're done, return the instance
 		return $this;
@@ -302,7 +302,7 @@ class FramsieRequestObject {
 						$sValue = null;
 					} else {                                                                                                                       // True Type
 						// Set the value
-						$sValue = $this->convertToTrueType($this->mQueryInProcessing[($iParameter + 1)]);
+						$sValue = FramsieConverter::StringToPhpType(rawurldecode(rawurldecode($this->mQueryInProcessing[($iParameter + 1)])));
 					}
 					// Set the parameter
 					$oQuery->{$sName} = $sValue;
@@ -353,8 +353,10 @@ class FramsieRequestObject {
 		$this->mServer = new stdClass();
 		// Loop through the SERVER object
 		foreach ($_SERVER as $sProperty => $sValue) {
+			// Formate the property name
+			$sProperty = FramsieConverter::VariableNameToHungarianUpperCamelCase($sProperty);
 			// Set the server variable into the system
-			$this->mServer->{"m".str_replace(' ', null, ucwords(str_replace('_', ' ', strtolower($sProperty))))} = $sValue;
+			$this->mServer->{$sProperty} = FramsieConverter::StringToPhpType($sValue);
 		}
 		// Return the instance
 		return $this;
@@ -373,7 +375,7 @@ class FramsieRequestObject {
 		// Loop through the sessions
 		foreach ($_SESSION as $sName => $sValue) {
 			// Set the session variable into the system
-			$this->mSessions->{$sName} = $sValue;
+			$this->mSessions->{$sName} = FramsieConverter::StringToPhpType($sValue);
 		}
 		// We're done, return the instance
 		return $this;

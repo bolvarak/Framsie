@@ -188,13 +188,11 @@ class FramsieHttpResponseMapper {
 			// Set the original property name
 			$sOriginalProperty                      = (string) $sProperty;
 			// Set the property name
-			$sProperty                              = (string) preg_replace('/[^a-zA-Z0-9]+/', ' ',  strtolower($sProperty)); // Remove special characters
-			$sProperty                              = (string) preg_replace('/\s+/',           null, ucwords($sProperty));    // Format the property name
-			$sProperty                              = (string) "m{$sProperty}";                                               // Globalize the property
+			$sProperty                              = (string) FramsieConverter::VariableNameToHungarianUpperCamelCase($sProperty);
 			// Set the property into the map
 			$this->mPropertyMap[$sOriginalProperty] = (string) $sProperty;
 			// Set the property into the system
-			$this->{$sProperty}                     = $mValue;
+			$this->{$sProperty}                     = FramsieConverter::StringToPhpType($mValue);
 		}
 		// Return the instance
 		return $this;
