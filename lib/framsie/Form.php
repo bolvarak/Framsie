@@ -58,18 +58,11 @@ abstract class FramsieForm {
 	protected $mClass          = null;
 
 	/**
-	 * This property contains the data providers for select fields
-	 * @access protected
-	 * @var stdClass
-	 */
-	protected $mDataProviders  = null;
-
-	/**
 	 * This property contains the fields for the form
 	 * @access protected
-	 * @var stdClass
+	 * @var array
 	 */
-	protected $mFields         = null;
+	protected $mFields         = array();
 
 	/**
 	 * This property contains the form's ID
@@ -92,13 +85,6 @@ abstract class FramsieForm {
 	 */
 	protected $mName           = null;
 
-	/**
-	 * This property contains the selected values for dropdowns
-	 * @access protected
-	 * @var stdClass
-	 */
-	protected $mSelectedValues = null;
-
 	///////////////////////////////////////////////////////////////////////////
 	/// Constructor //////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
@@ -111,12 +97,6 @@ abstract class FramsieForm {
 	 * @return FramsieForm $this
 	 */
 	public function __construct() {
-		// Initialize the fields
-		$this->mFields         = new stdClass();
-		// Initialize the data providers
-		$this->mDataProviders  = new stdClass();
-		// Initialize the selected values
-		$this->mSelectedValues = new stdClass();
 		// Return the instance
 		return $this;
 	}
@@ -130,6 +110,7 @@ abstract class FramsieForm {
 	 * @package Framsie
 	 * @subpackage FramsieForm
 	 * @access public
+	 * @throws FramsieException
 	 * @return string
 	 */
 	public function renderBlock() {
@@ -142,9 +123,8 @@ abstract class FramsieForm {
 		}
 		// Make sure the file exists
 		if (!file_exists(BLOCK_PATH.DIRECTORY_SEPARATOR.'forms'.DIRECTORY_SEPARATOR.$sFilename)) {
-			// Throw an exception because if this method is called, obviously
-			// the block is needed to continue
-			throw new Exception("The block file \"{$sFilename}\" does not exist as it was called, nor does it exist in the blocks directory");
+			// Trigger an exception
+			FramsieError::Trigger('FRAMBNE', array($sFilename));
 		}
 		// Start the capture of the output buffer stream
 		ob_start();
@@ -160,44 +140,6 @@ abstract class FramsieForm {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * This method adds an attribute to the system
-	 * @package Framsie
-	 * @subpackage FramsieForm
-	 * @access public
-	 * @param string $sName
-	 * @param string $sValue
-	 * @return FramsieForm $this
-	 */
-	public function addAttribute($sName, $sValue) {
-		// Add the attribute to the system
-		$this->mAttributes[$sName] = (string) $sValue;
-		// Return the instance
-		return $this;
-	}
-
-	/**
-	 * This method adds a dataprovider for a select field
-	 * @package Framsie
-	 * @subpackage FramsieForm
-	 * @access public
-	 * @param string $sName
-	 * @param array $aDataProvider
-	 * @throws Exception
-	 * @return FramsieForm $this
-	 */
-	public function addDataProvider($sName, $aDataProvider) {
-		// Make sure the field exists
-		if (empty($this->mFields->{$sName})) {
-			// Throw an exception
-			throw new Exception("The form field \"{$sName}\" does not exist.");
-		}
-		// Set the data provider
-		$this->mDataProviders->{$sName} = $aDataProvider;
-		// Return the instance
-		return $this;
-	}
-
-	/**
 	 * This method adds a field to the form
 	 * @package Framsie
 	 * @subpackage FramsieForm
@@ -205,89 +147,46 @@ abstract class FramsieForm {
 	 * @param string $sName
 	 * @param string $sLabel
 	 * @param string $sId
-	 * @param string $sClass
+	 * @param array $aClasses
 	 * @param array $aAttributes
 	 * @param array $aDataProvider
-	 * @param string $sSelected
-	 * @return FramsieForm $this
+	 * @return FramsieFormElement
 	 */
-	public function addField($sType, $sName, $sLabel, $sId = null, $sClass = null, $aAttributes = array(), $aDataProvider = array(), $sSelected = null) {
-		// Check for a class
-		if (!empty($sClass)) {
-			// Set the class into the attributes
-			$aAttributes['class'] = (string) $sClass;
-		}
-		// Add the element to the system
-		$this->mFields->{$sName} = new stdClass();
-		// Add the attributes
-		$this->mFields->{$sName}->aAttributes = (array) $aAttributes;
-		// Add the identifier
-		$this->mFields->{$sName}->sIdentifier = (string) (empty($sId) ? $sName : $sId);
-		// Set the label
-		$this->mFields->{$sName}->sLabel      = (string) $sLabel;
-		// Set the type
-		$this->mFields->{$sName}->sType       = (string) $sType;
-		// Check for a data provider
-		if (empty($aDataProvider) === false) {
-			// Add the data provider
-			$this->addDataProvider($sName, $aDataProvider);
-		}
-		// Check for a selected value
-		if (empty($sSelected) === false) {
-			// Add the selected value
-			$this->addSelectedValue($sName, $sSelected);
-		}
+	public function addField($sType, $sName, $sLabel, $sId = null, $aClasses = array(), $aAttributes = array(), $aDataProvider = array()) {
+		// Create the element object
+		$oFormElement = new FramsieFormElement($sName, $sType, $aClasses, $aAttributes);
+		// Set the identifier
+		$oFormElement->setIdentifier($sId);
+		// Set the DataProvider
+		$oFormElement->setDataProvider($aDataProvider);
+		// Set the element into the instance
+		$this->mFields[$sName] = $oFormElement;
 		// Return the instance
-		return $this;
+		return $this->mFields[$sName];
 	}
 
 	/**
-	 * This method adds a selected value to the dropdown
+	 * This method validates the form
 	 * @package Framsie
-	 * @subpackage FramsieForm
+	 * @subpackage FramsieFormElement
 	 * @access public
-	 * @param string $sName
-	 * @param string $sValue
-	 * @throws Exception
-	 * @return FramsieForm $this
+	 * @return boolean
 	 */
-	public function addSelectedValue($sName, $sValue) {
-		// Check for the field
-		if (empty($this->mFields->{$sName})) {
-			// Throw an exception
-			throw new Exception("The field \"{$sName}\" does not exist.");
+	public function isValid() {
+		// Create a valid placeholder notification
+		$bValid = true;
+		// Loop through the fields and set the values
+		foreach ($this->mFields as $sName => $oFormElement) {
+			// Set the value
+			$oFormElement->setValue(Framsie::getInstance()->getRequest()->getParam($sName));
+			// Determine if the element is valid
+			if ($oFormElement->isValid() === false) {
+				// Reset the valid notification
+				$bValid = (boolean) false;
+			}
 		}
-		// Set the selected value
-		$this->mSelectedValues->{$sName} = $sValue;
-		// Return the instance
-		return $this;
-	}
-
-	/**
-	 * This method adds a validation pattern to the selected field
-	 * @package Framsie
-	 * @subpackage FramsieForm
-	 * @access public
-	 * @param string $sName
-	 * @param string $sScheme
-	 * @param string $sMessage
-	 * @throws Exception
-	 * @return FramsieForm $this
-	 */
-	public function addValidator($sName, $sScheme, $sMessage) {
-		// Check for the field
-		if (empty($this->mFields->{$sName})) {
-			// Throw an exception
-			throw new Exception("The field \"{$sName}\" does not exist.");
-		}
-		// Set the validation pattern
-		$this->mFields->{$sName}->sValidationPattern = (string) $sScheme;
-		// Set the validation notifier
-		$this->mFields->{$sName}->bValid             = (boolean) true;
-		// Set the validation message
-		$this->mFields->{$sName}->sMessage           = (string) $sMessage;
-		// Return the instance
-		return $this;
+		// Return the valid notification
+		return $bValid;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -336,59 +235,17 @@ abstract class FramsieForm {
 	 * @subpackage FramsieForm
 	 * @access public
 	 * @param string $sName
-	 * @param bool $bAsHtml
-	 * @throws Exception
-	 * @return string
+	 * @throws FramsieException
+	 * @return FramsieFormElement|string
 	 */
-	public function getField($sName, $bAsHtml = true) {
-		// Check for the field
-		if (empty($this->mFields->{$sName})) {
-			// Throw a new exception
-			throw new Exception("The field \"{$sName}\" does not exist.");
+	public function getField($sName) {
+		// Make sure the field exists
+		if (empty($this->mFields[$sName])) {
+			// Trigger an exception
+			FramsieError::Trigger('FRAMFNE', array($sName));
 		}
-		// Determine the field type
-		switch($this->mFields->{$sName}->sType) {
-			// Select
-			case FramsieHtml::INPUT_SELECT :
-				// Return the field
-				return FramsieHtml::getInstance()->getDropdown(
-					$sName,                                                                                                                          // Send the name
-					$this->mFields->{$sName}->sIdentifier,                                                                                           // Send the identifier
-					(empty($this->mDataProviders->{$sName}) ? array() : $this->mDataProviders->{$sName}),                                            // Send the data provider
-					$this->mFields->{$sName}->aAttributes,                                                                                           // Send the attributes
-					(empty($this->mSelectedValues->{$sName}) ? null   : (empty($_POST[$sName]) ? $this->mSelectedValues->{$sName} : $_POST[$sName])) // Send the selected value
-				);
-			// We're done
-			break;
-
-			// Textarea
-			case FramsieHtml::INPUT_TEXTAREA :
-				// Return the field
-				return FramsieHtml::getInstance()->getTextarea(
-					$sName,                                          // Send the name
-					$this->mFields->{$sName}->sIdentifier,           // Send the identifier
-					(empty($_POST[$sName]) ? null : $_POST[$sName]), // Send the content
-					$this->mFields->{$sName}->aAttributes            // Send the attributes
-				);
-			// We're done
-			break;
-
-			// Everything else
-			default :
-				// Check for POST data
-				if (empty($_POST[$sName]) === false) {
-					// Set the field value
-					$this->mFields->{$sName}->aAttributes['value'] = $_POST[$sName];
-				}
-				// Return the field
-				return FramsieHtml::getInstance()->getInput(
-					$this->mFields->{$sName}->sType,       // Send the input type
-					$sName,                                // Send the name
-					$this->mFields->{$sName}->sIdentifier, // Send the identifier
-					$this->mFields->{$sName}->aAttributes  // Send the attributes
-				);
-			break;
-		}
+		// Return the field instance
+		return $this->mFields[$sName];
 	}
 
 	/**
@@ -404,11 +261,11 @@ abstract class FramsieForm {
 			// Create the fields HTML placeholder
 			$aFields = array();
 			// Loop through the fields
-			foreach ($this->mFields as $sName => $oProperties) {
+			foreach ($this->mFields as $sName => $oField) {
 				// Add the label to the array
 				array_push($aFields, $this->getLabel($sName));
 				// Add the field to the array
-				array_push($aFields, $this->getField($sName));
+				array_push($aFields, $oField->getHtml());
 			}
 			// Now generate and return the entire form
 			return FramsieHtml::getInstance()->getForm(
@@ -455,14 +312,14 @@ abstract class FramsieForm {
 	 * @access public
 	 * @param string $sName
 	 * @param boolean $bAsHtml
-	 * @throws Exception
+	 * @throws FramsieException
 	 * @return string
 	 */
 	public function getLabel($sName, $bAsHtml = true) {
 		// Check for the field
 		if (empty($this->mFields->{$sName})) {
-			// Throw an exception
-			throw new Exception("The field \"{$sName}\" does not exist.");
+			// Trigger an exception
+			FramsieError::Trigger('FRAMFNE', array($sName));
 		}
 		// Return the label
 		if ($bAsHtml === true) { // Return the HTML formatted label

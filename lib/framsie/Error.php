@@ -45,6 +45,8 @@ class FramsieError {
 		'FRAMCAC' => 'The defined cache directory ":=" does not exist',
 		'FRAMCNE' => 'The controller ":=" does not exist and the default controller could not be found',
 		'FRAMCNF' => 'The class ":=" could not be found',
+		'FRAMDPI' => 'The DataProvider must be an array or an object.',
+		'FRAMFNE' => 'The form field ":=" does not exist in this form.',
 		'FRAMINF' => 'Unable to instantiate the class ":="',
 		'FRAMIPN' => ':= is an invalid property name, you must use "Section.Property"',
 		'FRAMIRQ' => 'The request URI ":=" has been deemed invalid by the system',

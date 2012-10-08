@@ -227,6 +227,7 @@ class Bootstrap {
 		// Create an array of reserved class names
 		$aReservedClassNames = array(
 			'Form',
+			'FormElement',
 			'Framsie',
 			'HttpResponseMapper',
 			'Mapper',

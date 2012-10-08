@@ -76,4 +76,23 @@ class FramsieValidator {
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method tests a pattern against a data set
+	 * @package Framsie
+	 * @subpackage FramsieValidator
+	 * @access public
+	 * @param string $sPattern
+	 * @param multitype $mData
+	 * @return boolean
+	 */
+	public function testPattern($sPattern, $mData) {
+		// Test the pattern
+		if (preg_match($sPattern, $mData)) {
+			// The pattern succeeded, return
+			return true;
+		}
+		// The pattern did not succeed, return
+		return false;
+	}
 }
