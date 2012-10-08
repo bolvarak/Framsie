@@ -644,16 +644,17 @@ abstract class FramsieController {
 	 * @access public
 	 * @param array|stringstring $mStyle
 	 * @param string $sVersion
+	 * @param boolean $bMinify
 	 * @return string
 	 */
-	public function getStyleUrl($mStyle, $sVersion = null) {
+	public function getStyleUrl($mStyle, $sVersion = null, $bMinify = true) {
 		// Check to see if we need more than one style
 		if (is_array($mStyle)) {
 			// Generate the URL
-			$sUrl = (string) $this->getUrl('assets', 'style', 'compressed', 'true', 'file', base64_encode(FramsieCompression::getInstance()->compressEntity($mStyle)));
+			$sUrl = (string) $this->getUrl('assets', 'style', 'compressed', 'true', 'minify', (($bMinify === true) ? 'true' : 'false'), 'file', base64_encode(FramsieCompression::getInstance()->compressEntity($mStyle)));
 		} else {
 			// Generate the URL
-			$sUrl = (string) $this->getUrl('assets', 'style', 'file', base64_encode($mStyle));
+			$sUrl = (string) $this->getUrl('assets', 'style', 'minify', (($bMinify === true) ? 'true' : 'false'),'file', base64_encode($mStyle));
 		}
 		// Return the URL
 		return (empty($sVersion) ? $sUrl : "{$sUrl}?v={$sVersion}");

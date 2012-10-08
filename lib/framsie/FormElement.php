@@ -193,9 +193,9 @@ class FramsieFormElement {
 	 * @param string $sPattern
 	 * @return FramsieFormElement $this
 	 */
-	public function addValidationRule($sPattern) {
+	public function addValidationRule($sPattern, $sMessage) {
 		// Add the rule to the array
-		array_push($this->mValidation, $sPattern);
+		array_push($this->mValidation, array($sPattern, $sMessage));
 		// Return the instance
 		return $this;
 	}
@@ -209,18 +209,20 @@ class FramsieFormElement {
 	 */
 	public function isValid() {
 		// First thing's first, check the value
-		if (empty($this->mValue) && ($this->mRequired === true)) {
+		if (empty($this->mValue) && is_null($this->mValue) && ($this->mRequired === true)) {
 			// This element is required, yet there is no value, return
 			return false;
 		}
 		// Setup a validation placeholder
 		$bValid = true;
 		// Loop through the validation rules
-		foreach ($this->mValidation as $sRule) {
+		foreach ($this->mValidation as $aRule) {
 			// See if the rule validates
-			if ($this->mValidator->testPattern($sRule, $this->mValue)) {
+			if ($this->mValidator->testPattern($aRule[0], $this->mValue)) {
 				// Append an invalid field class
 				array_push($this->mClasses, 'framsieInvalidFormElement');
+				// Set the validation message
+				$this->mValidationMessage = (string) $aRule[1];
 				// Tell the instance that this element is invalid
 				$this->mValid = false;
 				// Decline validation

@@ -72,6 +72,13 @@ abstract class FramsieForm {
 	protected $mIdentifier     = null;
 
 	/**
+	 * This property contains the labels for the elements
+	 * @access protected
+	 * @var array
+	 */
+	protected $mLabels         = array();
+
+	/**
 	 * This property contains the request method for the form
 	 * @access protected
 	 * @var string
@@ -161,6 +168,8 @@ abstract class FramsieForm {
 		$oFormElement->setDataProvider($aDataProvider);
 		// Set the element into the instance
 		$this->mFields[$sName] = $oFormElement;
+		// Add the label
+		$this->mLabels[$sName] = (string) $sLabel;
 		// Return the instance
 		return $this->mFields[$sName];
 	}
@@ -317,16 +326,16 @@ abstract class FramsieForm {
 	 */
 	public function getLabel($sName, $bAsHtml = true) {
 		// Check for the field
-		if (empty($this->mFields->{$sName})) {
+		if (empty($this->mFields[$sName])) {
 			// Trigger an exception
 			FramsieError::Trigger('FRAMFNE', array($sName));
 		}
 		// Return the label
 		if ($bAsHtml === true) { // Return the HTML formatted label
-			return FramsieHtml::getInstance()->getLabel($this->mFields->{$sName}->sLabel, $this->mFields->{$sName}->sIdentifier);
+			return FramsieHtml::getInstance()->getLabel($this->mLabels[$sName], $this->mFields[$sName]->getIdentifier());
 		}
 		// Return the plain text label
-		return $this->mFields->{$sName}->sLabel;
+		return $this->mLabels[$sName];
 	}
 
 	/**
