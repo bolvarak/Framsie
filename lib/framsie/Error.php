@@ -46,6 +46,7 @@ class FramsieError {
 		'FRAMCNE' => 'The controller ":=" does not exist and the default controller could not be found',
 		'FRAMCNF' => 'The class ":=" could not be found',
 		'FRAMDPI' => 'The DataProvider must be an array or an object.',
+		'FRAMFMI' => 'The file or directory ":=" either does not exist or has been mistyped.',
 		'FRAMFNE' => 'The form field ":=" does not exist in this form.',
 		'FRAMINF' => 'Unable to instantiate the class ":="',
 		'FRAMIPN' => ':= is an invalid property name, you must use "Section.Property"',

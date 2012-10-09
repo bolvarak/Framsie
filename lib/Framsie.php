@@ -1,4 +1,4 @@
-<?php
+<?php session_start(); // Initialize Sessions
 /**
  * This class is the backbone of Frames, it sets up the request object
  * and processes said request object to run the application in a MVC pattern
@@ -51,11 +51,25 @@ class Framsie {
 	protected static $mInstances = array();
 
 	/**
+	 * This property contains custom class paths
+	 * @access protected
+	 * @var array
+	 */
+	protected $mCustomClassPaths = array();
+
+	/**
 	 * This property contains a globally accesssible instance of the request object
 	 * @access protected
 	 * @var FramsieRequestObject
 	 */
 	protected $mRequest          = null;
+
+	/**
+	 * This property contains the pre-dispatch required files
+	 * @access protected
+	 * @var array
+	 */
+	protected $mRequiredFiles    = array();
 
 	/**
 	 * This property contains the redirects URLs for custom URL structures
@@ -185,6 +199,80 @@ class Framsie {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This method sets up the defined class paths for Framsie
+	 * @package Framsie
+	 * @access public
+	 * @static
+	 * @return Framsie self::$mInstance;
+	 */
+	public static function Bootstrap() {
+		// Define the static file path
+		if (defined('STATIC_FILE_PATH') === false) {
+			define('STATIC_FILE_PATH',        dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'public');
+		}
+		// Define the library path
+		if (defined('LIBRARY_PATH') === false) {
+			define('LIBRARY_PATH',            dirname(__FILE__));
+		}
+		// Define the Frames path
+		if (defined('FRAMSIE_PATH') === false) {
+			define('FRAMSIE_PATH',            LIBRARY_PATH.DIRECTORY_SEPARATOR.'framsie');
+		}
+		// Define the application path
+		if (defined('APPLICATION_PATH') === false) {
+			define('APPLICATION_PATH',        LIBRARY_PATH.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'application');
+		}
+		// Define the model path
+		if (defined('MODEL_PATH') === false) {
+			define('MODEL_PATH',              APPLICATION_PATH.DIRECTORY_SEPARATOR.'models');
+		}
+		// Define the controller path
+		if (defined('CONTROLLER_PATH') === false) {
+			define('CONTROLLER_PATH',         APPLICATION_PATH.DIRECTORY_SEPARATOR.'controllers');
+		}
+		// Define the block path
+		if (defined('BLOCK_PATH') === false) {
+			define('BLOCK_PATH',              APPLICATION_PATH.DIRECTORY_SEPARATOR.'blocks');
+		}
+		// Define the JS assets path
+		if (defined('JAVASCRIPT_ASSETS_PATH') === false) {
+			define('JAVASCRIPT_ASSETS_PATH',  'assets'.DIRECTORY_SEPARATOR.'js');
+		}
+		// Define the CSS assets path
+		if (defined('CSS_ASSETS_PATH') === false) {
+			define('CSS_ASSETS_PATH',         'assets'.DIRECTORY_SEPARATOR.'css');
+		}
+		// Define the Image assets path
+		if (defined('IMG_ASSETS_PATH') === false) {
+			define('IMG_ASSETS_PATH',         'assets'.DIRECTORY_SEPARATOR.'img');
+		}
+		// Define the include path
+		if (defined('INCLUDE_PATH') === false) {
+			define('INCLUDE_PATH',            dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'includes');
+		}
+		// Define the cache path
+		if (defined('CACHE_DIRECTORY') === false) {
+			define('CACHE_DIRECTORY',         INCLUDE_PATH.DIRECTORY_SEPARATOR.'cache');
+		}
+		// Define the configuration path
+		if (defined('CONFIGURATION_FILE_PATH') === false) {
+			define('CONFIGURATION_FILE_PATH', APPLICATION_PATH.DIRECTORY_SEPARATOR.'configs'.DIRECTORY_SEPARATOR.'application.ini');
+		}
+		// Define the flat file database path
+		if (defined('FLAT_FILE_DB_PATH') === false) {
+			define('FLAT_FILE_DB_PATH',       APPLICATION_PATH.DIRECTORY_SEPARATOR.'db');
+		}
+		// Setup the autoloader
+		spl_autoload_register(array(self::getInstance(), 'autoLoader'));
+		// Setup the error handler
+		// set_error_handler    (array($this, 'dispatchErrors'));
+		// Setup the exception handler
+		set_exception_handler(array(self::getInstance(), 'dispatchException'));
+		// Return the instance of Framsie
+		return self::getInstance();
+	}
+
+	/**
 	 * This method dynamically loads new instances of classes into the workflow
 	 * @package Framsie
 	 * @access public
@@ -267,6 +355,27 @@ class Framsie {
 	}
 
 	/**
+	 * This method runs all of the processes that must be executed prior to dispatch
+	 * @package Framsie
+	 * @access protected
+	 * @return Framsie
+	 */
+	protected function onBeforeDispatch() {
+		// Check to see if an application environment has been set
+		if (defined('APPLICATION_ENVIRONMENT') === false) {
+			// Define it
+			$this->setEnvironment(Framsie::ENV_PRODUCTION);
+		}
+		// Loop through the pre-dispatch files and load them
+		foreach ($this->mRequiredFiles as $sFile) {
+			// Load the file
+			require_once($sFile);
+		}
+		// Return the isntance
+		return $this;
+	}
+
+	/**
 	 * This method checks the current request against the pre-defined redirects
 	 * @package Framsie
 	 * @access protected
@@ -291,6 +400,31 @@ class Framsie {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This method adds a custom class path to the system
+	 * @package Framsie
+	 * @access public
+	 * @param string $sPath
+	 * @throws FramsieException
+	 * @return Framsie $this
+	 */
+	public function addCustomClassPath($sPath) {
+		// Check the last character of the string
+		if (substr($sPath, -1) === DIRECTORY_SEPARATOR) {
+			// Remove the directory separator
+			$sPath = rtrim($sPath, DIRECTORY_SEPARATOR);
+		}
+		// Make sure the file exists
+		if (file_exists($sPath) === false) {
+			// Trigger an exception
+			FramsieError::Trigger('FRAMFMI', array($sPath));
+		}
+		// Add the path
+		array_push($this->mCustomClassPaths, $sPath);
+		// Return the instance
+		return $this;
+	}
+
+	/**
 	 * This method adds a redirect rule to the instance
 	 * @package Framsie
 	 * @access public
@@ -306,6 +440,131 @@ class Framsie {
 	}
 
 	/**
+	 * This method adds a file to the system that must be loaded before Framsie is dispatched
+	 * @package Framsie
+	 * @param string $sFile
+	 * @throws FramsieException
+	 * @return Framsie $this
+	 */
+	public function addRequiredFile($sFile) {
+		// Make sure the file exists
+		if (file_exists($sFile) === false) {
+			// Trigger an exception
+			FramsieError::Trigger('FRAMFMI', array($sFile));
+		}
+		// Add the file to the array
+		array_push($this->mRequiredFiles, $sFile);
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method automagically loads class files (if they exist)
+	 * @package Framsie
+	 * @access public
+	 * @param string $sClassName
+	 * @throws FramsieException
+	 * @return void
+	 */
+	public function autoLoader($sClassName) {
+		// Create an array of reserved class names
+		$aReservedClassNames = array(
+				'Form',
+				'FormElement',
+				'Framsie',
+				'HttpResponseMapper',
+				'Mapper',
+				'TableMapper'
+		);
+		// Check for a Framsie package class
+		if ((strpos($sClassName, 'Framsie') !== false) && (in_array($sClassName, $aReservedClassNames) === false)) {
+			// Replace the the class name
+			$sClassName = (string) str_replace('Framsie', null, $sClassName);
+		}
+
+		// Check for a mapper
+		if ((strpos($sClassName, 'Mapper') !== false) && (in_array($sClassName, $aReservedClassNames) === false)) {
+			// Replace the class name
+			$sClassName = (string) str_replace('Mapper', null, $sClassName);
+			// Set the directory
+			$sClassName = (string) 'mappers'.DIRECTORY_SEPARATOR.$sClassName;
+		}
+
+		// Check for a form
+		if ((strpos($sClassName, 'Form') !== false) && (in_array($sClassName, $aReservedClassNames) === false)) {
+			// Replace the class name
+			$sClassName = (string) str_replace('Form', null, $sClassName);
+			// Set the directory
+			$sClassName = (string) 'forms'.DIRECTORY_SEPARATOR.$sClassName;
+		}
+
+		// First we check in the library path, so set the filename
+		$sFilename = (string) LIBRARY_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
+		// Check for the file
+		if (file_exists($sFilename)) {
+			// Load the file
+			require_once($sFilename);
+			// We're done
+			return;
+		}
+
+		// Next we check the Framesie framework path
+		$sFilename = (string) FRAMSIE_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
+		// Check for the file
+		if (file_exists($sFilename)) {
+			// Load the file
+			require_once($sFilename);
+			// We're done
+			return;
+		}
+
+		// Next we check in the application path, so set the filename
+		$sFilename = (string) APPLICATION_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
+		// Check for the file
+		if (file_exists($sFilename)) {
+			// Load the file
+			require_once($sFilename);
+			// We're done
+			return;
+		}
+
+		// Next we check in the model path, so set the filename
+		$sFilename = (string) MODEL_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
+		// Check for the file
+		if (file_exists($sFilename)) {
+			// Load the file
+			require_once($sFilename);
+			// We're done
+			return;
+		}
+
+		// Finally we check in the controller path, so set the filename
+		$sFilename = (string) CONTROLLER_PATH.DIRECTORY_SEPARATOR.$sClassName.'.php';
+		// Check for the file
+		if (file_exists($sFilename)) {
+			// Load the file
+			require_once($sFilename);
+			// We're done
+			return;
+		}
+
+		// Loop through the custom class paths as well
+		foreach ($this->mCustomClassPaths as $sPath) {
+			// Check to see if the file exists
+			if (file_exists($sPath.DIRECTORY_SEPARATOR.$sFilename)) {
+				// Load the file
+				require_once($sPath.DIRECTORY_SEPARATOR.$sFilename);
+				// We're done
+				return;
+			}
+		}
+
+		// If we have not returned by now, the class does not exist,
+		// so we will throw a new exception
+		FramsieError::Trigger('FRAMCNF', array($sClassName));
+	}
+
+	/**
 	 * This method sets up the request and processes it returning the block to the user
 	 * @package Framsie
 	 * @subpackage FramsieRequestObject
@@ -316,14 +575,16 @@ class Framsie {
 	 * @throws FramsieException
 	 * @return Framsie $this
 	 */
-	public function dispatch($sHostName, $sRequest, $sStaticBase = null) {
+	public function dispatch($sStaticBase = null) {
 		// Check for an invalid request
-		if ($this->isInvalidRequest($sRequest)) {
+		if ($this->isInvalidRequest($_SERVER['REQUEST_URI'])) {
 			// Throw a new exception
-			FramsieError::Trigger('FRAMIRQ', array($sRequest));
+			FramsieError::Trigger('FRAMIRQ', array($_SERVER['REQUEST_URI']));
 		}
+		// Execute the pre-dispatch hooks
+		$this->onBeforeDispatch();
 		// Process the request
-		FramsieRequestObject::getInstance()->process($this->matchRedirects($sRequest), $sStaticBase);
+		FramsieRequestObject::getInstance()->process($this->matchRedirects($_SERVER['REQUEST_URI']), $sStaticBase);
 		// Process the layout
 		$this->dispatchLayout();
 		// Return the instance
@@ -401,5 +662,60 @@ class Framsie {
 	public function getRequest() {
 		// Return the current request in the system
 		return FramsieRequestObject::getInstance();
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	/// Setters //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method sets the application environment into the system
+	 * @package Framsie
+	 * @access public
+	 * @param string $sEnvironment
+	 * @return Framsie
+	 */
+	public function setEnvironment($sEnvironment) {
+		// Check to see if an application environment has been defined
+		if (defined('APPLICATION_ENVIROMENT') === false) {
+			// Set the applicaiton environment
+			define('APPLICATION_ENVIRONMENT', $sEnvironment);
+		}
+		// Check the environment
+		if (APPLICATION_ENVIRONMENT == (Framsie::ENV_DEVELOPMENT || Framsie::ENV_STAGING)) {
+			// Turn errors on
+			$this->setErrorReporting(true);
+		} else {
+			// Turn errors off
+			$this->setErrorReporting(false);
+		}
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method turns error reporting and display on and off
+	 * @package Framsie
+	 * @access public
+	 * @param boolean $bOnOff
+	 * @return Framsie
+	 */
+	public function setErrorReporting($bOnOff) {
+		// Do we need to turn errors on or off
+		if ($bOnOff === true) { // We turn them on
+			// Display errors
+			ini_set('display_errors',  true);
+			// Error reporting
+			ini_set('error_reporting', E_ALL);
+			// HTML errors
+			ini_set('html_errors',     true);
+		} else {                // We turn them off
+			// Display errors
+			ini_set('display_errors',  false);
+			// HTML errors
+			ini_set('html_errors',     false);
+		}
+		// Return the instance
+		return $this;
 	}
 }
