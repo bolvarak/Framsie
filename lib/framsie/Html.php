@@ -56,6 +56,12 @@ class FramsieHtml {
 	const INPUT_RADIO         = 'radio';
 
 	/**
+	 * This constant contains the type value for a reset button
+	 * @var string
+	 */
+	const INPUT_RESET         = 'reset';
+
+	/**
 	 * This constant contains the select tag name
 	 * @var string
 	 */

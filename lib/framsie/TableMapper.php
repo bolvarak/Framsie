@@ -18,7 +18,7 @@ abstract class FramsieTableMapper {
 	 * This constant contains the pattern that matches a boolean type column
 	 * @var string
 	 */
-	const PATTERN_BOOLEAN = '/(tinyint|bool)/i';
+	const PATTERN_BOOLEAN = '/(tinyint\(1\)|bool)/i';
 
 	/**
 	 * This constant contains the pattern that matches a float type column
@@ -252,7 +252,7 @@ abstract class FramsieTableMapper {
 	 */
 	protected function determineValueType($sColumn, $mValue) {
 		// Determine the data type
-		if (preg_match(self::PATTERN_BOOLEAN, $this->mColumns[$sColumn]->Type)) { // Boolean
+		if (preg_match(self::PATTERN_BOOLEAN, $this->mColumns[$sColumn]->Type) && (($mValue == 1) || ($mValue == 0))) { // Boolean
 			// Return the value
 			return (boolean) $mValue;
 		}
