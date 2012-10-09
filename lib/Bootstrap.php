@@ -176,6 +176,8 @@ class Bootstrap {
 	 * @return Bootstrap $this
 	 */
 	protected function onBeforeDispatch() {
+		// Initialize Caching
+		FramsieCache::getInstance()->setExpire(1);
 		// Initialize FramsieError with the database
 		FramsieError::InitializeErrorsFromDatabase('ErrorLookup', 'Code', 'Message');
 		// Return the instance

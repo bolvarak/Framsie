@@ -561,7 +561,7 @@ class FramsieDatabaseInterface {
 				$sLimits .= (string) "{$this->mLimits[0]},{$this->mLimits[1]}";
 			} else {                           // We just want N number of rows
 				// Set the LIMIT
-				$sLimits .= (string) $this->mLimits;
+				$sLimits .= (string) $this->mLimits[0];
 			}
 		}
 		// Return the LIMIT clause
