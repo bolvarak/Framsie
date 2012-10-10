@@ -213,6 +213,12 @@ class FramsieConverter {
 	const BASE_MILLENARY                    = 1000;
 
 	/**
+	 * This constant contains the number of bytes in a megabyte
+	 * @var integer
+	 */
+	const BYTES_IN_MEGABYTE                 = 1048576;
+
+	/**
 	 * This constant contains the number of centimeters in one foot
 	 * @var float
 	 */
@@ -298,6 +304,21 @@ class FramsieConverter {
 	public static function BinToHex($sBinary) {
 		// Return the converted string
 		return bin2hex($sBinary);
+	}
+
+	/**
+	 * This method converts bytes to megabytes
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param float $iBytes
+	 * @param integer $iDecimals
+	 * @return float
+	 */
+	public static function BytesToMegabytes($iBytes, $iDecimals = 2) {
+		// Return the converted value
+		return round(($iBytes / self::BYTES_IN_MEGABYTE), $iDecimals);
 	}
 
 	/**

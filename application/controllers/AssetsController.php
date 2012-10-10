@@ -15,6 +15,28 @@ class AssetsController extends FramsieController {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This view method renders a blob to the user
+	 * @package Framsie
+	 * @subpackage AssetsController
+	 * @access public
+	 * @return void
+	 */
+	public function blobView() {
+		// Disable the layout
+		$this->setDisableLayout();
+		// Disable the view
+		$this->getView()->setDisableView();
+		// Decode the Mime-Type
+		$sMimeType = base64_decode($this->getRequest()->getParam('mime'));
+		// Set the header
+		$this->setHeaderContentType($sMimeType);
+		// Display the blob
+		echo FramsieCompression::getInstance()->decompressEntity($this->getRequest()->getParam('blob'));
+		// We're done
+		exit;
+	}
+
+	/**
 	 * This method renders an encoded image url
 	 * @package Framsie
 	 * @subpackage AssetsController

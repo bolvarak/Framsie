@@ -420,6 +420,20 @@ abstract class FramsieController {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This method generates a blob url for displaying and downloading binaries
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param string $sBlob
+	 * @param string $sMimeType
+	 * @return string
+	 */
+	public function getBlobUrl($sBlob, $sMimeType) {
+		// Generate the URl
+		return $this->getUrl('assets', 'blob', 'mime', base64_encode($sMimeType), 'blob', FramsieCompression::getInstance()->compressEntity($sBlob));
+	}
+
+	/**
 	 * This method returns the body element class styles
 	 * @package Framsie
 	 * @subpackage FramsieController
@@ -441,6 +455,33 @@ abstract class FramsieController {
 	public function getBodyOnload() {
 		// Return the body onload
 		return $this->mBodyOnload;
+	}
+
+	/**
+	 * This method generates a URL to a database image
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param string $sTable
+	 * @param string $sPrimaryKeyColumn
+	 * @param integer|string $mPrimaryKey
+	 * @param string $sImageColumn
+	 * @param string $sMimeTypeColumn
+	 * @return string
+	 */
+	public function getDbImageUrl($sTable, $sPrimaryKeyColumn, $mPrimaryKey, $sImageColumn, $sMimeTypeColumn) {
+		// Setup the database interface
+		FramsieDatabaseInterface::getInstance(true)
+			->setTable($sTable)
+			->setQuery(FramsieDatabaseInterface::SELECTQUERY)
+			->addField($sImageColumn)
+			->addField($sMimeTypeColumn)
+			->addWhereClause($sPrimaryKeyColumn, $mPrimaryKey)
+			->generateQuery();
+		// Fetch the row
+		$oRow = FramsieDatabaseInterface::getInstance()->getRow();
+		// Generate the URL
+		return $this->getBlobUrl($oRow->{$sImageColumn}, $oRow->{$sMimeTypeColumn});
 	}
 
 	/**

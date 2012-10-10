@@ -52,7 +52,12 @@ class FramsieError {
 		'FRAMIPN' => ':= is an invalid property name, you must use "Section.Property"',
 		'FRAMIRQ' => 'The request URI ":=" has been deemed invalid by the system',
 		'FRAMPNE' => ':= does not exist in the configuration',
+		'FRAMTFR' => 'There are not enough replacements for the error you requested.',
+		'FRAMTMR' => 'There are too many replacements for the error you requested.',
 		'FRAMUNK' => 'An unknown error has occurred',
+		'FRAMURB' => 'IMagick was unable to read the image blob file.',
+		'FRAMURI' => 'IMagick was unable to resize the image to ":=x:=".',
+		'FRAMUWI' => 'IMagick was unable to write the image ":=".',
 		'FRAMVDE' => '"The block view action ":=" does not exist in the controller ":="',
 
 	);
@@ -101,11 +106,25 @@ class FramsieError {
 		// Check to see if the error exists
 		if (empty(self::$mErrors[$mCode]) === false) {
 			// Localize the error
-			$sError = (string) self::$mErrors[$mCode];
-			// Loop through the replacements
-			foreach ($aReplacements as $sVariable) {
+			$sError       = (string) self::$mErrors[$mCode];
+			// Grab the number of occurrences of the notator
+			$iOccurrences = substr_count($sError, $sVariableNotator);
+			// Check the number of replacements for too many
+			if (count($aReplacements) < $iOccurrences) {
+				// Trigger an exception
+				self::Trigger('FRAMTMR');
+			}
+			// Check the number of replacements for too few
+			if (count($aReplacements) > $iOccurrences) {
+				// Trigger an exception
+				self::Trigger('FRAMTFR');
+			}
+			// Loop through the occurrences
+			for ($iOccurrence = 0; $iOccurrence < $iOccurrences; $iOccurrence++) {
 				// Make the replacement
-				$sError = (string) str_replace($sVariableNotator, $sVariable, $sError);
+				$sError = (string) substr_replace($sError, $aReplacements[0], strpos($sError, $sVariableNotator), strlen($sVariableNotator));
+				// Remove the this replacement
+				array_shift($aReplacements);
 			}
 			// Return the proper error message
 			return $sError.' (Error:  '.$mCode.')';
