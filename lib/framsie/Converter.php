@@ -367,6 +367,26 @@ class FramsieConverter {
 	}
 
 	/**
+	 * This method converts a timestamp to an age in years
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param integer $iTimeStamp
+	 * @return integer
+	 */
+	public static function DateToAge($iTimeStamp) {
+		// Create the DateTime object
+		$oDate        = new DateTime(date('Y-m-d H:i:s', $iTimeStamp));
+		// Create the current DateTime object
+		$oCurrentDate = new DateTime(date('Y-m-d H:i:s', time()));
+		// Calculate the difference
+		$oInterval    = $oDate->diff($oCurrentDate, true);
+		// Return the difference
+		return intval($oInterval->format('%y'));
+	}
+
+	/**
 	 * This method returns the UNIX timestamp of the number of days since Epoch
 	 * @package Framsie
 	 * @subpackage FramsieConverter
@@ -575,6 +595,47 @@ class FramsieConverter {
 	public static function PoundsToKilograms($iPounds, $iDecimals = 2) {
 		// Return the converted value
 		return round(($iPounds / self::POUNDS_IN_KILOGRAM), $iDecimals);
+	}
+
+	/**
+	 * This method rounds a number to the nearest multiple
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @param integer $iNumber
+	 * @param integer $iMultiple
+	 * @param boolean $bRoundUp
+	 * @param integer $iDecimals
+	 * @return integer
+	 */
+	public function RoundToNearestMultiple($iNumber, $iMultiple, $bRoundUp = true, $iDecimals = 2) {
+		// Check for a zero multiple
+		if ($iMultiple === 0) {
+			// Return the number
+			return $iNumber;
+		}
+		// Calculate the remainder
+		$iRemainder = ($iNumber % $iMultiple);
+		// Determine if we have a zero remainder
+		if ($iRemainder === 0) {
+			// Simply return the number
+			return $iNumber;
+		}
+		// Caclulate the rounded up number
+		$iRoundedUp   = ($iNumber + $iMultiple - $iRemainder);
+		// Calculate the rouned down number
+		$iRoundedDown = ($iRoundedUp - $iMultiple);
+		// Determine if it makes sense to round up
+		if (($iRoundedUp - $iNumber) < ($iNumber - $iRoundedDown)) {
+			// Return the rounded up number
+			return round($iRoundedUp, $iDecimals);
+		}
+		// Determine if it makes sense to round down
+		if (($iNumber - $iRoundedDown) < ($iRoundedUp - $iNumber)) {
+			// Return the rounded down number
+			return round($iRoundedDown, $iDecimals);
+		}
+		// If we get here, fall back to what the user wants
+		return round((($bRoundUp === true) ? $iRoundedUp : $iRoundedDown), $iDecimals);
 	}
 
 	/**

@@ -183,6 +183,11 @@ class FramsieHttpResponseMapper {
 	 * @return FramsieHttpResponseMapper $this
 	 */
 	protected function processResponseIntoClass() {
+		// Check to see if the parent is empty
+		if (empty($this->mResponse)) {
+			// Return the instance
+			return $this;
+		}
 		// Loop through the response
 		foreach ($this->mResponse as $sProperty => $mValue) {
 			// Set the original property name

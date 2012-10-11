@@ -756,6 +756,20 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method resets the parameters so that a subsequent call can be made
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return FramsieHttp $this
+	 */
+	public function resetClient() {
+		// Reset the parameters
+		$this->mData = array();
+		// Return the instance
+		return $this;
+	}
+
+	/**
 	 * This method sets up the system for OAuth
 	 * @package Framsie
 	 * @subpackage FramsieHttp
