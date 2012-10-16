@@ -46,11 +46,15 @@ class FramsieError {
 		'FRAMCNE' => 'The controller ":=" does not exist and the default controller could not be found',
 		'FRAMCNF' => 'The class ":=" could not be found',
 		'FRAMDPI' => 'The DataProvider must be an array or an object.',
+		'FRAMDQF' => 'The database query has failed, please check your interface setup.',
 		'FRAMFMI' => 'The file or directory ":=" either does not exist or has been mistyped.',
 		'FRAMFNE' => 'The form field ":=" does not exist in this form.',
 		'FRAMINF' => 'Unable to instantiate the class ":="',
 		'FRAMIPN' => ':= is an invalid property name, you must use "Section.Property"',
 		'FRAMIRQ' => 'The request URI ":=" has been deemed invalid by the system',
+		'FRAMNTM' => 'No FramsieTableMapper was set for the table\'s records, you must set this in order for FramsieTableLoader to work properly.',
+		'FRAMNTS' => 'No database table was set, you must set a table before a query can be executed.',
+		'FRAMNUC' => 'No unique identifier column was set, you must set this so that the system may autoload the table into the instance.',
 		'FRAMPNE' => ':= does not exist in the configuration',
 		'FRAMTFR' => 'There are not enough replacements for the error you requested.',
 		'FRAMTMR' => 'There are too many replacements for the error you requested.',
@@ -59,7 +63,6 @@ class FramsieError {
 		'FRAMURI' => 'IMagick was unable to resize the image to ":=x:=".',
 		'FRAMUWI' => 'IMagick was unable to write the image ":=".',
 		'FRAMVDE' => '"The block view action ":=" does not exist in the controller ":="',
-
 	);
 
 	///////////////////////////////////////////////////////////////////////////
