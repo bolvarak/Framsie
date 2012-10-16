@@ -769,6 +769,21 @@ class FramsieDatabaseInterface {
 	 * @return string
 	 */
 	protected function quoteTableColumnName($sEntity) {
+		// Determine if this is a function call
+		if (preg_match('/^[a-zA-Z]+\(([a-zA-Z0-9_-`"\.]+)\)$/', $sEntity, $aMatches)) {
+			// Determine the architecture
+			// Determine the interface type
+			switch ($this->mInterface) {
+				// Oracle
+				case self::INTERFACE_OCI   : return str_replace($aMatches[1], str_replace(':sTableColumn', $aMatches[1], self::OCI_WRAPPER),   $sEntity); break;
+				// Microsoft SQL
+				case self::INTERFACE_MSSQL : return str_replace($aMatches[1], str_replace(':sTableColumn', $aMatches[1], self::MSSQL_WRAPPER), $sEntity); break;
+				// MySQL
+				case self::INTERFACE_MYSQL : return str_replace($aMatches[1], str_replace(':sTableColumn', $aMatches[1], self::MYSQL_WRAPPER), $sEntity); break;
+				// PostgreSQL
+				case self::INTERFACE_PGSQL : return str_replace($aMatches[1], str_replace(':sTableColumn', $aMatches[1], self::PGSQL_WRAPPER), $sEntity); break;
+			}
+		}
 		// Determine the interface type
 		switch ($this->mInterface) {
 			// Oracle
