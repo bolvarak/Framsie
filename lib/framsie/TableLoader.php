@@ -155,11 +155,11 @@ class FramsieTableLoader {
 		// Set the table
 		$this->mDBI->setTable($this->mTable);
 		// Set the field to select
-		$this->mDBI->addField($this->mUniqueIdentifierColumn, null, $this->mTable);
+		$this->mDBI->addField($this->mUniqueIdentifierColumn);
 		// Add the WHERE clauses
 		foreach ($this->mWhereClauses as $sColumn => $mValue) {
 			// Add the WHERE clause
-			$this->mDBI->addWhereClause($sColumn, $mValue, $this->mTable);
+			$this->mDBI->addWhereClause($sColumn, $mValue);
 		}
 		// Generate the query
 		$this->mDBI->generateQuery();
