@@ -401,6 +401,20 @@ class FramsieConverter {
 	}
 
 	/**
+	 * This method returns the number of days since Epoch instead of the number of seconds
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param integer $iTimeStamp
+	 * @return integer
+	 */
+	public static function DaysSinceEpoch($iTimeStamp) {
+		// Return the converted value
+		return round(($iTimeStamp / self::SECONDS_IN_DAY), 0);
+	}
+
+	/**
 	 * This method converts time() to days
 	 * @package Framsie
 	 * @subpackage FramsieConverter
