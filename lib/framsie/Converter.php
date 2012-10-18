@@ -270,7 +270,7 @@ class FramsieConverter {
 	 * This constant contains the number of seconds in one day
 	 * @var integer
 	 */
-	const SECONDS_IN_DAY                    = 84600;
+	const SECONDS_IN_DAY                    = 86400;
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Static Methods ////////////////////////////////////////////////

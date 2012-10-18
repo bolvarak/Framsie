@@ -370,6 +370,24 @@ abstract class FramsieTableMapper {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This method sets up the mapper from a PDO result
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @access public
+	 * @param object|array $oPdoResults
+	 * @return FramsieMapper $this
+	 */
+	public function fromPdo($oPdoResults) {
+		// Loop through the PDO result set
+		foreach ($oPdoResults as $sColumn => $sValue) {
+			// Set the property
+			$this->{$this->mColumns[$sColumn]} = $sValue;
+		}
+		// Return the instance
+		return $this;
+	}
+
+	/**
 	 * This method maps a database table to the mapper
 	 * @package Framsie
 	 * @subpackage FramieTableMapper
