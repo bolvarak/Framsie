@@ -411,7 +411,7 @@ class FramsieConverter {
 	 */
 	public static function DaysSinceEpoch($iTimeStamp) {
 		// Return the converted value
-		return float($iTimeStamp / self::SECONDS_IN_DAY);
+		return floor($iTimeStamp / self::SECONDS_IN_DAY);
 	}
 
 	/**
