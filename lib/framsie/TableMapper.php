@@ -277,9 +277,10 @@ abstract class FramsieTableMapper {
 	 * @package Framsie
 	 * @subpackage FramsieTableMapper
 	 * @access protected
+	 * @param array|object $oPdoResultSet
 	 * @return FramsieTableMapper $this
 	 */
-	protected function initializeObject() {
+	protected function initializeObject($oPdoResultSet = array()) {
 		// Make sure the table name is set
 		$this->verifyDbTable();
 		// Load the column data
@@ -292,6 +293,16 @@ abstract class FramsieTableMapper {
 			$sGlobal = (string) "m{$sColumn}";
 			// Set the property
 			$this->{$sGlobal} = $this->determineDefaultValueType($oColumn);
+		}
+		// Loop through the PDO object if one is provided
+		foreach ($oPdoResultSet as $sColumn => $mValue) {
+			// Check to see if the column exists
+			if (empty($this->mColumns[$sColumn]) === false) {
+				// Set the global property name
+				$sGlobal = (string) "m{$sColumn}";
+				// Set the property
+				$this->{$sGlobal} = $this->determineValueType($sColumn, $mValue);
+			}
 		}
 		// Return the instance
 		return $this;
@@ -378,11 +389,8 @@ abstract class FramsieTableMapper {
 	 * @return FramsieMapper $this
 	 */
 	public function fromPdo($oPdoResults) {
-		// Loop through the PDO result set
-		foreach ($oPdoResults as $sColumn => $sValue) {
-			// Set the property
-			$this->{$this->mColumns[$sColumn]} = $sValue;
-		}
+		// Load the PDO result set into the object
+		$this->initializeObject($oPdoResults);
 		// Return the instance
 		return $this;
 	}
