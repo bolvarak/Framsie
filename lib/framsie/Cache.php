@@ -144,14 +144,13 @@ class FramsieCache {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * The constructor simply returns the instance of the class and is
-	 * protected to enforce the singleton pattern
+	 * The constructor simply returns the instance of the class
 	 * @package Framsie
 	 * @subpackage FramsieCache
-	 * @access protected
+	 * @access public
 	 * @return FramsieCache $this
 	 */
-	protected function __construct() {
+	public function __construct() {
 		// Return the instance
 		return $this;
 	}
