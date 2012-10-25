@@ -35,6 +35,13 @@ class FramsieTableLoader {
 	protected $mIterator               = array();
 
 	/**
+	 * This property contains ORDER BY clauses
+	 * @access protected
+	 * @var array
+	 */
+	protected $mOrderByClauses         = array();
+
+	/**
 	 * This property contains the name of the table to query
 	 * @access protected
 	 * @var string
@@ -156,6 +163,11 @@ class FramsieTableLoader {
 		$this->mDBI->setTable($this->mTable);
 		// Set the field to select
 		$this->mDBI->addField($this->mUniqueIdentifierColumn);
+		// Loop through the ORDER BY clauses
+		foreach ($this->mOrderByClauses as $sColumn => $sDirection) {
+			// Add the ORDER BY clause
+			$this->mDBI->addOrderBy($sColumn, $sDirection);
+		}
 		// Add the WHERE clauses
 		foreach ($this->mWhereClauses as $sColumn => $mValue) {
 			// Add the WHERE clause
@@ -170,6 +182,22 @@ class FramsieTableLoader {
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method adds an ORDER BY clause to the system to organize the results
+	 * @package Framsie
+	 * @subpackage FramsieTableLoader
+	 * @access public
+	 * @param string $sColumn
+	 * @param string $sDirection
+	 * @return FramsieTableLoader $this
+	 */
+	public function addOrderByClause($sColumn, $sDirection = FramsieDatabaseInterface::ASCORD) {
+		// Add the clause to the system
+		$this->mOrderByClauses[$sColumn] = $sDirection;
+		// Return the instance
+		return $this;
+	}
 
 	/**
 	 * This method adds a WHERE clause to the system to limit the results
