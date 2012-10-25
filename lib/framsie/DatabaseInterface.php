@@ -769,7 +769,7 @@ class FramsieDatabaseInterface {
 	 * @return string
 	 */
 	protected function quoteTableColumnName($sEntity) {
-		// Determine if this is a function call
+		// Determine if this is a function call with a column name
 		if (preg_match('/^[a-zA-Z]+\(([a-zA-Z0-9_-`"\.]+)\)$/', $sEntity, $aMatches)) {
 			// Determine the architecture
 			// Determine the interface type
@@ -783,6 +783,11 @@ class FramsieDatabaseInterface {
 				// PostgreSQL
 				case self::INTERFACE_PGSQL : return str_replace($aMatches[1], str_replace(':sTableColumn', $aMatches[1], self::PGSQL_WRAPPER), $sEntity); break;
 			}
+		}
+		// Determine if this is a function call without a column name
+		if (preg_match('/^[a-zA-Z]+\(\)$/', $sEntity, $aMatches)) {
+			// Return the function
+			return $sEntity;
 		}
 		// Determine the interface type
 		switch ($this->mInterface) {
