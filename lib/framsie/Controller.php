@@ -26,16 +26,22 @@ abstract class FramsieController {
 	const FONT_EOT          = 'application/vnd.ms-fontobject';
 
 	/**
+	 * This constant contains the OTF font header content-type
+	 * @var string
+	 */
+	const FONT_OTF          = 'font/opentype';
+
+	/**
 	 * This constant contains the TTF font header content-type
 	 * @var string
 	 */
-	const FONT_TTF          = 'application/octet-stream';
+	const FONT_TTF          = 'font/ttf';
 
 	/**
 	 * This constant contains the WOFF font header content-type
 	 * @var string
 	 */
-	const FONT_WOFF         = 'application/font-woff';
+	const FONT_WOFF         = 'font/x-woff';
 
 	/**
 	 * This constant contains the CSS header content-type
