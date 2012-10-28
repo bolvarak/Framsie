@@ -41,7 +41,7 @@ abstract class FramsieController {
 	 * This constant contains the WOFF font header content-type
 	 * @var string
 	 */
-	const FONT_WOFF         = 'font/x-woff';
+	const FONT_WOFF         = 'font/woff';
 
 	/**
 	 * This constant contains the CSS header content-type
