@@ -52,6 +52,7 @@ class FramsieError {
 		'FRAMINF' => 'Unable to instantiate the class ":="',
 		'FRAMIPN' => ':= is an invalid property name, you must use "Section.Property"',
 		'FRAMIRQ' => 'The request URI ":=" has been deemed invalid by the system',
+		'FRAMNPK' => 'Mo primary key value provided.',
 		'FRAMNTM' => 'No FramsieTableMapper was set for the table\'s records, you must set this in order for FramsieTableLoader to work properly.',
 		'FRAMNTS' => 'No database table was set, you must set a table before a query can be executed.',
 		'FRAMNUC' => 'No unique identifier column was set, you must set this so that the system may autoload the table into the instance.',

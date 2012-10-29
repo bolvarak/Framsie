@@ -381,6 +381,40 @@ abstract class FramsieTableMapper {
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * This method deletes the record stored in this object from the database
+	 * @package Framsie
+	 * @subpackage FramsieTableMapper
+	 * @access public
+	 * @param array $aWhere
+	 * @return boolean
+	 */
+	public function delete($aWhere = array()) {
+		// Verify the DB table
+		$this->verifyDbTable();
+		// Verify the primary
+		$this->verifyPrimaryKey();
+		// Make sure we have a primary key
+		if (empty($this->{'m'.$this->mPrimaryKey})) {
+			// Throw a new exception
+			FramsieError::Trigger('FRAMNPK');
+		}
+		// Setup the DBI
+		FramsieDatabaseInterface::getInstance(true)
+			->setTable($this->mDbTable)
+			->setQuery(FramsieDatabaseInterface::DELETEQUERY)
+			->addWhereClause($this->mPrimaryKey, $this->{'m'.$this->mPrimaryKey});
+		// Loop through the other WHERE clauses
+		foreach ($aWhere as $sColumn => $mValue) {
+			// Add the WHERE clause
+			FramsieDatabaseInterface::getInstance()->addWhereClause($sColumn, $mValue);
+		}
+		// Generate the query
+		FramsieDatabaseInterface::getInstance()->generateQuery();
+		// Return the execution status
+		return FramsieDatabaseInterface::getInstance()->getQueryExecutionStatus();
+	}
+
+	/**
 	 * This method sets up the mapper from a PDO result
 	 * @package Framsie
 	 * @subpackage FramsieMapper

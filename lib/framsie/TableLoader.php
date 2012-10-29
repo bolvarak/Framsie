@@ -63,6 +63,13 @@ class FramsieTableLoader {
 	protected $mUniqueIdentifierColumn = null;
 
 	/**
+	 * This property contains a list of unique identifier values
+	 * @access protected
+	 * @var array
+	 */
+	protected $mUniqueIdentifiers      = array();
+
+	/**
 	 * This property contains the clauses for the WHERE statement
 	 * @access protected
 	 * @var array
@@ -143,6 +150,8 @@ class FramsieTableLoader {
 		foreach ($this->mDBI->getRows() as $oRow) {
 			// Instantiate and push the TableMapper
 			array_push($this->mIterator, Framsie::Loader($this->mTableMapper)->load($oRow->{$this->mUniqueIdentifierColumn}));
+			// Add the primary keys to the system
+			array_push($this->mUniqueIdentifiers, $oRow->{$this->mUniqueIdentifierColumn});
 		}
 		// Return the instance
 		return $this;
@@ -211,6 +220,35 @@ class FramsieTableLoader {
 	public function addWhereClause($sColumn, $mValue) {
 		// Add the clause to the system
 		$this->mWhereClauses[$sColumn] = $mValue;
+		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method deletes all of the records loaded by the load method
+	 * @package Framsie
+	 * @subpackage FramsieTableLoader
+	 * @access public
+	 * @return FramsieTableLoader $this
+	 */
+	public function delete() {
+		// Loop through the iterator
+		foreach ($this->mUniqueIdentifiers as $iUniqueIdentifier) {
+			// Setup the DBI
+			FramsieDatabaseInterface::getInstance(true)
+				->setTable($this->mTable)
+				->setQuery(FramsieDatabaseInterface::DELETEQUERY)
+				->addWhereClause($this->mUniqueIdentifierColumn, $iUniqueIdentifier);
+			// Loop through the WHERE clauses
+			foreach ($aWhere as $sColumn => $mValue) {
+				// Add the WHERE clause
+				FramsieDatabaseInterface::getInstance()->addWhereClause($sColumn, $mValue);
+			}
+			// Generate and execute the query
+			FramsieDatabaseInterface::getInstance()
+				->generateQuery()
+				->getQueryExecutionStatus();
+		}
 		// Return the instance
 		return $this;
 	}
