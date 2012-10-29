@@ -229,9 +229,10 @@ class FramsieTableLoader {
 	 * @package Framsie
 	 * @subpackage FramsieTableLoader
 	 * @access public
+	 * @param array $aWhere
 	 * @return FramsieTableLoader $this
 	 */
-	public function delete() {
+	public function delete($aWhere = array()) {
 		// Loop through the iterator
 		foreach ($this->mUniqueIdentifiers as $iUniqueIdentifier) {
 			// Setup the DBI
