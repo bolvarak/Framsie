@@ -92,7 +92,7 @@ class FramsieDateTime {
 			$iTimeStamp = time();
 		}
 		// Setup the dates placeholder
-		$aDates = array(strtotime($sMode));
+		$aDates = array(strtotime($sMode, $iTimeStamp));
 		// Loop through the days
 		for ($iDay = 0; $iDay < 6; $iDay++) {
 			// Add the date
