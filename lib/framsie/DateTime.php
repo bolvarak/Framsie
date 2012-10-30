@@ -124,7 +124,7 @@ class FramsieDateTime {
 		// Create the dates placeholder and add the first day of the year
 		$aDates    = array($iFirstDay);
 		// Loop through the days
-		for ($iDay = 0; $iDay < date('z', $iLastDay); $iDay++) {
+		for ($iDay = 0; $iDay < (date('z', $iLastDay) - 1); $iDay++) {
 			// Add the date
 			array_push($aDates, strtotime('+'.($iDay + 1).' days', $aDates[0]));
 		}
