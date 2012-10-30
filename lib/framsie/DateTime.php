@@ -96,7 +96,7 @@ class FramsieDateTime {
 		// Loop through the days
 		for ($iDay = 0; $iDay < 6; $iDay++) {
 			// Add the date
-			array_push($aDates, strtotime('+'.($iDay + 1).' days'), $aDates[0]);
+			array_push($aDates, strtotime('+'.($iDay + 1).' days', $aDates[0]));
 		}
 		// Return the dates
 		return $aDates;
