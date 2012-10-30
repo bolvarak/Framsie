@@ -103,6 +103,36 @@ class FramsieDateTime {
 	}
 
 	/**
+	 * This method calculates the timestamp for the days in a year
+	 * @package Framsie
+	 * @subpackage FramsieDateTime
+	 * @access public
+	 * @static
+	 * @param integer $iTimeStamp
+	 * @return array
+	 */
+	public static function CalculateDatesForYear($iTimeStamp = null) {
+		// Check for a timestamp
+		if (empty($iTimeStamp)) {
+			// Set the timestamp
+			$iTimeStamp = time();
+		}
+		// Grab the first day of the year
+		$iFirstDay = strtotime(date('Y', $iTimeStamp).'-1-1',   $iTimeStamp);
+		// Grab the last day of the year
+		$iLastDay  = strtotime(date('Y', $iTimeStamp).'-12-31', $iTimeStamp);
+		// Create the dates placeholder and add the first day of the year
+		$aDates    = array($iFirstDay);
+		// Loop through the days
+		for ($iDay = 0; $iDay < date('z', $iLastDay); $iDay++) {
+			// Add the date
+			array_push($aDates, strtotime('+'.($iDay + 1).' days', $aDates[0]));
+		}
+		// Return the dates
+		return $aDates;
+	}
+
+	/**
 	 * This method returns a MySQL DATE
 	 * @package Framsie
 	 * @subpackage FramsieDateTime
