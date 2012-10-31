@@ -160,7 +160,7 @@ class FramsieDateTime {
 	 * @param integer $iTimeStamp
 	 * @return string
 	 */
-	public function GetMySqlTimeStamp($iTimeStamp = null) {
+	public static function GetMySqlTimeStamp($iTimeStamp = null) {
 		// Check for a timestamp
 		if (empty($iTimeStamp)) {
 			// Set the timestamp

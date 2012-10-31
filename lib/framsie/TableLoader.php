@@ -236,10 +236,9 @@ class FramsieTableLoader {
 	 * @package Framsie
 	 * @subpackage FramsieTableLoader
 	 * @access public
-	 * @param array $aWhere
 	 * @return FramsieTableLoader $this
 	 */
-	public function delete($aWhere = array()) {
+	public function delete() {
 		// Loop through the iterator
 		foreach ($this->getIterator() as $oMapper) {
 			// Delete the record
