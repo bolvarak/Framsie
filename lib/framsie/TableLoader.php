@@ -241,23 +241,11 @@ class FramsieTableLoader {
 	 */
 	public function delete($aWhere = array()) {
 		// Loop through the iterator
-		foreach ($this->mUniqueIdentifiers as $iUniqueIdentifier) {
-			// Setup the DBI
-			FramsieDatabaseInterface::getInstance(true)
-				->setTable($this->mTable)
-				->setQuery(FramsieDatabaseInterface::DELETEQUERY)
-				->addWhereClause($this->mUniqueIdentifierColumn, $iUniqueIdentifier);
-			// Loop through the WHERE clauses
-			foreach ($aWhere as $sColumn => $mValue) {
-				// Add the WHERE clause
-				FramsieDatabaseInterface::getInstance()->addWhereClause($sColumn, $mValue);
-			}
-			// Generate and execute the query
-			FramsieDatabaseInterface::getInstance()
-				->generateQuery()
-				->getQueryExecutionStatus();
+		foreach ($this->getIterator() as $oMapper) {
+			// Delete the record
+			$oMapper->delete();
 		}
-		// Return the instance
+		// We're done
 		return $this;
 	}
 
