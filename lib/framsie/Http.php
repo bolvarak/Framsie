@@ -659,6 +659,76 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method checks to see if a key exists in the response
+	 * @package Framsis
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param array|string $mKey
+	 * @return boolean
+	 */
+	public function keyExists($mKey) {
+		// Check to see if the key is an array
+		if (is_array($mKey)) {
+			// Localize the response
+			$aResponse = $this->mResponse;
+			// Loop through the keys
+			foreach ($mKey as $sKey) {
+				// Check to see of the key exists
+				if (empty($aResponse[$sKey])) {
+					// We're done
+					return false;
+				}
+				// Update the response
+				$aResponse = $aResponse[$mKey];
+			}
+			// We're done
+			return true;
+		}
+		// Check for the key
+		if (emty($this->mResponse[$mKey])) {
+			// We're done
+			return false;
+		}
+		// We're done
+		return true;
+	}
+
+	/**
+	 * This method checks to see if a response key actually has a value
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param array|string $mKey
+	 * @return boolean
+	 */
+	public function keyHasValue($mKey) {
+		// Check to see if the key is an array
+		if (is_array($mKey)) {
+			// Localize the response
+			$aResponse = $this->mResponse;
+			// Loop through the keys
+			foreach ($mKey as $sKey) {
+				// Check the key for a value
+				if (empty($aResponse[$sKey]) && is_null($aResponse[$mKey])) {
+					// We're done
+					return false;
+				}
+				// Update the response
+				$aResponse = $aResponse[$mKey];
+			}
+			// We're done
+			return true;
+		}
+		// Check to see if the key has a value
+		if (empty($this->mResponse[$mKey]) && is_null($this->mResponse[$mKey])) {
+			// We're done
+			return false;
+		}
+		// We're done
+		return true;
+	}
+
+	/**
 	 * This method makes the request to the remote server and processes the response
 	 * @package Framsie
 	 * @subpackage FramsieHtml
