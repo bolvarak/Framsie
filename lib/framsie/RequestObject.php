@@ -725,7 +725,7 @@ class FramsieRequestObject {
 	 * @param integer [$iExpire]
 	 * @return FramsieRequestObject $this
 	 */
-	public function setCookie($sName, $sValue, $iExpire = 3600) {
+	public function setCookie($sName, $sValue, $iExpire = FramsieCache::EXPIRE_1_HOUR) {
 		// Set the cookie
 		setcookie($sName, $sValue, (time() + $iExpire));
 		// Set the cookie into the instance
