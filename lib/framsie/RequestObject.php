@@ -522,7 +522,7 @@ class FramsieRequestObject {
 	 */
 	public function getCookie($sName) {
 		// Check for the cookie
-		if (empty($this->mCookies->{$sName}) && is_null($this->mCookies->{$sName})) {
+		if (empty($this->mCookies->{$sName}) || is_null($this->mCookies->{$sName})) {
 			// Return false
 			return null;
 		}
