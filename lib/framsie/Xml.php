@@ -67,7 +67,9 @@ class FramsieXml {
 					// Check to see if this is the first index
 					if ($mIndex === 0) {
 						// Set the node
-						$oNode = $oDomElement;
+						$oNode     = $oDomElement;
+						// Set the root node name
+						$sRootNode = $oDomElement->tagName;
 					} else {
 						// Create the node
 						$oNode = $oDomDocument->createElement($oDomElement->tagName);
