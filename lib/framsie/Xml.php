@@ -60,6 +60,8 @@ class FramsieXml {
 		if (is_array($mEntity) || is_object($mEntity)) {
 			// Loop through the elements of the entity
 			foreach ($mEntity as $mIndex => $mElement) {
+				// Set the root node name
+				$sRootNode = $mIndex;
 				// Check for a numerically indexed array
 				if (is_int($mIndex)) {
 					// Check to see if this is the first index
@@ -71,6 +73,8 @@ class FramsieXml {
 						$oNode = $oDomDocument->createElement($oDomElement->tagName);
 						// Set the node
 						$oDomElement->parentNode->appendChild($oNode);
+						// Set the root node name
+						$sRootNode = $oDomElement->tagName;
 					}
 				} else {
 					// Create the collection
@@ -87,10 +91,12 @@ class FramsieXml {
 						$oCollection->appendChild($oItem);
 						// Set the node
 						$oNode = $oItem;
+						// Set the root node name
+						$sRootNode = rtrim($mIndex, 's');
 					}
 				}
 				// Recursively execute this method
-				self::Encode($mIndex, $mElement, $oNode, $oDomDocument);
+				self::Encode($sRootNode, $mElement, $oNode, $oDomDocument);
 			}
 		} else {
 			// Check to see if the entity is a boolean
