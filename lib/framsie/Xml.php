@@ -7,7 +7,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
  * @author Travis Brown <tmbrown6@gmail.com>
  */
-class FramsieXml {
+class FramsieXml extends DOMDocument {
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Constants ////////////////////////////////////////////////////////////
@@ -40,18 +40,11 @@ class FramsieXml {
 	 * @param DOMDocument $oDomDocument
 	 * @return string
 	 */
-	public static function Encode($mEntity, DOMElement $oDomElement = null, DOMDocument $oDomDocument = null) {
-		// Check for a DOMDocument
-		if (empty($oDomDocument)) {
-			// Create a new DOMDocument
-			$oDomDocument = new DOMDocument();
-			// Turn on formatting
-			$oDomDocument->formatOutput = true;
-		}
+	public static function Encode($mEntity, DOMElement $oDomElement = null) {
 		// Check for a DOMElement
 		if (empty($oDomElement)) {
 			// Set the DOMElement to the current DOMDocument
-			$oDomElement = $oDomDocument->documentElement;
+			$oDomElement = self;
 		}
 		// Check for an array or an object
 		if (is_array($mEntity) || is_object($mEntity)) {
@@ -65,7 +58,7 @@ class FramsieXml {
 						$oNode = $oDomElement;
 					} else {
 						// Create the node
-						$oNode = $oDomDocument->createElement($oDomElement->tagName);
+						$oNode = self::createElement($oDomElement->tagName);
 						// Set the node into the parent
 						$oDomElement->parentNode->appendChild($oNode);
 					}
@@ -76,7 +69,7 @@ class FramsieXml {
 					$oDomElement->appendChild($oNode);
 				}
 				// Execute this method once more
-				self::Encode($mElement, $oNode, $oDomDocument);
+				self::Encode($mElement, $oNode);
 			}
 		} else {
 			// Check to see if the entity is a boolean
@@ -85,9 +78,9 @@ class FramsieXml {
 				$mEntity = (string) (($mEntity === true) ? 'true' : 'false');
 			}
 			// Append the entity to the element
-			$oDomElement->appendChild($oDomDocument->createTextNode($mEntity));
+			$oDomElement->appendChild(self::createTextNode($mEntity));
 		}
 		// Return the XML
-		return $oDomDocument->saveXML();
+		return self::saveXML();
 	}
 }
