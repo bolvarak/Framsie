@@ -52,7 +52,7 @@ class FramsieXml {
 			// Add the root node
 			$oDomDocument->appendChild($oRootNode);
 			// Start the execution of this process
-			self::Encode($mEntity, $oRootNode, $oDomDocument);
+			self::Encode($sRootNode, $mEntity, $oRootNode, $oDomDocument);
 			// Return the XML
 			return $oDomDocument->saveXML();
 		}
