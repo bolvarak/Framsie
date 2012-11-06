@@ -40,7 +40,7 @@ class FramsieXml {
 	 * @param DOMDocument $oDomDocument
 	 * @return string
 	 */
-	public static function Encode($mEntity, $oDomElement = null, $oDomDocument = null) {
+	public static function Encode($sRootNode, $mEntity, $oDomElement = null, $oDomDocument = null) {
 		// Check for a DOMElement
 		if (empty($oDomElement)) {
 			// Create a new document
@@ -48,7 +48,7 @@ class FramsieXml {
 			// We want pretty printing
 			$oDomDocument->formatOutput = true;
 			// Create the root node
-			$oRootNode                  = $oDomDocument->createElement('data');
+			$oRootNode                  = $oDomDocument->createElement($sRootNode);
 			// Add the root node
 			$oDomDocument->appendChild($oRootNode);
 			// Start the execution of this process
@@ -62,18 +62,35 @@ class FramsieXml {
 			foreach ($mEntity as $mIndex => $mElement) {
 				// Check for a numerically indexed array
 				if (is_int($mIndex)) {
-					// Set the node name
-					$sNodeName = (string) 'entity';
+					// Check to see if this is the first index
+					if ($mIndex === 0) {
+						// Set the node
+						$oNode = $oDomElement;
+					} else {
+						// Create the node
+						$oNode = $oDomDocument->createElement($oDomElement->tagName);
+						// Set the node
+						$oDomElement->parentNode->appendChild($oNode);
+					}
 				} else {
-					// Set the node name
-					$sNodeName = (string) $mIndex;
+					// Create the collection
+					$oCollection = $oDomDocument->createElement($mIndex);
+					// Set the collection
+					$oDomElement->appendChild($oCollection);
+					// Create the node
+					$oNode       = $oCollection;
+					// Check for multiples of this element
+					if ((rtrim($mIndex, 's') !== $mIndex) && (count($mElement) > 1)) {
+						// Create the collection item
+						$oItem = $oDomDocument->createElement(rtrim($mIndex, 's'));
+						// Append the item to the collection
+						$oCollection->appendChild($oItem);
+						// Set the node
+						$oNode = $oItem;
+					}
 				}
-				// Create the node
-				$oNode = $oDomDocument->createElement($sNodeName);
-				// Add the node
-				$oDomElement->appendChild($oNode);
-				// Re-run this method
-				self::Encode($mElement, $oNode, $oDomDocument);
+				// Recursively execute this method
+				self::Encode($mIndex, $mElement, $oNode, $oDomDocument);
 			}
 		} else {
 			// Check to see if the entity is a boolean
