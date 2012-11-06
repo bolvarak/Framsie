@@ -51,7 +51,6 @@ class FramsieXml {
 			// $oRootNode                  = $oDomDocument->createElement($sRootNode);
 			// Add the root node
 			// $oDomDocument->appendChild($oRootNode);
-			var_dump($oDomDocument);
 			// Start the execution of this process
 			self::Encode($sRootNode, $mEntity, $oDomDocument->documentElement, $oDomDocument);
 			// Return the XML
