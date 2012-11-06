@@ -42,17 +42,17 @@ class FramsieXml {
 	 */
 	public static function Encode($sRootNode, $mEntity, $oDomElement = null, $oDomDocument = null) {
 		// Check for a DOMElement
-		if (empty($oDomElement)) {
+		if (empty($oDomDocument)) {
 			// Create a new document
 			$oDomDocument               = new DOMDocument();
 			// We want pretty printing
 			$oDomDocument->formatOutput = true;
 			// Create the root node
-			// $oRootNode                  = $oDomDocument->createElement($sRootNode);
+			$oRootNode                  = $oDomDocument->createElement($sRootNode);
 			// Add the root node
-			// $oDomDocument->appendChild($oRootNode);
+			$oDomDocument->appendChild($oRootNode);
 			// Start the execution of this process
-			self::Encode($sRootNode, $mEntity, $oDomDocument->documentElement, $oDomDocument);
+			self::Encode($sRootNode, $mEntity, $oRootNode, $oDomDocument);
 			// Return the XML
 			return $oDomDocument->saveXML();
 		}
