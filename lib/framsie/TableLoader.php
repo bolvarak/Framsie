@@ -185,9 +185,9 @@ class FramsieTableLoader {
 			$this->mDBI->addOrderBy($sColumn, $sDirection);
 		}
 		// Add the WHERE clauses
-		foreach ($this->mWhereClauses as $sColumn => $mValue) {
+		foreach ($this->mWhereClauses as $sColumn => $aData) {
 			// Add the WHERE clause
-			$this->mDBI->addWhereClause($sColumn, $mValue);
+			$this->mDBI->addWhereClause($sColumn, $aData['mValue'], null, $aData['sOperator']);
 		}
 		// Generate the query
 		$this->mDBI->generateQuery();
@@ -222,11 +222,15 @@ class FramsieTableLoader {
 	 * @access public
 	 * @param string $sColumn
 	 * @param multitype $mValue
+	 * @param string $sOperator
 	 * @return FramsieTableLoader $this
 	 */
-	public function addWhereClause($sColumn, $mValue) {
+	public function addWhereClause($sColumn, $mValue, $sOperator = FramsieDatabaseInterface::EQOP) {
 		// Add the clause to the system
-		$this->mWhereClauses[$sColumn] = $mValue;
+		$this->mWhereClauses[$sColumn] = array(
+			'mValue'    => $mValue,
+			'sOperator' => $sOperator
+		);
 		// Return the instance
 		return $this;
 	}
