@@ -44,7 +44,7 @@ class FramsieXml extends DOMDocument {
 		// Check for a DOMElement
 		if (empty($oDomElement)) {
 			// Set the DOMElement to the current DOMDocument
-			$oDomElement = self;
+			$oDomElement = new self();
 		}
 		// Check for an array or an object
 		if (is_array($mEntity) || is_object($mEntity)) {
@@ -64,7 +64,7 @@ class FramsieXml extends DOMDocument {
 					}
 				} else {
 					// Create the node
-					$oNode = $oDomDocument->createElement($mIndex);
+					$oNode = self::createElement($mIndex);
 					// Set the node into the document
 					$oDomElement->appendChild($oNode);
 				}
