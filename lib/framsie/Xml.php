@@ -7,7 +7,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
  * @author Travis Brown <tmbrown6@gmail.com>
  */
-class FramsieXml extends DOMDocument {
+class FramsieXml {
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Constants ////////////////////////////////////////////////////////////
@@ -40,11 +40,21 @@ class FramsieXml extends DOMDocument {
 	 * @param DOMDocument $oDomDocument
 	 * @return string
 	 */
-	public function fromMixed($mEntity, $oDomElement = null) {
+	public static function Encode($mEntity, $oDomElement = null, $oDomDocument = null) {
 		// Check for a DOMElement
 		if (empty($oDomElement)) {
-			// Set the DOMElement to the current DOMDocument
-			$oDomElement = $this;
+			// Create a new document
+			$oDomDocument               = new DOMDocument();
+			// We want pretty printing
+			$oDomDocument->formatOutput = false;
+			// Create the root node
+			$oRoodNode                  = $oDomDocument->createElement('data');
+			// Add the root node
+			$oDomDocument->appendChild($oRoodNode);
+			// Start the execution of this process
+			self::Encode($mEntity, $oRoodNode, $oDomDocument);
+			// Return the XML
+			return $oDomDocument->saveXML();
 		}
 		// Check for an array or an object
 		if (is_array($mEntity) || is_object($mEntity)) {
@@ -52,24 +62,18 @@ class FramsieXml extends DOMDocument {
 			foreach ($mEntity as $mIndex => $mElement) {
 				// Check for a numerically indexed array
 				if (is_int($mIndex)) {
-					// Check to see if this is the first index
-					if ($mIndex === 0) {
-						// Set the node to the DOMElement
-						$oNode = $oDomElement;
-					} else {
-						// Create the node
-						$oNode = $this->createElement($oDomElement->tagName);
-						// Set the node into the parent
-						$oDomElement->parentNode->appendChild($oNode);
-					}
+					// Set the node name
+					$sNodeName = (string) 'entity';
 				} else {
-					// Create the node
-					$oNode = $this->createElement($mIndex);
-					// Set the node into the document
-					$oDomElement->appendChild($oNode);
+					// Set the node name
+					$sNodeName = (string) $mIndex;
 				}
-				// Execute this method once more
-				$this->fromMixed($mElement, $oNode);
+				// Create the node
+				$oNode = $oDomDocument->createElement($sNodeName);
+				// Add the node
+				$oDomElement->appendChild($oNode);
+				// Re-run this method
+				self::Encode($mElement, $oNode, $oDomDocument);
 			}
 		} else {
 			// Check to see if the entity is a boolean
@@ -78,7 +82,7 @@ class FramsieXml extends DOMDocument {
 				$mEntity = (string) (($mEntity === true) ? 'true' : 'false');
 			}
 			// Append the entity to the element
-			$oDomElement->appendChild($this->createTextNode($mEntity));
+			$oDomElement->appendChild($oDomDocument->createTextNode($mEntity));
 		}
 		// Return the XML
 		return $this->saveXML();
