@@ -40,7 +40,7 @@ class FramsieXml extends DOMDocument {
 	 * @param DOMDocument $oDomDocument
 	 * @return string
 	 */
-	public function fromMixed($mEntity, DOMElement $oDomElement = null) {
+	public function fromMixed($mEntity, $oDomElement = null) {
 		// Check for a DOMElement
 		if (empty($oDomElement)) {
 			// Set the DOMElement to the current DOMDocument
