@@ -48,11 +48,11 @@ class FramsieXml {
 			// We want pretty printing
 			$oDomDocument->formatOutput = true;
 			// Create the root node
-			$oRoodNode                  = $oDomDocument->createElement('data');
+			$oRootNode                  = $oDomDocument->createElement('data');
 			// Add the root node
-			$oDomDocument->appendChild($oRoodNode);
+			$oDomDocument->appendChild($oRootNode);
 			// Start the execution of this process
-			self::Encode($mEntity, $oRoodNode, $oDomDocument);
+			self::Encode($mEntity, $oRootNode, $oDomDocument);
 			// Return the XML
 			return $oDomDocument->saveXML();
 		}
@@ -84,7 +84,5 @@ class FramsieXml {
 			// Append the entity to the element
 			$oDomElement->appendChild($oDomDocument->createTextNode($mEntity));
 		}
-		// Return the XML
-		return $oDomDocument->saveXML();
 	}
 }
