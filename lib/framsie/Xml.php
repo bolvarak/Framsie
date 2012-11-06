@@ -45,11 +45,13 @@ class FramsieXml {
 		if (empty($oDomDocument)) {
 			// Create a new DOMDocument
 			$oDomDocument = new DOMDocument();
+			// Turn on formatting
+			$oDomDocument->formatOutput = true;
 		}
 		// Check for a DOMElement
 		if (empty($oDomElement)) {
 			// Set the DOMElement to the current DOMDocument
-			$oDomElement = $oDomDocument;
+			$oDomElement = $oDomDocument->documentElement;
 		}
 		// Check for an array or an object
 		if (is_array($mEntity) || is_object($mEntity)) {
