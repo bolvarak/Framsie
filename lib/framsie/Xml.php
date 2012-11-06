@@ -46,7 +46,7 @@ class FramsieXml {
 			// Create a new document
 			$oDomDocument               = new DOMDocument();
 			// We want pretty printing
-			$oDomDocument->formatOutput = false;
+			$oDomDocument->formatOutput = true;
 			// Create the root node
 			$oRoodNode                  = $oDomDocument->createElement('data');
 			// Add the root node
