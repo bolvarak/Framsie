@@ -41,6 +41,8 @@ class FramsieError {
 	 * @staticvar array
 	 */
 	protected static $mErrors = array(
+		'FRAMACI' => 'The API service callback method ":=" is not a valid callback function or closure.',
+		'FRAMAMI' => 'The API service method ":=" does not exist.',
 		'FRAMBNE' => 'The block file ":=" does not exist in the blocks directory',
 		'FRAMCAC' => 'The defined cache directory ":=" does not exist',
 		'FRAMCNE' => 'The controller ":=" does not exist and the default controller could not be found',

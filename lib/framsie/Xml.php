@@ -20,160 +20,79 @@ class FramsieXml {
 	const XML_ENCODING_UTF8       = 'UTF-8';
 
 	/**
-	 * This constant contains the value for double space indentation in XML strings
-	 * @var string
-	 */
-	const XML_INDENT_DOUBLE_SPACE = '\s\s';
-
-	/**
-	 * This constant contains the value for space indentation in XML strings
-	 * @var string
-	 */
-	const XML_INDENT_SPACE        = '\s';
-
-	/**
-	 * This constant contains the value for tab indentation in XML strings
-	 * @var string
-	 */
-	const XML_INDENT_TAB          = '\t';
-
-	/**
 	 * This constant contains the value for XML version 1.0
 	 * @var string
 	 */
 	const XML_VERSION_1_0         = '1.0';
 
 	///////////////////////////////////////////////////////////////////////////
-	/// Properties ///////////////////////////////////////////////////////////
+	/// Public Static Methods ////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * This property contains the singleton instance of this class
-	 * @access protected
-	 * @staticvar FramsieXml
-	 */
-	protected static $mInstance   = null;
-
-	/**
-	 * This property contains the instance of the XML Reader
-	 * @access protected
-	 * @var XMLReader
-	 */
-	protected $mReader            = null;
-
-	/**
-	 * This property contains the instance of the XML Writer
-	 * @access protected
-	 * @var XMLWriter
-	 */
-	protected $mWriter            = null;
-
-	///////////////////////////////////////////////////////////////////////////
-	/// Singleton ////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-
-	/**
-	 * This method provides access to the singleton instance of this class
+	 * This method encodes an array or an object into an XML data structure
 	 * @package Framsie
 	 * @subpackage FramsieXml
 	 * @access public
 	 * @static
-	 * @param boolean $bReset
-	 * @return FramsieXml self::$mInstance
+	 * @param array|boolean|integer|object|string $mEntity
+	 * @param DOMDocument $oDomElement
+	 * @param DOMDocument $oDomDocument
+	 * @return string
 	 */
-	public static function getInstance($bReset = false) {
-		// Check for an existing instance or a reset notification
-		if (empty(self::$mInstance) || ($bReset === true)) {
-			// Create a new instance
-			self::$mInstance = new self();
+	public static function Encode($mEntity, &$oDomElement = null, &$oDomDocument = null) {
+		// Check for a DOM document
+		if (empty($oDomDocument)) {
+			// Create a new DOM document
+			$oDomDocument = new DOMDocument(self::XML_VERSION_1_0, self::XML_ENCODING_UTF8);
+			// Encode the entity
+			self::Encode($mEntity, $oDomDocument, $oDomDocument);
+			// Return the XML
+			return $oDomDocument->saveXML();
 		}
-		// Return the instance
-		return self::$mInstance;
+		// Check to see if the entity is an array or an object
+		if (is_array($mEntity) || is_object($mEntity)) {
+			// Iterate through the entity
+			foreach ($mEntity as $mIdentifer => $mElement) {
+				// Create a node placeholder
+				$oNode = null;
+				// Check for a numeric integer
+				if (is_numeric($mIdentifer)) {
+					// Check for a zero index
+					if ($mIdentifer == 0) {
+						// Set the node
+						$oNode = $oDomElement;
+					} else {
+						// Set the node
+						$oNode = $oDomDocument->createElement($oDomElement->tagName);
+						// Append the node
+						$oDomElement->parentNode->appendChild($oNode);
+					}
+				} else {
+					// Create the collection
+					$oCollection = $oDomDocument->createElement($mIdentifer);
+					// Add the collection to the element
+					$oDomElement->appendChild($oCollection);
+					// Set the collection into the node
+					$oNode       = $oCollection;
+					// Check the index to see if it's a collection item
+					if ((rtrim($mIdentifer, 's') !== $mIdentifer) && (count($mElement) > 1)) {
+						// Create the item
+						$oItem = $oDomDocument->createElement(rtrim($mIdentifer, 's'));
+						// Append the item to the collection
+						$oCollection->appendChild($oItem);
+						// Set the item into the node
+						$oNode = $oItem;
+					}
+				}
+				// Re-run the encoder
+				self::Encode($mElement, $oNode, $oDomDocument);
+			}
+		} else {
+			// Check the entity for a boolean
+			$mEntity = (is_bool($mEntity) ? ($mEntity ? 'true' : 'false') : $mEntity);
+			// Set the child into the element
+			$oDomElement->appendChild($oDomDocument->createTextNode($mEntity));
+		}
 	}
-
-	/**
-	 * This method sets an external instance into this class, it is primarily
-	 * only used in testing and generally with phpUnit
-	 * @package Framsie
-	 * @subpackage FramsieXml
-	 * @access public
-	 * @static
-	 * @param FramsieXml $oInstance
-	 * @return FramsieXml self::$mInstance
-	 */
-	public static function setInstance(FramsieXml $oInstance) {
-		// Set the external instance into the class
-		self::$mInstance = $oInstance;
-		// Return the instance
-		return self::$mInstance;
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-	/// Constructor //////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-
-	/**
-	 * The constructor simply returns the instance and is protected to
-	 * enforce the singleton pattern throughout the system
-	 * @package Framsie
-	 * @subpackage FramsieXml
-	 * @access protected
-	 * @return FramsieXml $this
-	 */
-	protected function __constructor() {
-		// Create the reader
-		$this->mReader = new XMLReader();
-		// Create ther XML writer
-		$this->mWriter = new XMLWriter();
-		// Open memory for the writer
-		$this->mWriter->openMemory();
-		// Turn indentation on
-		$this->mWriter->setIndent(true);
-		// Set the indentation string
-		$this->mWriter->setIndentString(self::XML_INDENT_TAB);
-		// Start the document
-		$this->mWriter->startDocument(self::XML_VERSION_1_0, self::XML_ENCODING_UTF8);
-		// Return the instance
-		return $this;
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-	/// Protected Methods ////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-
-
-
-
-	///////////////////////////////////////////////////////////////////////////
-	/// Public Methods ///////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-
-
-	public function toArray($sXml) {
-
-	}
-
-
-	public function toObject($sXml) {
-
-	}
-
-
-	public function toXml($mEntity) {
-
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-	/// Getters //////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-
-
-
-
-	///////////////////////////////////////////////////////////////////////////
-	/// Setters //////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////
-
-
-
 }
