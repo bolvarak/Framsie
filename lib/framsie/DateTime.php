@@ -45,9 +45,41 @@ class FramsieDateTime {
 	 */
 	const STR_FIRST_DAY_THIS_WEEK_SUN = 'sunday last week';
 
+	/**
+	 * This constant contains the format for the last thirty days prior to today
+	 * @var string
+	 */
+	const STR_LAST_30_DAYS            = '-30 days';
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Static Methods ////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method calculates the timestamps for the last 30 days
+	 * @package Framsie
+	 * @subpackage FramsieDateTime
+	 * @access public
+	 * @static
+	 * @param integer $iTimeStamp
+	 * @return array
+	 */
+	public static function CalculateDatesForLastThirtyDays($iTimeStamp = null) {
+		// Check for a timestamp
+		if (empty($iTimeStamp)) {
+			// Set the timestamp to the current time
+			$iTimeStamp = time();
+		}
+		// Create a dates placeholder and calculate the date for the first day
+		$aDates = array(strtotime(self::STR_LAST_30_DAYS, $iTimeStamp));
+		// Loop through the days
+		for ($iDay = 0; $iDay < 29; $iDay++) {
+			// Add the date
+			array_push($aDates, strtotime('+'.($iDay + 1).' days', $aDates[0]));
+		}
+		// Return the dates
+		return $aDates;
+	}
 
 	/**
 	 * This method calculates the timestamps for the days in this month
