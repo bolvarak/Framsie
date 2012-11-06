@@ -45,6 +45,8 @@ class FramsieXml {
 		if (empty($oDomDocument)) {
 			// Create a new DOM document
 			$oDomDocument = new DOMDocument(self::XML_VERSION_1_0, self::XML_ENCODING_UTF8);
+			// Format the output
+			$oDomDocument->formatOutput = true;
 			// Encode the entity
 			self::Encode($mEntity, $oDomDocument, $oDomDocument);
 			// Return the XML
