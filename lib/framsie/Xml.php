@@ -26,7 +26,7 @@ class FramsieXml extends DOMDocument {
 	const XML_VERSION_1_0         = '1.0';
 
 	///////////////////////////////////////////////////////////////////////////
-	/// Public Static Methods ////////////////////////////////////////////////
+	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
 	/**
@@ -40,11 +40,11 @@ class FramsieXml extends DOMDocument {
 	 * @param DOMDocument $oDomDocument
 	 * @return string
 	 */
-	public static function Encode($mEntity, DOMElement $oDomElement = null) {
+	public function fromMixed($mEntity, DOMElement $oDomElement = null) {
 		// Check for a DOMElement
 		if (empty($oDomElement)) {
 			// Set the DOMElement to the current DOMDocument
-			$oDomElement = new self();
+			$oDomElement = $this;
 		}
 		// Check for an array or an object
 		if (is_array($mEntity) || is_object($mEntity)) {
@@ -58,18 +58,18 @@ class FramsieXml extends DOMDocument {
 						$oNode = $oDomElement;
 					} else {
 						// Create the node
-						$oNode = self::createElement($oDomElement->tagName);
+						$oNode = $this->createElement($oDomElement->tagName);
 						// Set the node into the parent
 						$oDomElement->parentNode->appendChild($oNode);
 					}
 				} else {
 					// Create the node
-					$oNode = self::createElement($mIndex);
+					$oNode = $this->createElement($mIndex);
 					// Set the node into the document
 					$oDomElement->appendChild($oNode);
 				}
 				// Execute this method once more
-				self::Encode($mElement, $oNode);
+				$this->fromMixed($mElement, $oNode);
 			}
 		} else {
 			// Check to see if the entity is a boolean
@@ -78,9 +78,9 @@ class FramsieXml extends DOMDocument {
 				$mEntity = (string) (($mEntity === true) ? 'true' : 'false');
 			}
 			// Append the entity to the element
-			$oDomElement->appendChild(self::createTextNode($mEntity));
+			$oDomElement->appendChild($this->createTextNode($mEntity));
 		}
 		// Return the XML
-		return self::saveXML();
+		return $this->saveXML();
 	}
 }
