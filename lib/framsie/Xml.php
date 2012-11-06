@@ -85,6 +85,6 @@ class FramsieXml {
 			$oDomElement->appendChild($oDomDocument->createTextNode($mEntity));
 		}
 		// Return the XML
-		return $this->saveXML();
+		return $oDomDocument->saveXML();
 	}
 }
