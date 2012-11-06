@@ -40,61 +40,52 @@ class FramsieXml {
 	 * @param DOMDocument $oDomDocument
 	 * @return string
 	 */
-	public static function Encode($mEntity, DOMElement &$oDomElement = null, DOMDocument &$oDomDocument = null) {
-		// Check for a DOM document
+	public static function Encode($mEntity, DOMElement $oDomElement = null, DOMDocument $oDomDocument = null) {
+		// Check for a DOMDocument
 		if (empty($oDomDocument)) {
-			// Create a new DOM document
-			$oDomDocument = new DOMDocument(self::XML_VERSION_1_0, self::XML_ENCODING_UTF8);
-			// Format the output
-			$oDomDocument->formatOutput = true;
-			// Encode the entity
-			self::Encode($mEntity, $oDomDocument->documentElement, $oDomDocument);
-			// Return the XML
-			return $oDomDocument->saveXML();
+			// Create a new DOMDocument
+			$oDomDocument = new DOMDocument();
 		}
-		// Check to see if the entity is an array or an object
+		// Check for a DOMElement
+		if (empty($oDomElement)) {
+			// Set the DOMElement to the current DOMDocument
+			$oDomElement = $oDomDocument;
+		}
+		// Check for an array or an object
 		if (is_array($mEntity) || is_object($mEntity)) {
-			// Iterate through the entity
-			foreach ($mEntity as $mIdentifer => $mElement) {
-				// Create a node placeholder
-				$oNode = null;
-				// Check for a numeric integer
-				if (is_numeric($mIdentifer)) {
-					// Check for a zero index
-					if ($mIdentifer == 0) {
-						// Set the node
+			// Loop through the elements of the entity
+			foreach ($mEntity as $mIndex => $mElement) {
+				// Check for a numerically indexed array
+				if (is_int($mIndex)) {
+					// Check to see if this is the first index
+					if ($mIndex === 0) {
+						// Set the node to the DOMElement
 						$oNode = $oDomElement;
 					} else {
-						// Set the node
+						// Create the node
 						$oNode = $oDomDocument->createElement($oDomElement->tagName);
-						// Append the node
+						// Set the node into the parent
 						$oDomElement->parentNode->appendChild($oNode);
 					}
 				} else {
-					// Create the collection
-					$oCollection = $oDomDocument->createElement($mIdentifer);
-					// Add the collection to the element
-					$oDomElement->appendChild($oCollection);
-					// Set the collection into the node
-					$oNode       = $oCollection;
-					// Check the index to see if it's a collection item
-					if ((rtrim($mIdentifer, 's') !== $mIdentifer) && (count($mElement) > 1)) {
-						// Create the item
-						$oItem = $oDomDocument->createElement(rtrim($mIdentifer, 's'));
-						// Append the item to the collection
-						$oCollection->appendChild($oItem);
-						// Set the item into the node
-						$oNode = $oItem;
-					}
+					// Create the node
+					$oNode = $oDomDocument->createElement($mIndex);
+					// Set the node into the document
+					$oDomElement->appendChild($oNode);
 				}
-				// Re-run the encoder
+				// Execute this method once more
 				self::Encode($mElement, $oNode, $oDomDocument);
 			}
 		} else {
-			// Check the entity for a boolean
-			$mEntity = (is_bool($mEntity) ? ($mEntity ? 'true' : 'false') : $mEntity);
-			// Set the child into the element
+			// Check to see if the entity is a boolean
+			if (is_bool($mEntity)) {
+				// Reset the entity
+				$mEntity = (string) (($mEntity === true) ? 'true' : 'false');
+			}
+			// Append the entity to the element
 			$oDomElement->appendChild($oDomDocument->createTextNode($mEntity));
 		}
+		// Return the XML
+		return $oDomDocument->saveXML();
 	}
 }
