@@ -36,11 +36,11 @@ class FramsieXml {
 	 * @access public
 	 * @static
 	 * @param array|boolean|integer|object|string $mEntity
-	 * @param DOMDocument $oDomElement
+	 * @param DOMElement $oDomElement
 	 * @param DOMDocument $oDomDocument
 	 * @return string
 	 */
-	public static function Encode($mEntity, &$oDomElement = null, &$oDomDocument = null) {
+	public static function Encode($mEntity, DOMElement &$oDomElement = null, DOMDocument &$oDomDocument = null) {
 		// Check for a DOM document
 		if (empty($oDomDocument)) {
 			// Create a new DOM document
@@ -48,7 +48,7 @@ class FramsieXml {
 			// Format the output
 			$oDomDocument->formatOutput = true;
 			// Encode the entity
-			self::Encode($mEntity, $oDomDocument, $oDomDocument);
+			self::Encode($mEntity, $oDomDocument->documentElement, $oDomDocument);
 			// Return the XML
 			return $oDomDocument->saveXML();
 		}
