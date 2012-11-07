@@ -474,7 +474,11 @@ class FramsieRequestObject {
 		$this->mController->setRequest($this);
 		// Set the view object into the controller
 		$this->mController->setView(new FramsieView());
-		// Set the block file in the controller
+		// Check for an initialization method
+		if (method_exists($this->mController, 'init')) {
+			// Initialize the controller class
+			$this->mController->init();
+		}
 		// Set the block file into the controller view
 		$this->mController->getView()->setBlockFile(strtolower(str_replace('Controller', null, get_class($this->mController))).'/'.strtolower(str_replace('View', null, $this->mBlock)).'.phtml');
 		// Execute the view
