@@ -727,11 +727,12 @@ class FramsieRequestObject {
 	 * @param string $sName
 	 * @param multitype $sValue
 	 * @param integer [$iExpire]
+	 * @param boolean [$bDelete]
 	 * @return FramsieRequestObject $this
 	 */
-	public function setCookie($sName, $sValue, $iExpire = FramsieCache::EXPIRE_1_HOUR) {
+	public function setCookie($sName, $sValue, $iExpire = FramsieCache::EXPIRE_1_HOUR, $bDelete = false) {
 		// Set the cookie
-		setcookie($sName, $sValue, (time() + $iExpire));
+		setcookie($sName, $sValue, (($bDelete === true)) ? (time() - $iExpire) : (time() + $iExpire));
 		// Set the cookie into the instance
 		$this->mCookies->{$sName} = $sValue;
 		// Return the instance
