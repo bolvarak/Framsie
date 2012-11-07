@@ -251,7 +251,7 @@ class FramsieTableMapper {
 	 * @return boolean|float|integer|string
 	 */
 	protected function determineValueType($sColumn, $mValue) {
-		var_dump(this);
+		var_dump($this);
 		// Determine the data type
 		if (preg_match(self::PATTERN_BOOLEAN, $this->mColumns[$sColumn]->Type) && (($mValue == 1) || ($mValue == 0))) { // Boolean
 			// Return the value
