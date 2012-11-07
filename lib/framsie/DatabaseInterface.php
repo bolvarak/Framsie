@@ -1377,6 +1377,24 @@ class FramsieDatabaseInterface {
 		return $oTableMeta->fetchAll(PDO::FETCH_OBJ);
 	}
 
+	/**
+	 * This method grabs the tables associated with this database
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @access public
+	 * @return array
+	 */
+	public function getTables() {
+		// Setup the query
+		$sQuery           = (string) "SHOW TABLES;";
+		// Setup the statement
+		$oTablesStatement = $this->mConnection->prepare($sQuery);
+		// Execute the statement
+		$oTablesStatement->execute();
+		// Return the results
+		return $oTablesStatement->fetchAll(PDO::FETCH_OBJ);
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Setters //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
