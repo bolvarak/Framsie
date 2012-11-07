@@ -369,10 +369,10 @@ class FramsieDatabaseInterface {
 	 * The constructor simply sets the database connection into the system,
 	 * it is protected so that we may enforce the singleton pattern
 	 * @package FramsieDatabaseInterface
-	 * @access protected
+	 * @access public
 	 * @return FramsieDatabaseInterface $this
 	 */
-	protected function __construct() {
+	public function __construct() {
 		// Try to connect
 		try {
 			// Create the database connection
