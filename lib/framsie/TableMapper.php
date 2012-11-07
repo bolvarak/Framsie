@@ -475,6 +475,11 @@ abstract class FramsieTableMapper {
 		FramsieDatabaseInterface::getInstance()->generateQuery();
 		// Grab the row
 		$oMapRow = (object) FramsieDatabaseInterface::getInstance()->getRow(PDO::FETCH_OBJ);
+		// Check for a row
+		if (empty($oMapRow)) {
+			// We're done
+			return false;
+		}
 		// Loop through the object
 		foreach ($oMapRow as $sColumn => $mValue) {
 			// Set the property
