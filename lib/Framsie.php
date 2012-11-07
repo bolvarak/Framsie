@@ -469,6 +469,7 @@ class Framsie {
 	public function autoLoader($sClassName) {
 		// Create an array of reserved class names
 		$aReservedClassNames = array(
+				'DatabaseMapper',
 				'Form',
 				'FormElement',
 				'Framsie',
