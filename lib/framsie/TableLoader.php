@@ -165,17 +165,15 @@ class FramsieTableLoader {
 	protected function populateIterator() {
 		// Loop through the rows
 		foreach ($this->mDBI->getRows() as $oRow) {
-			// Stringify the table mapper
-			$sMapperInstance = (string) $this->mTableMapper;
 			// Check for the default TableMapper
 			if ($this->mTableMapper === self::DEFAULT_TABLE_MAPPER) {
 				// Instantiate the TableMapper
-				$oMapper = new $sMapperInstance($this->mTable, $this->mUniqueIdentifierColumn);
+				$oMapper = Framsie::Loader($this->mTableMapper, $this->mTable, $this->mUniqueIdentifierColumn);
 				// Push the TableMapper instance
 				array_push($this->mIterator, $oMapper->load($this->mUniqueIdentifierColumn));
 			} else {
 				// Instantiate the TableMapper
-				$oMapper = new $sMapperInstance();
+				$oMapper = Framsie::Loader($this->mTableMapper);
 				array_push($this->mIterator, $oMapper->load($this->mUniqueIdentifierColumn));
 			}
 			// Add the primary keys to the system
