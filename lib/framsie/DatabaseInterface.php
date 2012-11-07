@@ -1392,7 +1392,7 @@ class FramsieDatabaseInterface {
 		// Execute the statement
 		$oTablesStatement->execute();
 		// Return the results
-		return $oTablesStatement->fetchAll(PDO::FETCH_OBJ);
+		return $oTablesStatement->fetchAll(PDO::FETCH_NUM);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
