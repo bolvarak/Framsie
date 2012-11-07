@@ -65,14 +65,24 @@ class FramsieDatabaseMapper {
 			// Check to see if this table has a primary key
 			if ($oPrimaryKey === false) {
 				// Append the table and instantiate the mapper
-				$this->mTables[$aTableName[0]] = new FramsieTableMapper($aTableName[0], null);
+				$this->mTables[$aTableName[0]]['oMapper'] = new FramsieTableMapper($aTableName[0], null);
 				// This table is a lookup table
-				$this->mTables[$aTableName[0]]->setIsLookupTable(true);
+				$this->mTables[$aTableName[0]]['oMapper']->setIsLookupTable(true);
+				// Instantiate the TableLoader
+				$this->mTables[$aTableName[0]]['oLoader'] = new FramsieTableLoader();
+				// Set the table into the TableLoader
+				$this->mTables[$aTableName[0]]['oLoader']->setTable($aTableName[0]);
 				// We're done with this iteration
 				continue;
 			}
 			// Append the table and instantiate the mapper
-			$this->mTables[$aTableName[0]] = new FramsieTableMapper($aTableName[0], $oPrimaryKey->Column_name);
+			$this->mTables[$aTableName[0]]['oMapper'] = new FramsieTableMapper($aTableName[0], $oPrimaryKey->Column_name);
+			// Instantiate the TableLoader
+			$this->mTables[$aTableName[0]]['oLoader'] = new FramsieTableLoader();
+			// Set the TableLoader table
+			$this->mTables[$aTableName[0]]['oLoader']->setTable($aTableName[0]);
+			// Set the TableLoader unique identifier
+			$this->mTables[$aTableName[0]]['oLoader']->setUniqueIdentifierColumn($oPrimaryKey->Column_name);
 		}
 		// Return the instance
 		return $this;
@@ -92,6 +102,42 @@ class FramsieDatabaseMapper {
 	public function getDatabase() {
 		// Return the database
 		return $this->mDatabase;
+	}
+
+	/**
+	 * This method loads the FramsieTableLoader instance for a table
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseMapper
+	 * @access public
+	 * @param string $sTableName
+	 * @return FramsieTableLoader
+	 */
+	public function getTableLoader($sTableName) {
+		// Make sure the TableLoader exists
+		if (empty($this->mTables[$sTableName]) || empty($this->mTables[$sTableName]['oLoader'])) {
+			// We're done
+			return null;
+		}
+		// Return the TableLoader
+		return $this->mTables[$sTableName]['oLoader'];
+	}
+
+	/**
+	 * This method loads the FramsieTableMapper instance for a table
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseMapper
+	 * @access public
+	 * @param string $sTableName
+	 * @return FramsieTableMapper
+	 */
+	public function getTableMapper($sTableName) {
+		// Make sure the TableMapper exists
+		if (empty($this->mTables[$sTableName]) || empty($this->mTables[$sTableName]['oMapper'])) {
+			// We're done
+			return null;
+		}
+		// Return the TableMapper
+		return $this->mDatabase[$sTableName]['oMapper'];
 	}
 
 	///////////////////////////////////////////////////////////////////////////

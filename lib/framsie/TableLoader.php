@@ -10,6 +10,16 @@
 class FramsieTableLoader {
 
 	///////////////////////////////////////////////////////////////////////////
+	/// Constants ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This constant contains the name of the default TableMapper instance to use
+	 * @var string
+	 */
+	const DEFAULT_TABLE_MAPPER         = 'FramsieTableMapper';
+
+	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
@@ -60,7 +70,7 @@ class FramsieTableLoader {
 	 * @access protected
 	 * @var string
 	 */
-	protected $mTableMapper            = null;
+	protected $mTableMapper            = self::DEFAULT_TABLE_MAPPER;
 
 	/**
 	 * This property contains the column name that has the unique identifier
@@ -155,8 +165,19 @@ class FramsieTableLoader {
 	protected function populateIterator() {
 		// Loop through the rows
 		foreach ($this->mDBI->getRows() as $oRow) {
-			// Instantiate and push the TableMapper
-			array_push($this->mIterator, Framsie::Loader($this->mTableMapper)->load($oRow->{$this->mUniqueIdentifierColumn}));
+			// Stringify the table mapper
+			$sMapperInstance = (string) $this->mTableMapper;
+			// Check for the default TableMapper
+			if ($this->mTableMapper === self::DEFAULT_TABLE_MAPPER) {
+				// Instantiate the TableMapper
+				$oMapper = new $sMapperInstance($this->mTable, $this->mUniqueIdentifierColumn);
+				// Push the TableMapper instance
+				array_push($this->mIterator, $oMapper->load($this->mUniqueIdentifierColumn));
+			} else {
+				// Instantiate the TableMapper
+				$oMapper = new $sMapperInstance();
+				array_push($this->mIterator, $oMapper->load($this->mUniqueIdentifierColumn));
+			}
 			// Add the primary keys to the system
 			array_push($this->mUniqueIdentifiers, $oRow->{$this->mUniqueIdentifierColumn});
 		}
