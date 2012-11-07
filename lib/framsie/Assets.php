@@ -188,7 +188,7 @@ class FramsieAssets {
 			$sMinified = (string) preg_replace('/'.PHP_EOL.'/', null, $sMinified);
 		} else {
 			// Remove Multi-Line Comments
-			$sMinified = (string) preg_replace('#/\*.*?\*/#s', null, $sMinified);
+			// $sMinified = (string) preg_replace('#/\*.*?\*/#s', null, $sMinified);
 			// Remove multiple new lines
 			// $sMinified = (string) preg_replace('/\n(\s*\n)+/', "\n", $sMinified);
 			// Replace tabs with spaces
