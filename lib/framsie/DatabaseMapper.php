@@ -65,14 +65,14 @@ class FramsieDatabaseMapper {
 			// Check to see if this table has a primary key
 			if ($oPrimaryKey === false) {
 				// Append the table and instantiate the mapper
-				$this->mTables[$aTableName[0]] = new FramsieTableMapper($sTableName, null);
+				$this->mTables[$aTableName[0]] = new FramsieTableMapper($aTableName[0], null);
 				// This table is a lookup table
 				$this->mTables[$aTableName[0]]->setIsLookupTable(true);
 				// We're done with this iteration
 				continue;
 			}
 			// Append the table and instantiate the mapper
-			$this->mTables[$aTableName[0]] = new FramsieTableMapper($sTableName, $oPrimaryKey->Column_name);
+			$this->mTables[$aTableName[0]] = new FramsieTableMapper($aTableName[0], $oPrimaryKey->Column_name);
 		}
 		// Return the instance
 		return $this;
