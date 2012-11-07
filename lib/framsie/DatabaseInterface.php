@@ -1386,7 +1386,7 @@ class FramsieDatabaseInterface {
 	 */
 	public function getTables() {
 		// Setup the query
-		$sQuery           = (string) "SHOW TABLES;";
+		$sQuery           = (string) "SHOW TABLES AS {$this->quoteTableColumnName('TableName')};";
 		// Setup the statement
 		$oTablesStatement = $this->mConnection->prepare($sQuery);
 		// Execute the statement
