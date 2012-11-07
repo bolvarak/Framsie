@@ -174,7 +174,7 @@ class FramsieTableLoader {
 			} else {
 				// Instantiate the TableMapper
 				$oMapper = Framsie::Loader($this->mTableMapper);
-				array_push($this->mIterator, $oMapper->load($this->mUniqueIdentifierColumn));
+				array_push($this->mIterator, $oMapper->load($oRow->{$this->mUniqueIdentifierColumn}));
 			}
 			// Add the primary keys to the system
 			array_push($this->mUniqueIdentifiers, $oRow->{$this->mUniqueIdentifierColumn});
