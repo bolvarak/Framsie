@@ -12,7 +12,7 @@ class FramsieDatabaseMapper {
 	 * @var string
 	 */
 	protected $mDatabase = null;
-	
+
 	/**
 	 * This proeprty contains the FramsieTableMapper instances for each table
 	 * @access protected
@@ -41,22 +41,41 @@ class FramsieDatabaseMapper {
 		// Return the instance
 		return $this;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
-	
+
+	/**
+	 * This method loads the database tables into the system
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseMapper
+	 * @access public
+	 * @return FramsieDatabaseMapper $this
+	 */
 	public function load() {
 		// Initialize the DBI
 		$aTables = FramsieDatabaseInterface::getInstance(true) // We want a new instance
 			->setDatabase($this->mDatabase)         // Set the database
 			->getTables();                          // Grab the tables
 		// Loop through the tables
-		foreach ($aTables as $iTable => $sTableName) {
-			
+		foreach ($aTables as $aTableName) {
+			// Grab the primary key
+			$oPrimaryKey = FramsieDatabaseInterface::getInstance(true)->setTable($aTableName[0])->getTablePrimaryKey();
+			// Check to see if this table has a primary key
+			if ($oPrimaryKey === false) {
+				// Append the table and instantiate the mapper
+				$this->mTables[$aTableName[0]] = new FramsieTableMapper($sTableName, null);
+				// This table is a lookup table
+				$this->mTables[$aTableName[0]]->setIsLookupTable(true);
+				// We're done with this iteration
+				continue;
+			}
 			// Append the table and instantiate the mapper
-			$this->mTables[$sTableName] = new FramsieTableMapper($sTableName, $sPrimaryKey);
+			$this->mTables[$aTableName[0]] = new FramsieTableMapper($sTableName, $oPrimaryKey->Column_name);
 		}
+		// Return the instance
+		return $this;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
