@@ -1392,7 +1392,7 @@ class FramsieDatabaseInterface {
 		// Execute the statement
 		$oPkStatement->execute();
 		// Return the results
-		return $oPkStatement->fetch(PDO::FETCH_NUM);
+		return $oPkStatement->fetch(PDO::FETCH_OBJ);
 	}
 
 	/**
