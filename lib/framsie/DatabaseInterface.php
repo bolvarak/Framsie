@@ -1378,6 +1378,24 @@ class FramsieDatabaseInterface {
 	}
 
 	/**
+	 * This method finds the primary key of a table
+	 * @package Framsie
+	 * @subpackage FramsieDatabaseInterface
+	 * @access public
+	 * @return mixed
+	 */
+	public function getTablePrimaryKey() {
+		// Setup the query
+		$sQuery       = (string) "SHOW INDEX FROM {$this->quoteTableColumnName($this->mTable)} WHERE {$this->quoteTableColumnName('Key_name')} = {$this->quoteTrueFieldValue('PRIMARY')};";
+		// Setup the statement
+		$oPkStatement = $this->mConnection->prepare($sQuery);
+		// Execute the statement
+		$oPkStatement->execute();
+		// Return the results
+		return $oPkStatement->fetch(PDO::FETCH_NUM);
+	}
+
+	/**
 	 * This method grabs the tables associated with this database
 	 * @package Framsie
 	 * @subpackage FramsieDatabaseInterface
