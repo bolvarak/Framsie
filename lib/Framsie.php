@@ -273,6 +273,37 @@ class Framsie {
 	}
 
 	/**
+	 * This method runs a check on an array to determine if it is associative or numerically indexed
+	 * @package Framsie
+	 * @access public
+	 * @static
+	 * @param array $aEntity
+	 * @return boolean
+	 */
+	public static function IsAssociatiative(array $aEntity) {
+		// Check the array
+		return (boolean) count(array_filter(array_keys($aEntity), 'is_string'));
+	}
+
+	/**
+	 * This method does a check to see if the variable is actually empty
+	 * @package Framsie
+	 * @access public
+	 * @static
+	 * @param mixed $mEntity
+	 * @return boolean
+	 */
+	public static function IsEmpty($mEntity) {
+		// Check to see if the entity variable is empty or not
+		if (empty($mEntity) && is_null($mEntity)) {
+			// The entity is most definitely empty
+			return true;
+		}
+		// The entity is not empty
+		return false;
+	}
+
+	/**
 	 * This method dynamically loads new instances of classes into the workflow
 	 * @package Framsie
 	 * @access public
