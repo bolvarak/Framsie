@@ -1151,6 +1151,11 @@ class FramsieHttp {
 	public function resetClient() {
 		// Reset the parameters
 		$this->mData = array();
+		// Reset the raw data request
+		$this->mRawRequestData = null;
+		$this->mSendRawRequest = false;
+		// Reset the required fields
+		$this->mRequiredParams = array();
 		// Return the instance
 		return $this;
 	}
