@@ -303,6 +303,13 @@ class FramsieHttp {
 	protected $mPassword                     = null;
 
 	/**
+	 * This property contains the raw request data
+	 * @access protected
+	 * @var string
+	 */
+	protected $mRawRequestData               = null;
+
+	/**
 	 * This property contains hooks that should be executed before the request is made
 	 * @access protected
 	 * @var arrau
@@ -343,6 +350,13 @@ class FramsieHttp {
 	 * @var array
 	 */
 	protected $mResponseHooks                = array();
+
+	/**
+	 * This property tells the system that the data we send will be a pure POST header
+	 * @access protected
+	 * @var boolean
+	 */
+	protected $mSendRawRequest               = false;
 
 	/**
 	 * This property tells the system whether or not to use OAuth
@@ -837,8 +851,14 @@ class FramsieHttp {
 		curl_setopt($rCurlHandle, CURLOPT_URL, $this->mUrl);
 		// Tell the handle that we are making a POST request
 		curl_setopt($rCurlHandle, CURLOPT_POST, true);
-		// Send the data
-		curl_setopt($rCurlHandle, CURLOPT_POSTFIELDS, (empty($this->mData) ? null : $this->encodeDataParams()));
+		// Check to see if we are sending a raw request
+		if ($this->mSendRawRequest === true) {
+			// Send the data
+			curl_setopt($rCurlHandle, CURLOPT_POSTFIELDS, $this->mRawRequestData);
+		} else {
+			// Send the data
+			curl_setopt($rCurlHandle, CURLOPT_POSTFIELDS, (empty($this->mData) ? null : $this->encodeDataParams()));
+		}
 		// We're done
 		return $this;
 	}
@@ -856,8 +876,14 @@ class FramsieHttp {
 		curl_setopt($rCurlHandle, CURLOPT_URL, $this->mUrl);
 		// Tell the handle that we are making a PUT request
 		curl_setopt($rCurlHandle, CURLOPT_CUSTOMREQUEST, self::REQUEST_METHOD_PUT_NAME);
-		// Send the data
-		curl_setopt($rCurlHandle, CURLOPT_POSTFIELDS, (empty($this->mData) ? null : $this->encodeDataParams()));
+		// Check to see if we are sending a raw request
+		if ($this->mSendRawRequest === true) {
+			// Send the data
+			curl_setopt($rCurlHandle, CURLOPT_POSTFIELDS, $this->mRawRequestData);
+		} else {
+			// Send the data
+			curl_setopt($rCurlHandle, CURLOPT_POSTFIELDS, (empty($this->mData) ? null : $this->encodeDataParams()));
+		}
 		// We're done
 		return $this;
 	}
@@ -1392,6 +1418,19 @@ class FramsieHttp {
 	}
 
 	/**
+	 * This method returns the current raw request data
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param boolean $bDecode
+	 * @return string
+	 */
+	public function getRawRequestData($bDecode = true) {
+		// Return the raw request data
+		return (($bDecode === true) ? rawurldecode($this->mRawRequestData) : $this->mRawRequestData);
+	}
+
+	/**
 	 * This method returns the current request method set in the system
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -1425,6 +1464,18 @@ class FramsieHttp {
 	public function getResponse() {
 		// Return the response from the server
 		return $this->mResponse;
+	}
+
+	/**
+	 * This method returns the boolean notification for sending raw requests
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return boolean
+	 */
+	public function getSendRawRequest() {
+		// Return the raw request notification
+		return $this->mSendRawRequest;
 	}
 
 	/**
@@ -1609,6 +1660,27 @@ class FramsieHttp {
 	}
 
 	/**
+	 * This method sets the raw request data into the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param string $sData
+	 * @param boolean $bEncode
+	 * @return FramsieHttp $this
+	 */
+	public function setRawRequestData($sData, $bEncode = true) {
+		// Check to see if we need to encode the data
+		if ($bEncode === true) {
+			// Encode the data
+			$sData = rawurlencode($sData);
+		}
+		// Set the data into the system
+		$this->mRawRequestData = (string) $sData;
+		// We're done
+		return $this;
+	}
+
+	/**
 	 * This method sets the request method into the system
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -1664,6 +1736,21 @@ class FramsieHttp {
 		}
 		// If we get to this point, trigger an exception
 		FramsieError::Trigger('FRAMICS');
+	}
+
+	/**
+	 * This method sets the notification in the system that tells it we are sending raw request data
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param boolean $bSendRaw
+	 * @return FramsieHttp $this
+	 */
+	public function setSendRawRequest($bSendRaw = true) {
+		// Set the notification into the system
+		$this->mSendRawRequest = (boolean) $bSendRaw;
+		// We're done
+		return $this;
 	}
 
 	/**
