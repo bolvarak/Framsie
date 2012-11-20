@@ -6,8 +6,9 @@
  * @copyright 2012 Travis Brown <tmbrown6@gmail.com>
  * @license GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
  * @author Travis Brown <tmbrown6@gmail.com>
+ * @todo Support XML
  */
-abstract class FramsieHttp {
+class FramsieHttp {
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Constants ////////////////////////////////////////////////////////////
@@ -17,157 +18,181 @@ abstract class FramsieHttp {
 	 * This constant contains the HTML type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_HTML                   = 1;
+	const DATA_TYPE_HTML                     = 1;
 
 	/**
 	 * This constant contains the JSON type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_JSON                   = 2;
+	const DATA_TYPE_JSON                     = 2;
 
 	/**
 	 * This constant contains the QUERY_STRING type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_QUERY_STR              = 3;
+	const DATA_TYPE_QUERY_STR                = 3;
 
 	/**
 	 * This constant contains the SCRIPT type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_SCRIPT                 = 4;
+	const DATA_TYPE_SCRIPT                   = 4;
 
 	/**
 	 * This constant contains the TEXT type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_TEXT                   = 5;
+	const DATA_TYPE_TEXT                     = 5;
 
 	/**
 	 * This constant contains the XML type definition
 	 * @var integer
 	 */
-	const DATA_TYPE_XML                    = 6;
+	const DATA_TYPE_XML                      = 6;
 
 	/**
 	 * This constant contains the definition for the JSON format
 	 * @var string
 	 */
-	const FORMAT_JSON                      = 'json';
+	const FORMAT_JSON                        = 'json';
 
 	/**
 	 * This constant contains the definition for the XML format
 	 * @var string
 	 */
-	const FORMAT_XML                       = 'xml';
+	const FORMAT_XML                         = 'xml';
 
 	/**
 	 * This constant contains the definition for the HMAC-SHA1 signature algorithm
 	 * @var string
 	 */
-	const OAUTH_SIGNATURE_METHOD_HMAC_SHA1 = 'HMAC-SHA1';
+	const OAUTH_SIGNATURE_METHOD_HMAC_SHA1   = 'HMAC-SHA1';
 
 	/**
 	 * This constant contains the version number for OAuth v1.0
 	 * @var string
 	 */
-	const OAUTH_VERSION_1_0                = '1.0';
+	const OAUTH_VERSION_1_0                  = '1.0';
 
 	/**
 	 * This constant contains the parameter name for the OAuth callback function
 	 * @var string
 	 */
-	const OAUTH_PARAM_CALLBACK             = 'oauth_callback';
+	const OAUTH_PARAM_CALLBACK               = 'oauth_callback';
 
 	/**
 	 * This constant contains the parameter name for the OAuth consumer key
 	 * @var string
 	 */
-	const OAUTH_PARAM_CONSUMER_KEY         = 'oauth_consumer_key';
+	const OAUTH_PARAM_CONSUMER_KEY           = 'oauth_consumer_key';
 
 	/**
 	 * This constant contains the parameter name for the OAuth nonce
 	 * @var string
 	 */
-	const OAUTH_PARAM_NONCE                = 'oauth_nonce';
+	const OAUTH_PARAM_NONCE                  = 'oauth_nonce';
 
 	/**
 	 * This contant contains the parameter name for the OAuth signature
 	 * @var string
 	 */
-	const OAUTH_PARAM_SIGNATURE            = 'oauth_signature';
+	const OAUTH_PARAM_SIGNATURE              = 'oauth_signature';
 
 	/**
 	 * This constant contains the parameter name for the OAuth signature method
 	 * @var string
 	 */
-	const OAUTH_PARAM_SIGNATURE_METHOD     = 'oauth_signature_method';
+	const OAUTH_PARAM_SIGNATURE_METHOD       = 'oauth_signature_method';
 
 	/**
 	 * This constant contains the parameter name for the OAuth timestamp
 	 * @var string
 	 */
-	const OAUTH_PARAM_TIMESTAMP            = 'oauth_timestamp';
+	const OAUTH_PARAM_TIMESTAMP              = 'oauth_timestamp';
 
 	/**
 	 * This constant contains the parameter name for the OAuth token
 	 * @var string
 	 */
-	const OAUTH_PARAM_TOKEN                = 'oauth_token';
+	const OAUTH_PARAM_TOKEN                  = 'oauth_token';
 
 	/**
 	 * This constant contains the parameter name for the OAuth token secret
 	 * @var string
 	 */
-	const OAUTH_PARAM_TOKEN_SECRET         = 'oauth_token_secret';
+	const OAUTH_PARAM_TOKEN_SECRET           = 'oauth_token_secret';
 
 	/**
 	 * This constant contains the parameter name for the OAuth version
 	 * @var string
 	 */
-	const OAUTH_PARAM_VERSION              = 'oauth_version';
+	const OAUTH_PARAM_VERSION                = 'oauth_version';
 
 	/**
 	 * This constant contains the OAuth parameter name prefix
 	 * @var string
 	 */
-	const OAUTH_PARAMETER_PREFIX       = 'oauth_';
+	const OAUTH_PARAMETER_PREFIX             = 'oauth_';
 
 	/**
 	 * This constant contains the OpenSocial parameter name prefix
 	 * @var string
 	 */
-	const OPEN_SOCIAL_PARAMETER_PREFIX = 'opensocial_';
+	const OPEN_SOCIAL_PARAMETER_PREFIX       = 'opensocial_';
 
 	/**
-	 * This constant contains the GET type definition
+	 * This constant contains the DELETE type definition for the request
 	 * @var integer
 	 */
-	const REQUEST_METHOD_GET               = 1;
+	const REQUEST_METHOD_DELETE              = 0;
+
+	/**
+	 * This constant contains the actual string for a DELETE request
+	 * @var string
+	 */
+	const REQUEST_METHOD_DELETE_NAME         = 'DELETE';
+
+	/**
+	 * This constant contains the GET type definition for the request
+	 * @var integer
+	 */
+	const REQUEST_METHOD_GET                 = 1;
 
 	/**
 	 * This constant contains the actual string for a GET request
 	 * @var string
 	 */
-	const REQUEST_METHOD_GET_NAME          = 'GET';
+	const REQUEST_METHOD_GET_NAME            = 'GET';
 
 	/**
-	 * This constant contains the POST type definition
+	 * This constant contains the POST type definition for the request
 	 * @var integer
 	 */
-	const REQUEST_METHOD_POST              = 2;
+	const REQUEST_METHOD_POST                = 2;
+
+	/**
+	 * This constant contains the PUT type definition for the request
+	 * @var integer
+	 */
+	const REQUEST_METHOD_PUT                 = 3;
+
+	/**
+	 * This constant contains the actual string for a PUT request
+	 * @var string
+	 */
+	const REQUEST_METHOD_PUT_NAME            = 'PUT';
 
 	/**
 	 * This constant contains the actual string for a POST request
 	 * @var string
 	 */
-	const REQUEST_METHOD_POST_NAME         = 'POST';
+	const REQUEST_METHOD_POST_NAME           = 'POST';
 
 	/**
 	 * This constant contains the XOAuth parameter name prefix
 	 * @var string
 	 */
-	const XOAUTH_PARAMETER_PREFIX      = 'xoauth_';
+	const XOAUTH_PARAMETER_PREFIX            = 'xoauth_';
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
@@ -178,153 +203,167 @@ abstract class FramsieHttp {
 	 * @access protected
 	 * @staticvar FramsieHttp
 	 */
-	protected static $mInstance      = null;
+	protected static $mInstance              = null;
 
 	/**
 	 * This property contains the data for the request
 	 * @access protected
 	 * @var array
 	 */
-	protected $mData                 = array();
+	protected $mData                         = array();
 
 	/**
 	 * This property contains the hooks that should be executed when the data is encoded
 	 * @access protected
 	 * @var array
 	 */
-	protected $mDataEncodeHooks      = array();
+	protected $mDataEncodeHooks              = array();
 
 	/**
 	 * This property contains the data type
 	 * @access protected
 	 * @var string
 	 */
-	protected $mDataType             = null;
+	protected $mDataType                     = null;
 
 	/**
 	 * This property contains the request headers
 	 * @access protected
 	 * @var array
 	 */
-	protected $mHeaders              = array();
+	protected $mHeaders                      = array();
 
 	/**
 	 * This property contains the last sent request
 	 * @access protected
 	 * @var stdClass
 	 */
-	protected $mLastRequest          = null;
+	protected $mLastRequest                  = null;
 
 	/**
 	 * This property contains the last server response
 	 * @access protected
 	 * @var stdClass
 	 */
-	protected $mLastResponse         = null;
+	protected $mLastResponse                 = null;
 
 	/**
 	 * This method contains the local instance of OAuth
 	 * @var OAuth
 	 */
-	protected $mOauth                = null;
+	protected $mOauth                        = null;
 
 	/**
 	 * This property contains the OAuth consumer key
 	 * @access protected
 	 * @var string
 	 */
-	protected $mOauthConsumerKey     = null;
+	protected $mOauthConsumerKey             = null;
 
 	/**
 	 * This property contains the OAuth consumer secret
 	 * @access protected
 	 * @var string
 	 */
-	protected $mOauthConsumerSecret  = null;
+	protected $mOauthConsumerSecret          = null;
 
 	/**
 	 * This property contains the OAuth signature method
 	 * @access protected
 	 * @var string
 	 */
-	protected $mOauthSignatureMethod = self::OAUTH_SIGNATURE_METHOD_HMAC_SHA1;
+	protected $mOauthSignatureMethod         = self::OAUTH_SIGNATURE_METHOD_HMAC_SHA1;
 
 	/**
 	 * This property contains the OAuth token
 	 * @access protected
 	 * @var string
 	 */
-	protected $mOauthToken           = null;
+	protected $mOauthToken                   = null;
 
 	/**
 	 * This property contains the OAuth token secret
 	 * @access protected
 	 * @var string
 	 */
-	protected $mOauthTokenSecret     = null;
+	protected $mOauthTokenSecret             = null;
 
 	/**
 	 * This property contains the OAuth version that should be used
 	 * @access protected
 	 * @var string
 	 */
-	protected $mOauthVersion         = self::OAUTH_VERSION_1_0;
+	protected $mOauthVersion                 = self::OAUTH_VERSION_1_0;
 
 	/**
 	 * This property contains the HTTP password
 	 * @access protected
 	 * @var string
 	 */
-	protected $mPassword             = null;
+	protected $mPassword                     = null;
 
 	/**
 	 * This property contains hooks that should be executed before the request is made
 	 * @access protected
 	 * @var arrau
 	 */
-	protected $mRequestHooks         = array();
+	protected $mRequestHooks                 = array();
 
 	/**
 	 * This property contains the request method
 	 * @access protected
 	 * @var integer
 	 */
-	protected $mRequestMethod        = null;
+	protected $mRequestMethod                = null;
+
+	/**
+	 * This property contains the function or method to call when a required parameter is not set
+	 * @access protected
+	 * @var array|string
+	 */
+	protected $mRequiredParamMissingCallback = null;
+
+	/**
+	 * This property contains a list of required fields for the API call
+	 * @access protected
+	 * @var array
+	 */
+	protected $mRequiredParams               = array();
 
 	/**
 	 * This property contains the decoded response from the server
 	 * @access protected
 	 * @var array
 	 */
-	protected $mResponse             = array();
+	protected $mResponse                     = array();
 
 	/**
 	 * This property contains the hooks that should be executed upon response
 	 * @access protected
 	 * @var array
 	 */
-	protected $mResponseHooks        = array();
+	protected $mResponseHooks                = array();
 
 	/**
 	 * This property tells the system whether or not to use OAuth
 	 * @access protected
 	 * @var boolean
 	 */
-	protected $mUseOauth             = false;
+	protected $mUseOauth                     = false;
 
 	/**
 	 * This property contains the request url
 	 * @access protected
 	 * @var string
 	 */
-	protected $mUrl                  = null;
+	protected $mUrl                          = null;
 
 	/**
 	 * This property contains the HTTP username
 	 * @access protected
 	 * @var string
 	 */
-	protected $mUsername             = null;
+	protected $mUsername                     = null;
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
@@ -385,6 +424,56 @@ abstract class FramsieHttp {
 	///////////////////////////////////////////////////////////////////////////
 	/// Protected Methods ////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method checks the data parameters to ensure all of the required ones are present
+	 * @package Framsie
+	 * @package FramsieHttp
+	 * @access protected
+	 * @return void
+	 */
+	protected function checkRequiredParams() {
+		// First make sure there are params to check
+		if (empty($this->mRequiredParams)) {
+			// We're done
+			return;
+		}
+		// Loop through the parameters
+		foreach ($this->mRequiredParams as $sParameter => $sOrParameter) {
+			// Check the parameter and for other parameters
+			if (($this->keyExists($sParameter, true) === false) && (is_null($sOrParameter) === false) && ($this->keyExists($sOrParameter, true))) {
+				// Check for a callback
+				if (empty($this->mRequiredParamMissingCallback) === false) {
+					// Execute the callback
+					$this->executeRequiredParamMissingCallback($sParameter);
+					// We're done
+					return;
+				} else {
+					// Throw an exception
+					FramsieError::Trigger('FRAMMRP');
+					// We're done
+					return;
+				}
+			}
+			// Check for the parameter
+			if (($this->keyExists($sParameter, true) === false) && (is_null($sOrParameter) === true)) {
+				// Check for a callback
+				if (empty($this->mRequiredParamMissingCallback) === false) {
+					// Execute the callback
+					$this->executeRequiredParamMissingCallback($sParameter);
+					// We're done
+					return;
+				} else {
+					// Throw an exception
+					FramsieError::Trigger('FRAMMRP');
+					// We're done
+					return;
+				}
+			}
+		}
+		// We're done
+		return;
+	}
 
 	/**
 	 * This method encodes the parameters in the data array into a query string
@@ -495,19 +584,48 @@ abstract class FramsieHttp {
 	 * @access protected
 	 * @return FramsieHttp $this
 	 */
-	protected function executeRequestHooks() {
+	protected function executeRequestHooks(&$rCurlHandle) {
 		// Loop through the request hooks and execute them
 		foreach ($this->mRequestHooks as $sMethod) {
 			// Check to see if the method has an object associated with it
 			if (is_array($sMethod) === true) {
 				// Execute the hook
-				call_user_func($sMethod);
+				call_user_func_array($sMethod, array($rCurlHandle));
 			} else {
 				// Execute the method
-				$this->{$sMethod}();
+				call_user_func_array(array($this, $sMethod), array($rCurlHandle));
 			}
 		}
 		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method executes the callback for missing parameters that are required
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param string $sParameter
+	 * @return FramsieHttp $this
+	 */
+	protected function executeRequiredParamMissingCallback($sParameter) {
+		// Check to see if the callback is a closure
+		if (is_callable($this->mRequiredParamMissingCallback)) {
+			// Execute the callback
+			$this->mRequiredParamMissingCallback($sParameter);
+			// We're done
+			return $this;
+		}
+		// Check to see if the callback is simply a method in this class
+		if (is_string($this->mRequiredParamMissingCallback)) {
+			// Execute the method
+			call_user_func_array(array($this, $this->mRequiredParamMissingCallback), array($sParameter));
+			// We're done
+			return $this;
+		}
+		// Execute the callback
+		call_user_func_array($this->mRequiredParamMissingCallback, array($sParameter));
+		// We're done
 		return $this;
 	}
 
@@ -535,6 +653,27 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method initializes the cURL request handle
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param resource $rCurlHandle
+	 * @return FramsieHttp $this
+	 */
+	protected function initializeRequestHandle(&$rCurlHandle) {
+		// We want to return transfer
+		curl_setopt($rCurlHandle, CURLOPT_RETURNTRANSFER, true);
+		// We do not wish to verify the peer's SSL
+		curl_setopt($rCurlHandle, CURLOPT_SSL_VERIFYPEER, false);
+		// We do not wish to verify the host's SSL
+		curl_setopt($rCurlHandle, CURLOPT_SSL_VERIFYHOST, false);
+		// We want to follow any redirects
+		curl_setopt($rCurlHandle, CURLOPT_FOLLOWLOCATION, true);
+		// We're done
+		return $this;
+	}
+
+	/**
 	 * This method parses a Query string into the response or into an array
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -556,6 +695,170 @@ abstract class FramsieHttp {
 		// Parse the query string into the response
 		parse_str($sQuery, $this->mResponse);
 		// Return the instance
+		return $this;
+	}
+
+	/**
+	 * This method sets up the cURL handle for a DELETE request
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param resource $rCurlHandle
+	 * @return FramsieHttp $this
+	 */
+	protected function setupDeleteRequest(&$rCurlHandle) {
+		// Set the URL
+		curl_setopt($rCurlHandle, CURLOPT_URL, (empty($this->mData) ? $this->mUrl : implode('?', array($this->mUrl, $this->encodeDataParams()))));
+		// Tell the handle that we are making a DELETE request
+		curl_setopt($rCurlHandle, CURLOPT_CUSTOMREQUEST, self::REQUEST_METHOD_DELETE_NAME);
+		// We're done
+		return $this;
+	}
+
+	/**
+	 * This method sets up the cURL handle for a GET request
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param resource $rCurlHandle
+	 * @return FramsieHttp $this
+	 */
+	protected function setupGetRequest(&$rCurlHandle) {
+		// Set the URL
+		curl_setopt($rCurlHandle, CURLOPT_URL, (empty($this->mData) ? $this->mUrl : implode('?', array($this->mUrl, $this->encodeDataParams()))));
+		// We're done
+		return $this;
+	}
+
+	/**
+	 * This method sets up the HTTP username and password for the cURL request
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param resource $rCurlHandle
+	 * @return FramsieHttp $this
+	 */
+	protected function setupHttpCredentials(&$rCurlHandle) {
+		// Check for a username
+		if (!empty($this->mUsername) || !empty($this->mPassword)) {
+			// Set the username
+			curl_setopt($rCurlHandle, CURLOPT_USERPWD, implode(':', array($this->mUsername, $this->mPassword)));
+			// Tell the handle that we want to authenticate
+			curl_setopt($rCurlHandle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+		}
+		// We're done
+		return $this;
+	}
+
+	/**
+	 * This method sets up the headers for the cURL request
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param resource $rCurlHandle
+	 * @return FramsieHttp $this
+	 */
+	protected function setupHttpHeaders(&$rCurlHandle) {
+		// Check for headers
+		if (!empty($this->mHeaders)) {
+			// Set the headers
+			curl_setopt($rCurlHandle, CURLOPT_HTTPHEADER, $this->mHeaders);
+		} else {
+			// Turn headers off
+			curl_setopt($rCurlHandle, CURLOPT_HEADER, false);
+		}
+		// We're done
+		return $this;
+	}
+
+	/**
+	 * This method stores the last request data into an object for later reference
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param resource $rCurlHandle
+	 * @return FramsieHttp $this
+	 */
+	protected function setupLastRequest(&$rCurlHandle) {
+		// Set the request
+		$this->mLastRequest               = new stdClass();
+		// Set the url
+		$this->mLastRequest->sUrl         = (string) $this->mUrl;
+		// Set the request data
+		$this->mLastRequest->aRequestData = (array) $this->mData;
+		// Set the request query string
+		$this->mLastRequest->sQueryString = (string) (empty($this->mData) ? null : $this->encodeDataParams());
+		// We're done
+		return $this;
+	}
+
+	/**
+	 * This method sets up the last response object for later reference
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param resource $rCurlHandle
+	 * @param array|object|string $mResponse
+	 * @param Exception $oException
+	 * @return FramsieHttp $this
+	 */
+	protected function setupLastResponse(&$rCurlHandle, $mResponse, $oException = null) {
+		// Initialize the response
+		$this->mLastResponse             = new stdClass();
+		// Set the raw response
+		$this->mLastResponse->sResponse  = (string) $mResponse;
+		// Set the cURL response code
+		$this->mLastResponse->iCode      = (integer) curl_errno($rCurlHandle);
+		// Set the success code
+		$this->mLastResponse->bSuccess   = (boolean) true;
+		// Check for an exception
+		if (empty($oException) === false) {
+			// Set the response status
+			$this->mLastRespons->bSuccess    = (boolean) false;
+			// Set the cURL error
+			$this->mLastResponse->sError     = (string) curl_error($rCurlHandle);
+			// Set the exception
+			$this->mLastResponse->oException = $oException;
+		}
+		// We're done
+		return $this;
+	}
+
+	/**
+	 * This method sets up the cURL handle for a POST request
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param resource $rCurlHandle
+	 * @return FramsieHttp $this
+	 */
+	protected function setupPostRequest(&$rCurlHandle) {
+		// Set the URL
+		curl_setopt($rCurlHandle, CURLOPT_URL, $this->mUrl);
+		// Tell the handle that we are making a POST request
+		curl_setopt($rCurlHandle, CURLOPT_POST, true);
+		// Send the data
+		curl_setopt($rCurlHandle, CURLOPT_POSTFIELDS, (empty($this->mData) ? null : $this->encodeDataParams()));
+		// We're done
+		return $this;
+	}
+
+	/**
+	 * This method sets up the cURL handle for a PUT request
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access protected
+	 * @param resource $rCurlHandle
+	 * @return FramsieHttp $this
+	 */
+	protected function setupPutRequest(&$rCurlHandle) {
+		// Set the URL
+		curl_setopt($rCurlHandle, CURLOPT_URL, $this->mUrl);
+		// Tell the handle that we are making a PUT request
+		curl_setopt($rCurlHandle, CURLOPT_CUSTOMREQUEST, self::REQUEST_METHOD_PUT_NAME);
+		// Send the data
+		curl_setopt($rCurlHandle, CURLOPT_POSTFIELDS, (empty($this->mData) ? null : $this->encodeDataParams()));
+		// We're done
 		return $this;
 	}
 
@@ -641,6 +944,22 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method adds a required parameter to the system
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param string $sParam
+	 * @param string $sOrField
+	 * @return FramsieHttp $this
+	 */
+	public function addRequriedParam($sParam, $sOrField = null) {
+		// Add the field to the system
+		$this->mRequiredParams[$sParam] = $sOrField;
+		// We're done
+		return $this;
+	}
+
+	/**
 	 * This method adds a hook method to the response
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -666,26 +985,28 @@ abstract class FramsieHttp {
 	 * @param array|string $mKey
 	 * @return boolean
 	 */
-	public function keyExists($mKey) {
+	public function keyExists($mKey, $bSearchRequest = false) {
 		// Check to see if the key is an array
 		if (is_array($mKey)) {
 			// Localize the response
-			$aResponse = $this->mResponse;
+			$aSearch = (($bSearchRequest === true) ? $this->mData : $this->mResponse);
 			// Loop through the keys
 			foreach ($mKey as $sKey) {
 				// Check to see of the key exists
-				if (empty($aResponse[$sKey])) {
+				if (array_key_exists($mKey, $aSearch) === false) {
 					// We're done
 					return false;
 				}
 				// Update the response
-				$aResponse = $aResponse[$mKey];
+				$aSearch = $aSearch[$mKey];
 			}
 			// We're done
 			return true;
 		}
+		// Localize the response
+		$aSearch = (($bSearchRequest === true) ? $this->mData : $this->mResponse);
 		// Check for the key
-		if (emty($this->mResponse[$mKey])) {
+		if (array_key_exists($mKey, $aSearch) === false) {
 			// We're done
 			return false;
 		}
@@ -741,45 +1062,28 @@ abstract class FramsieHttp {
 			// Setup OAuth
 			$this->setupOauth();
 		}
+		// Make sure all required fields are present
+		$this->checkRequiredParams();
 		// Initialize the cURL handler
 		$rHandle = curl_init();
+		// Initialize the cURL handle
+		$this->initializeRequestHandle($rHandle);
 		// Determine the request method
-		if ($this->mRequestMethod === self::REQUEST_METHOD_GET) {
-			// Set the URL
-			curl_setopt($rHandle, CURLOPT_URL, (empty($this->mData) ? $this->mUrl : $this->mUrl.'?'.$this->encodeDataParams()));
-		} else {
-			// Tell the handle that we are making a POST request
-			curl_setopt($rHandle, CURLOPT_POST, true);
-			// Send the data
-			curl_setopt($rHandle, CURLOPT_POSTFIELDS, (empty($this->mData) ? null : $this->encodeDataParams()));
+		switch ($this->mRequestMethod) {
+			case self::REQUEST_METHOD_DELETE : $this->setupDeleteRequest($rHandle); break; // DELETE
+			case self::REQUEST_METHOD_GET    : $this->setupGetRequest   ($rHandle); break; // GET
+			case self::REQUEST_METHOD_POST   : $this->setupPostRequest  ($rHandle); break; // POST
+			case self::REQUEST_METHOD_PUT    : $this->setupPutRequest   ($rHandle); break; // PUT
+			default                          : $this->setupGetRequest   ($rHandle); break; // Default to GET requests
 		}
-		// Check for a username
-		if (!empty($this->mUsername) || !empty($this->mPassword)) {
-			// Set the username
-			curl_setopt($rHandle, CURLOPT_USERPWD, "{$this->mUsername}:{$this->mPassword}");
-			// Tell the handle that we want to authenticate
-			curl_setopt($rHandle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-		}
-		// Check for headers
-		if (!empty($this->mHeaders)) {
-			// Set the headers
-			curl_setopt($rHandle, CURLOPT_HTTPHEADER, $this->mHeaders);
-		} else {
-			// Turn headers off
-			curl_setopt($rHandle, CURLOPT_HEADER, false);
-		}
-		// Tell the handle that we want to return the data
-		curl_setopt($rHandle, CURLOPT_RETURNTRANSFER, true);
-		// Set the request
-		$this->mLastRequest = new stdClass();
-		// Set the url
-		$this->mLastRequest->sUrl         = (string) $this->mUrl;
-		// Set the request data
-		$this->mLastRequest->aRequestData = (array) $this->mData;
-		// Set the request query string
-		$this->mLastRequest->sQueryString = (string) (empty($this->mData) ? null : $this->encodeDataParams());
+		// Setup the HTTP username and password
+		$this->setupHttpCredentials($rHandle);
+		// Setup the HTTP headers
+		$this->setupHttpHeaders($rHandle);
+		// Setup the last request object
+		$this->setupLastRequest($rHandle);
 		// Execute the request hooks
-		$this->executeRequestHooks();
+		$this->executeRequestHooks($rHandle);
 		// Set the response placeholder
 		$sResponse = null;
 		// Try to execute the handle
@@ -787,29 +1091,15 @@ abstract class FramsieHttp {
 			// Execute the handle
 			$sResponse = curl_exec($rHandle);
 		} catch (Exception $oException) {
-			// Initialize the response
-			$this->mLastResponse = new stdClass();
-			// Set the raw response
-			$this->mLastResponse->sResponse = (string) $sResponse;
-			// Set the response status
-			$this->mLastRespons->bSuccess   = (boolean) false;
-			// Set the cURL error
-			$this->mLastResponse->sError    = (string) curl_error($rHandle);
-			// Set the cURL response code
-			$this->mLastResponse->iCode     = (integer) curl_errno($rHandle);
+			// Setup the last response
+			$this->setupLastResponse($rHandle, $sResponse, $oException);
 			// Close the handle
 			curl_close($rHandle);
 			// Return the instance
 			return $this;
 		}
-		// Initialize the response
-		$this->mLastResponse            = new stdClass();
-		// Set the raw response
-		$this->mLastResponse->sResponse = (string) $sResponse;
-		// Set the response status
-		$this->mLastResponse->bSuccess  = (boolean) true;
-		// Set the cURL response code
-		$this->mLastResponse->iCode     = (integer) curl_errno($rHandle);
+		// Setup the last response
+		$this->setupLastResponse($rHandle, $sResponse);
 		// Determine the datatype
 		switch ($this->mDataType) {
 			case self::DATA_TYPE_JSON      : $this->mResponse = json_decode($sResponse, true);                   break; // JSON
@@ -1114,6 +1404,18 @@ abstract class FramsieHttp {
 	}
 
 	/**
+	 * This method returns the callback hook for the missing parameters check
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @return array|closure
+	 */
+	public function getRequiredParamMissingCallback() {
+		// Return the callback
+		return $this->mRequiredParamMissingCallback;
+	}
+
+	/**
 	 * This method returns the last processed response in the system
 	 * @package Framsie
 	 * @subpackage FramsieHttp
@@ -1319,6 +1621,49 @@ abstract class FramsieHttp {
 		$this->mRequestMethod = (integer) $iRequestMethod;
 		// Return the instance
 		return $this;
+	}
+
+	/**
+	 * This method adds a callback to the required parameters check hook
+	 * @package Framsie
+	 * @subpackage FramsieHttp
+	 * @access public
+	 * @param closure|string $mCallback
+	 * @param object|string $mObject
+	 * @return FramsieHttp $this
+	 */
+	public function setRequiredParamMissingCallback($mCallback, $mObject = null) {
+		// First check to see if they provided a literal callback
+		if (is_callable($mCallback)) {
+			// Set the callback into the system
+			$this->mRequiredParamMissingCallback = $mCallback;
+			// We're done
+			return $this;
+		}
+		// Check to see if the method or function they provided exists
+		if (method_exists($this, $mCallback) || function_exists($mCallback)) {
+			// Set the callback into the system
+			$this->mRequiredParamMissingCallback = $mCallback;
+			// We're done
+			return $this;
+		}
+		// Check to see if an object was provided with the method
+		if (is_null($mObject) === false) {
+			// Check to see if object provided is a string or instance
+			if (is_string($mObject) && class_exists($mObject)) {
+				// Instantiate the object
+				$mObject = new $mObject();
+			}
+			// Check to see if the method exists in the object
+			if (method_exists($mObject, $mCallback)) {
+				// Set the callback into the system
+				$this->mRequiredParamMissingCallback = array($mObject, $mCallback);
+				// We're done
+				return $this;
+			}
+		}
+		// If we get to this point, trigger an exception
+		FramsieError::Trigger('FRAMICS');
 	}
 
 	/**
