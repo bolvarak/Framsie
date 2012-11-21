@@ -189,6 +189,24 @@ class FramsieHttp {
 	const REQUEST_METHOD_POST_NAME           = 'POST';
 
 	/**
+	 * This constant contains the C variable notator for replacements when building a URL
+	 * @var string
+	 */
+	const VARIABLE_NOTATOR_C                 = '%s';
+
+	/**
+	 * This constant contains the Framsie variable notator for replacements when building a URL
+	 * @var string
+	 */
+	const VARIABLE_NOTATOR_DEFAULT           = ':=';
+
+	/**
+	 * This constant contains the PDO variable notator for replacements when building a URL
+	 * @var string
+	 */
+	const VARIABLE_NOTATOR_PDO               = '?';
+
+	/**
 	 * This constant contains the XOAuth parameter name prefix
 	 * @var string
 	 */
@@ -1004,6 +1022,45 @@ class FramsieHttp {
 	}
 
 	/**
+	 * This method builds a request URI from a URI template and variable replacements
+	 * @package Framsie
+	 * @subpackage FramsieHtto
+	 * @param string $sUri
+	 * @param array $aReplacements
+	 * @param string $sVariableNotator
+	 * @throws FramsieException
+	 * @return string
+	 */
+	public function buildUri($sUri, $aReplacements, $sVariableNotator = self::VARIABLE_NOTATOR_DEFAULT) {
+		// Grab the number of occurrences of the notator
+		$iOccurrences = substr_count($sUri, $sVariableNotator);
+		// Check the number of replacements for too many
+		if (count($aReplacements) < $iOccurrences) {
+			// Trigger an exception
+			FramsieError::Trigger('FRAMTMR');
+		}
+		// Check the number of replacements for too few
+		if (count($aReplacements) > $iOccurrences) {
+			// Trigger an exception
+			FramsieError::Trigger('FRAMTFR');
+		}
+		// Loop through the occurrences
+		for ($iOccurrence = 0; $iOccurrence < $iOccurrences; $iOccurrence++) {
+			// Make the replacement
+			$sUri = (string) substr_replace($sUri, rawurlencode($aReplacements[0]), strpos($sUri, $sVariableNotator), strlen($sVariableNotator));
+			// Remove the this replacement
+			array_shift($aReplacements);
+		}
+		// Make sure the URL is valid
+		if (filter_var($sUri, FILTER_VALIDATE_URL) === false) {
+			// Trigger an exception
+			FramsieError::Trigger('FRAMIRQ', array($sUri));
+		}
+		// Return the URI
+		return $sUri;
+	}
+
+	/**
 	 * This method checks to see if a key exists in the response
 	 * @package Framsis
 	 * @subpackage FramsieHttp
@@ -1779,7 +1836,7 @@ class FramsieHttp {
 	 * @subpackage FramsieHttp
 	 * @access public
 	 * @param string $sUrl
-	 * @throws Exception
+	 * @throws FramsieException
 	 * @return FramsieHttp $this
 	 */
 	public function setUrl($sUrl) {
@@ -1791,6 +1848,6 @@ class FramsieHttp {
 			return $this;
 		}
 		// Throw an exception
-		throw new Exception("The URL \"{$sUrl}\" is not a valid URL.");
+		FramsieError::Trigger('FRAMIRQ', array($sUrl));
 	}
 }

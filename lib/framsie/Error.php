@@ -54,7 +54,7 @@ class FramsieError {
 		'FRAMICS' => 'Invalid callback method provided.',
 		'FRAMINF' => 'Unable to instantiate the class ":="',
 		'FRAMIPN' => ':= is an invalid property name, you must use "Section.Property"',
-		'FRAMIRQ' => 'The request URI ":=" has been deemed invalid by the system',
+		'FRAMIRQ' => 'The request URI ":=" is invalid.',
 		'FRAMMRP' => 'Missing required parameter ":=".',
 		'FRAMNPK' => 'Mo primary key value provided.',
 		'FRAMNTM' => 'No FramsieTableMapper was set for the table\'s records, you must set this in order for FramsieTableLoader to work properly.',
