@@ -674,10 +674,10 @@ class FramsieHttp {
 			// Check to see if the method has an object associated with it
 			if (is_array($sMethod) === true) {
 				// Execute the hook
-				call_user_func($sMethod);
+				call_user_func_array($sMethod, array($this->mResponse));
 			} else {
 				// Execute the method
-				$this->{$sMethod}();
+				call_user_func_array(array($this, $sMethod), array($this->mResponse));
 			}
 		}
 		// Return the instance
@@ -1727,10 +1727,10 @@ class FramsieHttp {
 	 * @subpackage FramsieHttp
 	 * @access public
 	 * @param string $sData
-	 * @param boolean $bEncode
+	 * @param boolean $bEncode [false]
 	 * @return FramsieHttp $this
 	 */
-	public function setRawRequestData($sData, $bEncode = true) {
+	public function setRawRequestData($sData, $bEncode = false) {
 		// Check to see if we need to encode the data
 		if ($bEncode === true) {
 			// Encode the data
