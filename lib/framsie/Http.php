@@ -1078,12 +1078,12 @@ class FramsieHttp {
       // Loop through the keys
       foreach ($mKey as $sKey) {
         // Check to see of the key exists
-        if (array_key_exists($mKey, $aSearch) === false) {
+        if (array_key_exists($sKey, $aSearch) === false) {
           // We're done
           return false;
         }
         // Update the response
-        $aSearch = $aSearch[$mKey];
+        $aSearch = $aSearch[$sKey];
       }
       // We're done
       return true;
@@ -1120,7 +1120,7 @@ class FramsieHttp {
           return false;
         }
         // Update the response
-        $aResponse = $aResponse[$mKey];
+        $aResponse = $aResponse[$sKey];
       }
       // We're done
       return true;
