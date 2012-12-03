@@ -1727,14 +1727,15 @@ class FramsieHttp {
 	 * @subpackage FramsieHttp
 	 * @access public
 	 * @param string $sData
-	 * @param boolean $bEncode [false]
 	 * @return FramsieHttp $this
 	 */
-	public function setRawRequestData($sData, $bEncode = false) {
-		// Check to see if we need to encode the data
-		if ($bEncode === true) {
-			// Encode the data
-			$sData = rawurlencode($sData);
+	public function setRawRequestData($sData) {
+		// Determine the datatype
+		switch ($this->mDataType) {
+			case self::DATA_TYPE_JSON      : $this->mRawRequestData = (string) json_encode($sData);      break; // JSON
+			case self::DATA_TYPE_QUERY_STR : $this->mRawRequestData = (string) http_build_query($sData); break; // Query String
+		     // case self::DATA_TYPE_XML       : $this->mResponse = FramsieXml::getInstance()->toObject($sResponse); break; // XML
+			default                        : $this->mRawRequestData = (string) $sData;                   break; // HTML|SCRIPT|TEXT
 		}
 		// Set the data into the system
 		$this->mRawRequestData = (string) $sData;
