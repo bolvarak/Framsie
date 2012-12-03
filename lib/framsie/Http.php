@@ -820,6 +820,8 @@ class FramsieHttp {
 		$this->mLastRequest->aRequestData = (array) $this->mData;
 		// Set the request query string
 		$this->mLastRequest->sQueryString = (string) (empty($this->mData) ? null : $this->encodeDataParams());
+		// Set the cURL information
+		$this->mLastRequest->sInfo        = curl_getinfo($rCurlHandle);
 		// We're done
 		return $this;
 	}
