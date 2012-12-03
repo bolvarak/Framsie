@@ -1207,12 +1207,21 @@ class FramsieHttp {
    */
   public function resetClient() {
     // Reset the parameters
-    $this->mData = array();
+    $this->mData           = array();
+    // Reset the headers
+    $this->mHeaders        = array();
     // Reset the raw data request
     $this->mRawRequestData = null;
-    $this->mSendRawRequest = false;
+    // Reset the request hooks
+    $this->mRequestHooks   = array();
     // Reset the required fields
     $this->mRequiredParams = array();
+    // Reset the response
+    $this->mResponse       = null;
+    // Reset the response hooks
+    $this->mResponseHooks  = array();
+    // Reset the raw request status
+    $this->mSendRawRequest = false;
     // Return the instance
     return $this;
   }
