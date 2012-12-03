@@ -1314,6 +1314,36 @@ class FramsieHttp {
     // Return the current HTTP username
     return $this->mUsername;
   }
+  
+  /**
+   * This method returns a key or subkey from the response
+   * @package Framsie
+   * @subpackage FramsieHttp
+   * @access public
+   * @param array|integer|string $mKey
+   * @return multitype
+   */
+  public function getKey($mKey) {
+    // Make sure the key exists
+    if ($this->keyExists($mKey) === false) {
+      // The key doesn't exist so return null
+      return null;
+    }
+    // Check to see if the key is an array
+    if (is_array($mKey)) {
+      // Localize the response
+      $aSearch = $this->mResponse;
+      // Loop through the keys
+      foreach ($mKey as $sKey) {
+        // Update the response
+        $aSearch = $aSearch[$mKey];
+      }
+      // We're done
+      return $aSearch;
+    }
+    // Return the key
+    return $this->mResponse[$mKey];
+  }
 
   /**
    * This method returns the last request in the system
