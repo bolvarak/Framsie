@@ -1336,7 +1336,7 @@ class FramsieHttp {
       // Loop through the keys
       foreach ($mKey as $sKey) {
         // Update the response
-        $aSearch = $aSearch[$mKey];
+        $aSearch = $aSearch[$sKey];
       }
       // We're done
       return $aSearch;
