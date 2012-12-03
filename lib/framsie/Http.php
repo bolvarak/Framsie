@@ -1737,8 +1737,6 @@ class FramsieHttp {
 		     // case self::DATA_TYPE_XML       : $this->mResponse = FramsieXml::getInstance()->toObject($sResponse); break; // XML
 			default                        : $this->mRawRequestData = (string) $sData;                   break; // HTML|SCRIPT|TEXT
 		}
-		// Set the data into the system
-		$this->mRawRequestData = (string) $sData;
 		// We're done
 		return $this;
 	}
