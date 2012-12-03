@@ -941,7 +941,7 @@ class FramsieHttp {
    */
   public function addHeader($sName, $sValue) {
     // Add the header to the system
-    array_push($this->mHeaders, "{$sName}:  {$sValue}\n");
+    array_push($this->mHeaders, "{$sName}: {$sValue}");
     // Return the instance
     return $this;
   }
