@@ -446,7 +446,7 @@ class FramsieSmtp {
 	protected function readSocket() {
 		// Read from the socket
 		$this->mResponse = (string) fgets($this->mSocket, self::READ_BITS);
-		var_dump($this->mResponse); flush();
+		file_put_contents('/home/tbrown/sites/beta.travismbrown.com/smtp.log', $this->mResponse, FILE_APPEND);
 		// Check for a socket
 		if (empty($this->mSocket)) {
 			// Throw an exception
