@@ -85,6 +85,12 @@ class FramsieSmtp {
 	protected static $mInstance   = null;
 
 	/**
+	 * This property contains an array of hooks that are executed once the systems logs in
+	 * @access protected
+	 */
+	protected $mAuthHooks         = array();
+
+	/**
 	 * This property contains the message
 	 * @access protected
 	 * @var string
@@ -440,6 +446,7 @@ class FramsieSmtp {
 	protected function readSocket() {
 		// Read from the socket
 		$this->mResponse = (string) fgets($this->mSocket, self::READ_BITS);
+		var_dump($this->mResponse); flush();
 		// Check for a socket
 		if (empty($this->mSocket)) {
 			// Throw an exception
@@ -494,6 +501,30 @@ class FramsieSmtp {
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * This method adds an authentication hook to the system
+	 * @package Framsie
+	 * @subpackage FramsieSmtp
+	 * @access public
+	 * @param array|callback|string $mHook
+	 * @throws FramsieException
+	 * @return FramsieSmtp $this
+	 */
+	public function addAuthenticationHook($mHook) {
+		// Check for an array and if we can call the method
+		if (is_array($mHook) && (method_exists($mHook[0], $mHook[1]) === false)) {
+			// Throw an exception
+			FramsieError::Trigger('FRAMICS');
+		}
+		// Check for the method in this object or if the callback is an anonymous function
+		if ((method_exists($this, $mHook) === false) && (is_callable($mHook) === false)) {
+			// Throw an exception
+			FramsieError::Trigger('FRAMICS');
+		}
+		// Add the hook
+		array_push($this->mAuthHooks, $mHook);
+	}
 
 	/**
 	 * This method adds a recipient to the system
