@@ -531,7 +531,12 @@ class FramsieSmtp {
 			$this->setServerPort   (FramsieConfiguration::Load('smtpSettings.serverPort'));
 		}
 		// Open the socket
-		$this->mSocket = fsockopen($this->mServerAddress, $this->mServerPort, $sError, $iError, $this->mTimeout);
+		$this->mSocket = fsockopen($this->mServerAddress, $this->mServerPort, $iError, $sError, $this->mTimeout);
+		// Check for a connection
+		if (!$this->mSocket || (empty($sError) === false)) {
+			// Throw an exception
+			throw new Exception($sError, $iError);
+		}
 		// Process the response
 		$this->readSocket();
 		// Send the HELO
