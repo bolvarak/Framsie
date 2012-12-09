@@ -18,19 +18,25 @@ class Framsie {
 	 * This constant defines the development environment name
 	 * @var string
 	 */
-	const ENV_DEVELOPMENT = 'devel';
+	const ENV_DEVELOPMENT  = 'devel';
 
 	/**
 	 * This constant defines the production environment name
 	 * @var string
 	 */
-	const ENV_PRODUCTION  = 'prod';
+	const ENV_PRODUCTION   = 'prod';
 
 	/**
 	 * This constant defines the staging environment name
 	 * @var string
 	 */
-	const ENV_STAGING     = 'stg';
+	const ENV_STAGING      = 'stg';
+
+	/**
+	 * This constant contains the Framsie notation for template strings
+	 * @var string
+	 */
+	const FRAMSIE_NOTATION = ':=';
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
@@ -336,6 +342,41 @@ class Framsie {
 		}
 		// Return the instance
 		return $oInstance;
+	}
+
+	/**
+	 * This method provides a string template variable replacement system for preparing template strings
+	 * @package Framsie
+	 * @access public
+	 * @static
+	 * @param string $sString
+	 * @param array $aReplacements
+	 * @param string $sNotation
+	 * @throws FramsieException
+	 * @return string
+	 */
+	public static function PrepareString($sString, $aReplacements = array(), $sNotation = self::FRAMSIE_NOTATION) {
+		// Grab the number of occurrences of the notator
+		$iOccurrences = substr_count($sString, $sNotation);
+		// Check the number of replacements for too many
+		if (count($aReplacements) < $iOccurrences) {
+			// Trigger an exception
+			self::Trigger('FRAMTMR');
+		}
+		// Check the number of replacements for too few
+		if (count($aReplacements) > $iOccurrences) {
+			// Trigger an exception
+			self::Trigger('FRAMTFR');
+		}
+		// Loop through the occurrences
+		for ($iOccurrence = 0; $iOccurrence < $iOccurrences; $iOccurrence++) {
+			// Make the replacement
+			$sString = (string) substr_replace($sString, $aReplacements[0], strpos($sString, $sNotation), strlen($sNotation));
+			// Remove the this replacement
+			array_shift($aReplacements);
+		}
+		// Return the proper error message
+		return $sString;
 	}
 
 	///////////////////////////////////////////////////////////////////////////
