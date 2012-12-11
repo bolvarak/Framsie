@@ -114,7 +114,7 @@ class FramsieTableMapper {
 			// Set the property name
 			$sColumn = (string) substr_replace($sMethod, null, 0, 3);
 			// Make sure the column exists
-			if (empty($this->mColumns[$sColumn])) {
+			if (array_key_exists($sColumn, $this->mColumns) === false) {
 				// Throw an exception
 				throw new Exception("The column \"{$sColumn}\" does not exist in the table \"{$this->mDbTable}\".");
 			}
@@ -126,7 +126,7 @@ class FramsieTableMapper {
 			// Set the property name
 			$sColumn = (string) substr_replace($sMethod, null, 0, 3);
 			// Make sure the column exists
-			if (empty($this->mColumns[$sColumn])) {
+			if (array_key_exists($sColumn, $this->mColumns) === false) {
 				// Throw an exception
 				throw new Exception("The column \"{$sColumn}\" does not exist in the table \"{$this->mDbTable}\".");
 			}
@@ -151,9 +151,9 @@ class FramsieTableMapper {
 	 */
 	public function __get($sProperty) {
 		// Make sure the column exists
-		if (empty($this->mColumns[substr($sProperty, 1)])) {
+		if (array_key_exists(substr($sProperty, 1), $this->mColumns) === false) {
 			// Throw an exception
-			throw new Exception("The column \"".substr($sProperty, 1)."\" does not exist in the table \"{$this->mDbTable}\".");
+			throw new Exception("The column \"".substr($sProperty, 1)."\" does not exist in the table \"{$this->mDbTable}\" or is not readable.");
 		}
 		// Return the property
 		return $this->{$sProperty};
@@ -171,9 +171,9 @@ class FramsieTableMapper {
 	 */
 	public function __set($sProperty, $mValue) {
 		// Make sure the column exists
-		if (empty($this->mColumns[substr($sProperty, 1)])) {
+		if (array_key_exists(substr($sProperty, 1), $this->mColumns) === false) {
 			// Throw an exception
-			throw new Exception("The column \"".substr($sProperty, 1)."\" does not exist in the table \"{$this->mDbTable}\".");
+			throw new Exception("The column \"".substr($sProperty, 1)."\" does not exist in the table \"{$this->mDbTable}\" or is not writable.");
 		}
 		// Set the property
 		$this->{$sProperty} = $this->determineValueType(substr($sProperty, 1), $mValue);
@@ -277,32 +277,21 @@ class FramsieTableMapper {
 	 * @package Framsie
 	 * @subpackage FramsieTableMapper
 	 * @access protected
-	 * @param array|object $oPdoResultSet
 	 * @return FramsieTableMapper $this
 	 */
-	protected function initializeObject($oPdoResultSet = array()) {
+	protected function initializeObject() {
 		// Make sure the table name is set
 		$this->verifyDbTable();
 		// Load the column data
-		$this->mColumns = FramsieDatabaseInterface::getInstance(true)
-			->setTable  ($this->mDbTable) // Send the table name
+		$this->mColumns = new FramsieDatabaseInterface();
+		$this->mColumns = $this->mColumns
+                        ->setTable  ($this->mDbTable) // Send the table name
 			->getColumns();               // Load the column data
+
 		// Loop through the columns
 		foreach ($this->mColumns as $sColumn => $oColumn) {
-			// Set the global name
-			$sGlobal = (string) "m{$sColumn}";
 			// Set the property
-			$this->{$sGlobal} = $this->determineDefaultValueType($oColumn);
-		}
-		// Loop through the PDO object if one is provided
-		foreach ($oPdoResultSet as $sColumn => $mValue) {
-			// Check to see if the column exists
-			if (empty($this->mColumns[$sColumn]) === false) {
-				// Set the global property name
-				$sGlobal = (string) "m{$sColumn}";
-				// Set the property
-				$this->{$sGlobal} = $this->determineValueType($sColumn, $mValue);
-			}
+			$this->{"m{$sColumn}"} = $this->determineDefaultValueType($oColumn);
 		}
 		// Return the instance
 		return $this;
@@ -424,7 +413,15 @@ class FramsieTableMapper {
 	 */
 	public function fromPdo($oPdoResults) {
 		// Load the PDO result set into the object
-		$this->initializeObject($oPdoResults);
+		$this->initializeObject();
+                // Loop through the PDO object if one is provided
+        	foreach ($oPdoResults as $sColumn => $mValue) {
+			// Check to see if the column exists
+			if (array_key_exists($sColumn. $this->mColumns)) {
+				// Set the property
+				$this->{"m{$sColumn}"} = $this->determineValueType($sColumn, $mValue);
+			}
+		}
 		// Return the instance
 		return $this;
 	}
@@ -451,15 +448,15 @@ class FramsieTableMapper {
 		}
 		// Setup the database interface
 		FramsieDatabaseInterface::getInstance(true)       // Instantiate the interface
-		->setQuery(FramsieDatabaseInterface::SELECTQUERY) // We want a SELECT query
-		->setTable($this->mDbTable);                      // Set the table
+		        ->setQuery(FramsieDatabaseInterface::SELECTQUERY) // We want a SELECT query
+		        ->setTable($this->mDbTable);                      // Set the table
 		// Check to see if we are simply loading by ID
 		if (empty($iUniqueIdentifier) && empty($aWhere)) {
 			// Throw an exception
 			throw new Exception('You must provide either a primary key unique identifier or at least one additional WHERE clause.');
 		}
 		// Check to see if the unique identifier is empty
-		if ((empty($iUniqueIdentifier) === false) && (is_null($iUniqueIdentifier) === false)) {
+		if (is_null($iUniqueIdentifier) === false) {
 			// Set the unique ID
 			FramsieDatabaseInterface::getInstance()->addWhereClause($this->mPrimaryKey, $iUniqueIdentifier);
 		}
@@ -470,7 +467,6 @@ class FramsieTableMapper {
 		}
 		// Add the fields to the interface
 		$this->setColumnMapIntoInterface(false);
-		// Loop through the additional where clauses
 		// Generate the query
 		FramsieDatabaseInterface::getInstance()->generateQuery();
 		// Grab the row
@@ -483,7 +479,7 @@ class FramsieTableMapper {
 		// Loop through the object
 		foreach ($oMapRow as $sColumn => $mValue) {
 			// Set the property
-			$this->{'m'.$sColumn} = $this->determineValueType($sColumn, $mValue);
+			$this->{"m{$sColumn}"} = $this->determineValueType($sColumn, $mValue);
 		}
 		// Return the instance
 		return $this;
@@ -506,9 +502,9 @@ class FramsieTableMapper {
 		// Check to see if we have a primary key value
 		if (empty($this->{'m'.$this->mPrimaryKey}) || ($this->mIsLookupTable === true)) { // Run an INSERT
 			// Setup the database interface
-			FramsieDatabaseInterface::getInstance(true)           // Instantiate the interface
-			->setQuery(FramsieDatabaseInterface::INSERTQUERY) // We want an INSERT query
-			->setTable($this->mDbTable);                      // Set the table
+			FramsieDatabaseInterface::getInstance(true)               // Instantiate the interface
+			        ->setQuery(FramsieDatabaseInterface::INSERTQUERY) // We want an INSERT query
+			        ->setTable($this->mDbTable);                      // Set the table
 			// Add the fields to the insterface
 			$this->setColumnMapIntoInterface(true);
 			// Loop through the where clause

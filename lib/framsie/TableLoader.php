@@ -170,7 +170,7 @@ class FramsieTableLoader {
 				// Instantiate the TableMapper
 				$oMapper = Framsie::Loader($this->mTableMapper, $this->mTable, $this->mUniqueIdentifierColumn);
 				// Push the TableMapper instance
-				array_push($this->mIterator, $oMapper->load($this->mUniqueIdentifierColumn));
+				array_push($this->mIterator, $oMapper->load($oRow->{$this->mUniqueIdentifierColumn}));
 			} else {
 				// Instantiate the TableMapper
 				$oMapper = Framsie::Loader($this->mTableMapper);

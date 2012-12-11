@@ -115,24 +115,10 @@ class FramsieError {
 		if (empty(self::$mErrors[$mCode]) === false) {
 			// Localize the error
 			$sError       = (string) self::$mErrors[$mCode];
-			// Grab the number of occurrences of the notator
-			$iOccurrences = substr_count($sError, $sVariableNotator);
-			// Check the number of replacements for too many
-			if (count($aReplacements) < $iOccurrences) {
-				// Trigger an exception
-				self::Trigger('FRAMTMR');
-			}
-			// Check the number of replacements for too few
-			if (count($aReplacements) > $iOccurrences) {
-				// Trigger an exception
-				self::Trigger('FRAMTFR');
-			}
-			// Loop through the occurrences
-			for ($iOccurrence = 0; $iOccurrence < $iOccurrences; $iOccurrence++) {
-				// Make the replacement
-				$sError = (string) substr_replace($sError, $aReplacements[0], strpos($sError, $sVariableNotator), strlen($sVariableNotator));
-				// Remove the this replacement
-				array_shift($aReplacements);
+			// Check for replacements
+			if (empty($aReplacements) === false) {
+				// Make the replacements
+				$sError = (string) Framsie::PrepareString($sError, $aReplacements, $sVariableNotator);
 			}
 			// Return the proper error message
 			return $sError.' (Error:  '.$mCode.')';

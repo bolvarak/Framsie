@@ -17,61 +17,103 @@ class FramsieSmtp {
 	 * This constant contains the method number for the AUTH LOGIN request
 	 * @var integer
 	 */
-	const AUTH_LOGIN_REQUEST      = 1;
+	const AUTH_LOGIN_REQUEST        = 1;
+
+	/**
+	 * This constant contains the SMTP login command
+	 * @var string
+	 */
+	const AUTH_LOGIN_REQUEST_CMD    = 'AUTH LOGIN:=';
 
 	/**
 	 * This constant contains the method number for the DATA request
 	 * @var integer
 	 */
-	const DATA_REQUEST            = 4;
+	const DATA_REQUEST              = 4;
+
+	/**
+	 * This constant contains the SMTP DATA command
+	 * @var string
+	 */
+	const DATA_REQUEST_CMD          = 'DATA:=';
+
+	/**
+	 * This constant contains the actual SMTP header command string
+	 * @var string
+	 */
+	const HEADER_REQUEST_CMD        = 'To:  <:=>:=From:  <:=>:=Subject:  :=:=:=:=:=:=.:=';
 
 	/**
 	 * This constant contains the method number for the HELO request
 	 * @var integer
 	 */
-	const HELO_REQUEST            = 0;
+	const HELO_REQUEST              = 0;
+
+	/**
+	 * This constant contains the SMTP EHLO request command
+	 * @var string
+	 */
+	const HELO_REQUEST_CMD          = 'EHLO :=:=';
 
 	/**
 	 * This constant contains the method number for the RCPT TO request
 	 * @var integer
 	 */
-	const MAIL_FROM_REQUEST       = 2;
+	const MAIL_FROM_REQUEST         = 2;
+
+	/**
+	 * This constant contains the SMTP MAIL FROM command
+	 * @var string
+	 */
+	const MAIL_FROM_REQUEST_CMD     = 'MAIL FROM:  :=:=';
 
 	/**
 	 * This constant contains the method number for the MAIL TO request
 	 * @var integer
 	 */
-	const MAIL_TO_REQUEST         = 3;
+	const MAIL_TO_REQUEST           = 3;
+
+	/**
+	 * This constant contains the SMTP RCPT TO command
+	 * @var string
+	 */
+	const MAIL_TO_REQUEST_CMD       = 'RCPT TO:  :=:=';
 
 	/**
 	 * This constant contains the MIME-Type value for HTML messages
 	 * @var string
 	 */
-	const MIME_HTML               = 'text/html';
+	const MIME_HTML                 = 'text/html';
 
 	/**
 	 * This constant contains the MIME-Type value for text messages
 	 * @var string
 	 */
-	const MIME_TEXT               = 'text/plain';
+	const MIME_TEXT                 = 'text/plain';
 
 	/**
 	 * This constants contains the newline type for SMTP servers
 	 * @var string
 	 */
-	const NEWLINE                 = '\r\n';
+	const NEWLINE                   = '\r\n';
 
 	/**
 	 * This constant contains the method number for the QUIT request
 	 * @var integer
 	 */
-	const QUIT_REQUEST            = 5;
+	const QUIT_REQUEST              = 5;
+
+	/**
+	 * This constant contains the SMTP quit command
+	 * @var string
+	 */
+	const QUIT_REQUEST_CMD          = 'QUIT:=';
 
 	/**
 	 * This constant contains the number of bits to read from the server
 	 * @var integer
 	 */
-	const READ_BITS               = 4096;
+	const READ_BITS                 = 1024;
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Properties ///////////////////////////////////////////////////////////
@@ -82,118 +124,118 @@ class FramsieSmtp {
 	 * @access protected
 	 * @staticvar FramsieSmtp
 	 */
-	protected static $mInstance   = null;
+	protected static $mInstance     = null;
 
 	/**
 	 * This property contains an array of hooks that are executed once the systems logs in
 	 * @access protected
 	 */
-	protected $mAuthHooks         = array();
+	protected $mAuthHooks           = array();
 
 	/**
 	 * This property contains the message
 	 * @access protected
 	 * @var string
 	 */
-	protected $mMessage           = null;
+	protected $mMessage             = null;
 
 	/**
 	 * This property contains the MIME-Type for the messag
 	 * @access protected
 	 * @var string
 	 */
-	protected $mMimeType          = null;
+	protected $mMimeType            = null;
 
 	/**
 	 * This property contains the authentication password
 	 * @access protected
 	 * @var string
 	 */
-	protected $mPassword          = null;
+	protected $mPassword            = null;
 
 	/**
 	 * This property contains the recipient email addresses
 	 * @access protected
 	 * @var array
 	 */
-	protected $mRecipients        = array();
+	protected $mRecipients          = array();
 
 	/**
 	 * This property contains the last response from the server
 	 * @access protected
 	 * @var string
 	 */
-	protected $mResponse          = null;
+	protected $mResponse            = array();
 
 	/**
 	 * This property contains the sender's email address
 	 * @access protected
 	 * @var string
 	 */
-	protected $mSender            = null;
+	protected $mSender              = null;
 
 	/**
 	 * This property contains the sender's name
 	 * @access protected
 	 * @var string
 	 */
-	protected $mSenderName        = null;
+	protected $mSenderName          = null;
 
 	/**
 	 * This property contains the SMTP server's address
 	 * @access protected
 	 * @var string
 	 */
-	protected $mServerAddress     = null;
+	protected $mServerAddress       = null;
 
 	/**
 	 * This proeprty contains the SMTP server's port
 	 * @access protected
 	 * @var integer
 	 */
-	protected $mServerPort        = 25;
+	protected $mServerPort          = 25;
 
 	/**
 	 * This property contains the socket connection
 	 * @access protected
 	 * @var file pointer
 	 */
-	protected $mSocket            = null;
+	protected $mSocket              = null;
 
 	/**
 	 * This property contains the subject of the message
 	 * @access protected
 	 * @var string
 	 */
-	protected $mSubject           = null;
+	protected $mSubject             = null;
 
 	/**
 	 * This property contains the number of seconds to wait for a connection
 	 * @access protected
 	 * @var integer
 	 */
-	protected $mTimeout           = 30;
+	protected $mTimeout             = 30;
 
 	/**
 	 * This property contains the authentication notifier
 	 * @access protected
 	 * @var boolean
 	 */
-	protected $mUseAuthentication = false;
+	protected $mUseAuthentication   = false;
 
 	/**
 	 * This property contains the authentication username
 	 * @access protected
 	 * @var string
 	 */
-	protected $mUsername          = null;
+	protected $mUsername            = null;
 
 	/**
 	 * This property contains the SSL notifier
 	 * @access protected
 	 * @var boolean
 	 */
-	protected $mUseSsl            = false;
+	protected $mUseSsl              = false;
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Singleton ////////////////////////////////////////////////////////////
@@ -440,12 +482,14 @@ class FramsieSmtp {
 	 * @package Framsie
 	 * @subpackage FramsieSmtp
 	 * @access protected
+	 * @param string $sKey
+	 * @param integer $iBits [1024]
 	 * @throws Exception
 	 * @return FramsieSmtp $this
 	 */
-	protected function readSocket() {
+	protected function readSocket($sKey, $iBits = self::READ_BITS) {
 		// Read from the socket
-		$this->mResponse = (string) fgets($this->mSocket, self::READ_BITS);
+		$this->mResponse[$sKey] = (string) fgets($this->mSocket, $iBits);
 		// Check for a socket
 		if (empty($this->mSocket)) {
 			// Throw an exception
