@@ -260,11 +260,17 @@ abstract class FramsieController {
 	 * @subpackage FramsieController
 	 * @access protected
 	 * @param multitype $mResponse
+	 * @param boolean $bJsonp [false]
 	 * @return void
 	 */
-	protected function sendJsonEndpointResponse($mResponse) {
-		// Encode and send the response
-		die(json_encode($mResponse));
+	protected function sendJsonEndpointResponse($mResponse, $bJsonp = false) {
+		// Check to see if this is a JSON-P response
+		if ($bJsonp === true) {
+			die($mResponse);
+		} else {
+			// 	Encode and send the response
+			die(json_encode($mResponse));
+		}
 	}
 
 	/**
