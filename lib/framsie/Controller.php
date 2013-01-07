@@ -841,7 +841,7 @@ abstract class FramsieController {
 		// Check to see if we need to disable the view
 		if ($bDisableView === true) {
 			// Disable the view
-			$this->getView()->setDisableView();
+			$this->mView->setDisableView();
 		}
 		// Disable the layout
 		$this->setDisableLayout();
@@ -864,7 +864,7 @@ abstract class FramsieController {
 		// Check to see if we need to disable the view
 		if ($bDisableView === true) {
 			// Disable the view
-			$this->getView()->setDisableView();
+			$this->mView->setDisableView();
 		}
 		// Disable the layout
 		$this->setDisableLayout();
@@ -887,7 +887,7 @@ abstract class FramsieController {
 		// Check to see if we need to disable the view
 		if ($bDisableView === true) {
 			// Disable the view
-			$this->getView()->setDisableView();
+			$this->mView->setDisableView();
 		}
 		// Disable the layout
 		$this->setDisableLayout();
