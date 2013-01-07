@@ -266,7 +266,7 @@ abstract class FramsieController {
 	protected function sendJsonEndpointResponse($mResponse, $bJsonp = false) {
 		// Check to see if this is a JSON-P response
 		if ($bJsonp === true) {
-			die($mResponse);
+			die("{$this->getRequest()->getParam('callback')}(".json_encode($mResponse).")");
 		} else {
 			// 	Encode and send the response
 			die(json_encode($mResponse));
