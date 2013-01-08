@@ -26,6 +26,53 @@ class FramsieModel {
 	 * @var FramsieMapper
 	 */
 	protected $mMapper            = null;
+	
+	///////////////////////////////////////////////////////////////////////////
+	/// Singleton ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * This method creates a singleton instance out of this class or its child
+	 * @package Framsie
+	 * @subpackage FramsieModel
+	 * @access public
+	 * @static
+	 * @return FramsieModel self::$mInstance
+	 */
+	public static function getInstance($bReset = false) {
+		// Check for an instance or a reset notification
+		if (empty(self::$mInstance) || ($bReset === true)) {
+			// Load the called class
+			$sClass = get_called_class();
+			// Set the new instance
+			self::$mInstance = new $sClass();
+		}
+		// Return the instance
+		return self::$mInstance;
+	}
+	
+	/**
+	 * This method sets an external instance into the class
+	 * @package Framsie
+	 * @subpackage FramsieModel
+	 * @access public
+	 * @static
+	 * @throws FramsieException
+	 * @return FramsieModel self::$mInstance
+	 */
+	public static function setInstance($oInstance) {
+		// Determine the called class
+		$sClass = get_called_class();
+		// Make sure we have an instance of determined class
+		if ($oInstance instanceof $sClass) {
+			// Set the new instance
+			self::$mInstance = $oInstance;
+			// Return the instance
+			return self::$mInstance;
+		}
+		// Trigger an Exception
+		FramsieError::Trigger('FRAMIIN', array($sClass));
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Protected Methods ////////////////////////////////////////////////////

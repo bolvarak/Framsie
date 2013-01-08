@@ -52,6 +52,7 @@ class FramsieError {
 		'FRAMFMI' => 'The file or directory ":=" either does not exist or has been mistyped.',
 		'FRAMFNE' => 'The form field ":=" does not exist in this form.',
 		'FRAMICS' => 'Invalid callback method provided.',
+		'FRAMIIN' => 'The instance object you provided is not an instance of ":=".',
 		'FRAMINF' => 'Unable to instantiate the class ":="',
 		'FRAMIPN' => ':= is an invalid property name, you must use "Section.Property"',
 		'FRAMIRQ' => 'The request URI ":=" is invalid.',
