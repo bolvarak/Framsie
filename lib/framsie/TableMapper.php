@@ -207,7 +207,7 @@ class FramsieTableMapper {
 			$sJavascript .= (string) "set".substr($sName, 1).": function(mValue) { this.{$sName} = mValue; return this; }, ";
 		}
 		// Trim the commas
-		$sJavascript  = (string) rtrim($sJavascript, ',');
+		$sJavascript  = (string) rtrim($sJavascript, ",");
 		// Finish the string off
 		$sJavascript .= (string) '}';
 		// Return the JSONP string
