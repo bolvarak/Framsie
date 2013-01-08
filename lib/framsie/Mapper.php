@@ -131,6 +131,46 @@ abstract class FramsieMapper {
 		// Throw an exception because the property does not exist
 		throw new Exception("The property \"{$sProperty}\" does not exist or is not publically accessible.");
 	}
+	
+	/**
+	 * This method converts the mapper to a JavaScript object with functions
+	 * @package Framsie
+	 * @subpackage FramsieMapper
+	 * @access public
+	 * @return string
+	 */
+	public function __toJavascript() {
+		// Start the object string off
+		$sJavascript = (string) '{';
+		// Loop through the properties
+		foreach (get_object_vars($this) as $sName => $mValue) {
+			// Add the property to the json string
+			$sJavascript .= (string) "{$sName}: '".json_encode($mValue)."', ";
+		}
+		// Loop through the class methods
+		foreach (get_class_methods($this) as $sMethod) {
+			// Check to see if this is a getter
+			if (substr(strtolower($sMethod), 0, 3) === 'get') {
+				// Set the property name
+				$sProperty    = (string) lcfirst(substr_replace($sMethod, null, 0, 3));
+				// Append to the javascript
+				$sJavascript .= (string) "{$sMethod}: function() { return this.{$sProperty} }, ";
+			}
+			// Check to see if this is a setter
+			if (substr(strtolower($sMethod), 0, 3) === 'set') {
+				// Set the property name
+				$sProperty    = (string) lcfirst(substr_replace($sMethod, null, 0, 3));
+				// Append to the javascript
+				$sJavascript .= (string) "{$sMethod}: function(mValue) { this.{$sProperty} = mValue; return this; }, ";
+			}
+		}
+		// Trim the commas
+		$sJavascript  = (string) rtrim($sJavascript, ',');
+		// Finish the string off
+		$sJavascript .= (string) '}';
+		// Return the JSONP string
+		return $sJavascript;
+	}
 
 	/**
 	 * This method converts the this instance to a string and into JSON
