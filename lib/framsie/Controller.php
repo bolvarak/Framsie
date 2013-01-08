@@ -261,12 +261,13 @@ abstract class FramsieController {
 	 * @access protected
 	 * @param multitype $mResponse
 	 * @param boolean $bJsonp [false]
+	 * @param boolean $bAlreadyEncoded [false]
 	 * @return void
 	 */
-	protected function sendJsonEndpointResponse($mResponse, $bJsonp = false) {
+	protected function sendJsonEndpointResponse($mResponse, $bJsonp = false, $bAlreadyEncoded = false) {
 		// Check to see if this is a JSON-P response
 		if ($bJsonp === true) {
-			die("{$this->getRequest()->getParam('callback')}(".json_encode($mResponse).")");
+			die("{$this->getRequest()->getParam('callback')}(".(($bAlreadyEncoded === false) ? json_encode($mResponse) : $mResponse).")");
 		} else {
 			// 	Encode and send the response
 			die(json_encode($mResponse));
