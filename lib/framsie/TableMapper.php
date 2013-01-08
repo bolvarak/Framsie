@@ -194,7 +194,7 @@ class FramsieTableMapper {
 		// Loop through the properties
 		foreach (get_object_vars($this) as $sName => $mValue) {
 			// Add the property to the json string
-			$sJavascript .= (string) "{$sName}: '".json_encode($mValue)."', ";
+			$sJavascript .= (string) "{$sName}: ".json_encode($mValue).", ";
 		}
 		// Loop through the properties once more
 		foreach (get_object_vars($this) as $sName => $mValue) {
@@ -207,7 +207,7 @@ class FramsieTableMapper {
 			$sJavascript .= (string) "set".substr($sName, 1).": function(mValue) { this.{$sName} = mValue; return this; }, ";
 		}
 		// Trim the commas
-		$sJavascript  = (string) rtrim($sJavascript, ",");
+		$sJavascript  = (string) rtrim($sJavascript, ',');
 		// Finish the string off
 		$sJavascript .= (string) '}';
 		// Return the JSONP string
