@@ -199,12 +199,12 @@ class FramsieTableMapper {
 		// Loop through the properties once more
 		foreach (get_object_vars($this) as $sName => $mValue) {
 			// Add the getter to the json string
-			$sJavascript .= (string) "get".substr($sName, 1).": function() { return this['{$sName}']; }, ";
+			$sJavascript .= (string) "\"get".substr($sName, 1)."\": function() { return this['{$sName}']; }, ";
 		}
 		// Loop through the final time
 		foreach (get_object_vars($this) as $sName => $mValue) {
 			// Add the setter to the json string
-			$sJavascript .= (string) "set".substr($sName, 1).": function(mValue) { this['{$sName}'] = mValue; return this; }, ";
+			$sJavascript .= (string) "\"set".substr($sName, 1)."\": function(mValue) { this['{$sName}'] = mValue; return this; }, ";
 		}
 		// Trim the commas
 		$sJavascript  = (string) rtrim($sJavascript, ',');
