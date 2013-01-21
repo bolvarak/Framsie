@@ -187,7 +187,7 @@ class FramsieAssets {
 			// Remove all new lines
 			$sMinified = (string) preg_replace('/'.PHP_EOL.'/', null, $sMinified);
 			// Set the name comments
-			$sMinified = (string) str_replace(array('[:::', ':::]'), array("\n/* ", " */\n\n"), $sMinified);
+			$sMinified = (string) str_replace(array('[:::', ':::]'), array("\n\n/* ", " */\n"), $sMinified);
 		} else {
 			// Remove Multi-Line Comments
 			$sMinified = (string) preg_replace('#/\*.*?\*/#s', null, $sMinified);
