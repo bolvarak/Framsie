@@ -187,7 +187,7 @@ class FramsieAssets {
 			// Remove all new lines
 			$sMinified = (string) preg_replace('/'.PHP_EOL.'/', null, $sMinified);
 			// Set the name comments
-			$sMinified = (string) str_replace(array('[:::', ':::]'), array("\n/* ", " */\n"), $sMinified);
+			$sMinified = (string) str_replace(array('[:::', ':::]'), array("\n/* ", " */\n\n"), $sMinified);
 		} else {
 			// Remove Multi-Line Comments
 			$sMinified = (string) preg_replace('#/\*.*?\*/#s', null, $sMinified);
@@ -231,11 +231,11 @@ class FramsieAssets {
 			// Loop through the stylesheets
 			foreach ($mStylesheet as $sSheet) {
 				// Append the stylesheet
-				$sCss .= (string) "[:::{$sSheet}:::]".Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH.DIRECTORY_SEPARATOR.$sSheet);
+				$sCss .= (string) (($bMinify === true) ? "[:::{$sSheet}:::]" : null).Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH.DIRECTORY_SEPARATOR.$sSheet);
 			}
 		}  else {
 			// Set the stylesheet
-			$sCss = (string) "[:::{$mStylesheet}:::]".Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH.DIRECTORY_SEPARATOR.$mStylesheet);
+			$sCss = (string) (($bMinify === true) ? "[:::{$mStylesheet}:::]" : null).Framsie::getInstance()->renderBlock(CSS_ASSETS_PATH.DIRECTORY_SEPARATOR.$mStylesheet);
 		}
 		// Return the CSS
 		return (($bMinify === true) ? $this->minifyAsset($sCss, $this->generateName($mStylesheet, true), false) : $this->loadAsset($sCss, $this->generateName($mStylesheet, false)));
