@@ -251,7 +251,7 @@ abstract class FramsieController {
 	 */
 	protected function isCurrentUrl($sUri) {
 		// Check the URI against the current request URI
-		if ((strpos($this->getUrl(), $sUrl) !== false) || ($this->getUrl() === $sUri)) {
+		if ((strpos($this->getUrl(), $sUri) !== false) || ($this->getUrl() === $sUri)) {
 			// This queried URI is the current request
 			return true;
 		}
