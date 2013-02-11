@@ -240,6 +240,24 @@ abstract class FramsieController {
 	///////////////////////////////////////////////////////////////////////////
 	/// Protected Methods ////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * This method checks to see if a queried URI is the current REQUEST_URI
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access protected
+	 * @param string $sUri
+	 * @return boolean
+	 */
+	protected function isCurrentUrl($sUri) {
+		// Check the URI against the current request URI
+		if ((strpos($this->getUrl(), $sUrl) !== false) || ($this->getUrl() === $sUri)) {
+			// This queried URI is the current request
+			return true;
+		}
+		// Return false by default
+		return false;
+	}
 
 	/**
 	 * This method encodes and sends an HTTP Query String response for AJAX method endpoints
