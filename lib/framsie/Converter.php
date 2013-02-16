@@ -247,6 +247,12 @@ class FramsieConverter {
 	 * @var float
 	 */
 	const KILOGRAMS_IN_POUND                = 0.454;
+	
+	/**
+	 * This constant contains the number of milliliters in one cup
+	 * @var integer
+	 */
+	const MILLILITERS_IN_CUP                = 237;
 
 	/**
 	 * This constant contains the number of minutes in one hour
@@ -349,6 +355,21 @@ class FramsieConverter {
 	public static function CentimetersToInches($iCentimeters, $iDecimals = 2) {
 		// Return the converted value
 		return round(($iCentimeters / self::CENTIMETERS_IN_INCH), $iDecimals);
+	}
+	
+	/**
+	 * This method converts cups to milliliters
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param integer $iCups
+	 * @param integer $iDecimals [2]
+	 * @return float
+	 */
+	public static function CupsToMilliliters($iCups, $iDecimals = 2) {
+		// Return the converted value
+		return round(($iCups * self::MILLILITERS_IN_CUP), $iDecimals);
 	}
 
 	/**
@@ -564,6 +585,21 @@ class FramsieConverter {
 	public static function KilogramsToPounds($iKilograms, $iDecimals = 2) {
 		// Return the converted value
 		return round(($iKilograms / self::KILOGRAMS_IN_POUND), $iDecimals);
+	}
+	
+	/**
+	 * This method converts milliliters to cups
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param integer $iMilliliters
+	 * @param integer $iDecimals [2]
+	 * @return float
+	 */
+	public static function MillilitersToCups($iMilliliters, $iDecimals = 2) {
+		// Return the converted value
+		return round(($iMilliliters / self::MILLILITERS_IN_CUP), $iDecimals);
 	}
 
 	/**
