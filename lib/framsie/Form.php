@@ -2,12 +2,13 @@
 /**
  * This class provides an easy form generation
  * @package Framsie
+ * @requires FramsieModel
  * @version 1.0
  * @copyright 2012 Travis Brown <tmbrown6@gmail.com>
  * @license GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
  * @author Travis Brown <tmbrown6@gmail.com>
  */
-abstract class FramsieForm {
+abstract class FramsieForm extends FramsieModel {
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Constants ////////////////////////////////////////////////////////////
