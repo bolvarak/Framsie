@@ -50,6 +50,19 @@ class FramsieTableLoader {
 	 * @var array<FramsieTableMapper>
 	 */
 	protected $mIterator               = array();
+	
+	
+	/**
+	 * This property contains the limit min
+	 * @var integer
+	 */
+	protected $mLimitMinimum           = null;
+	 
+	 /**
+	  * This property contains the limit maximum
+	  * @var integer
+	  */
+	 protected $mLimitMaximum          = null;
 
 	/**
 	 * This property contains ORDER BY clauses
@@ -208,6 +221,12 @@ class FramsieTableLoader {
 			// Add the WHERE clause
 			$this->mDBI->addWhereClause($sColumn, $aData['mValue'], null, $aData['sOperator']);
 		}
+		// Check for a limit
+		if (empty($this->mLimitMinimum) === false) {
+			// Set the limit
+			$this->mDBI->setLimit($this->mLimitMinimum, $this->mLimitMaximum);
+		}
+		
 		// Generate the query
 		$this->mDBI->generateQuery();
 		// Return the instance
@@ -443,6 +462,24 @@ class FramsieTableLoader {
 	public function setFields(array $aFields) {
 		// Set the fields into the class
 		$this->mFields = $aFields;
+		// Return the instance
+		return $this;
+	}
+	
+	/**
+	 * This method sets the limit into the instance
+	 * @package Framsie
+	 * @subpackage FramsieTableLoader
+	 * @access public
+	 * @param integer $iMinor
+	 * @param integer $iMajor [null]
+	 * @return FramsieTableLoader $this
+	 */
+	public function setLimit($iMinor, $iMajor = null) {
+		// Set the minimum limit into the instance
+		$this->mLimitMinimum = (integer) $iMinor;
+		// Set the maximum limit into the instance
+		$this->mLimitMaximum = (is_null($iMajor) ? null : (integer) $iMajor);
 		// Return the instance
 		return $this;
 	}
