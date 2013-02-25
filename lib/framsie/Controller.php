@@ -7,7 +7,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl-3.0.html>
  * @author Travis Brown <tmbrown6@gmail.com>
  */
-abstract class FramsieController {
+abstract class FramsieController extends FramsieModel {
 
 	///////////////////////////////////////////////////////////////////////////
 	/// Constants ////////////////////////////////////////////////////////////
