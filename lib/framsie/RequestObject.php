@@ -469,7 +469,7 @@ class FramsieRequestObject {
 		// Process the query string and return
 		$this->processQuery();
 		// Execute the controller
-		$this->mController = new $this->mController();
+		$this->mController = $this->mController::getInstance();
 		// Set the request into the controller
 		$this->mController->setRequest($this);
 		// Set the view object into the controller
