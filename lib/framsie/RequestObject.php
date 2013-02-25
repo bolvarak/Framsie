@@ -471,7 +471,7 @@ class FramsieRequestObject {
 		// Set the controller
 		$sController = "{$this->mController}";
 		// Execute the controller
-		$this->mController = $sController::getInstance();
+		$this->mController = $sController::getInstance(true);
 		// Set the request into the controller
 		$this->mController->setRequest($this);
 		// Set the view object into the controller
