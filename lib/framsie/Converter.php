@@ -229,6 +229,12 @@ class FramsieConverter {
 	 * @var float
 	 */
 	const CENTIMETERS_IN_INCH               = 2.54;
+	
+	/**
+	 * This constant contains the number of cups in one liter
+	 * @var float
+	 */
+	const CUPS_IN_LITER                     = 4.22675284;
 
 	/**
 	 * This constant contains the number of inches one centimeter
@@ -355,6 +361,21 @@ class FramsieConverter {
 	public static function CentimetersToInches($iCentimeters, $iDecimals = 2) {
 		// Return the converted value
 		return round(($iCentimeters / self::CENTIMETERS_IN_INCH), $iDecimals);
+	}
+	
+	/**
+	 * This method converts cups to liters
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param integer $iCups
+	 * @param integer $iDecimals [2]
+	 * @return float
+	 */
+	public static function CupsToLiters($iCups, $iDecimals = 2) {
+		// Return the converted value
+		return round(($iCups * self::CUPS_IN_LITER), $iDecimals);
 	}
 	
 	/**
@@ -585,6 +606,21 @@ class FramsieConverter {
 	public static function KilogramsToPounds($iKilograms, $iDecimals = 2) {
 		// Return the converted value
 		return round(($iKilograms / self::KILOGRAMS_IN_POUND), $iDecimals);
+	}
+	
+	/**
+	 * This method converts liters to cups
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param integer $iLiters
+	 * @param integer $iDecimals [2]
+	 * @return float
+	 */
+	public static function LitersToCups($iLiters, $iDecimals = 2) {
+		// Return the converted value
+		return round(($iLiters / self::CUPS_IN_LITER), $iDecimals);
 	}
 	
 	/**
