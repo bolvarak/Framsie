@@ -234,7 +234,7 @@ class FramsieConverter {
 	 * This constant contains the number of cups in one liter
 	 * @var float
 	 */
-	const CUPS_IN_LITER                     = 4.22675284;
+	const CUPS_IN_LITER                     = 0.236588;
 
 	/**
 	 * This constant contains the number of inches one centimeter
