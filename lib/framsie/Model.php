@@ -41,12 +41,16 @@ class FramsieModel {
 	 */
 	public static function getInstance($bReset = false) {
 		// Set the class
-		$sClass = get_called_class();
+		$sClass    = get_called_class();
+		// Create an instance
+		$oInstance = new $sClasS();
 		// Check for an instance or a reset notification
-		if (empty(self::$mInstance) || ($bReset === true) || !(self::$mInstance instanceof $sClass)) {
+		if (empty(self::$mInstance) || ($bReset === true) || !(self::$mInstance instanceof $oInstance)) {
 			// Set the new instance
 			self::$mInstance = new $sClass();
 		}
+		// Delete the instance
+		unset($oInstance);
 		// Return the instance
 		return self::$mInstance;
 	}
