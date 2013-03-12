@@ -8,7 +8,7 @@
  * @author Travis Brown <tmbrown6@gmail.com>
  * @todo Support XML
  */
-class FramsieHttp {
+class FramsieHttp extends FramsieModel {
 
   ///////////////////////////////////////////////////////////////////////////
   /// Constants ////////////////////////////////////////////////////////////
@@ -215,13 +215,6 @@ class FramsieHttp {
   ///////////////////////////////////////////////////////////////////////////
   /// Properties ///////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This property contains the singleton instance of this class
-   * @access protected
-   * @staticvar FramsieHttp
-   */
-  protected static $mInstance              = null;
   
   /**
    * This property contains the current cURL handle
@@ -403,46 +396,6 @@ class FramsieHttp {
    * @var string
    */
   protected $mUsername                     = null;
-
-  ///////////////////////////////////////////////////////////////////////////
-  /// Singleton ////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This method provides access to the singleton instance of this class
-   * @package Framsie
-   * @subpackage FramsieHttp
-   * @access public
-   * @static
-   * @param boolean $bReset
-   * @return FramsieHttp self::$mInstance
-   */
-  public static function getInstance($bReset = false) {
-    // Check for an existing instance or a reset notification
-    if (empty(self::$mInstance) || ($bReset === true)) {
-      // Create a new instance
-      self::$mInstance = new self();
-    }
-    // Return the instance
-    return self::$mInstance;
-  }
-
-  /**
-   * This method sets an external instance into this class, it is primarily
-   * only used in testing and generally with phpUnit
-   * @package Framsie
-   * @subpackage FramsieHttp
-   * @access public
-   * @static
-   * @param FramsieHttp $oInstance
-   * @return FramsieHttp self::$mInstance
-   */
-  public static function setInstance(FramsieHttp $oInstance) {
-    // Set the external instance into the class
-    self::$mInstance = $oInstance;
-    // Return the instance
-    return self::$mInstance;
-  }
 
   ///////////////////////////////////////////////////////////////////////////
   /// Constructor //////////////////////////////////////////////////////////
@@ -1196,6 +1149,44 @@ class FramsieHttp {
     $this->executeResponseHooks();
     // Return the instance
     return $this;
+  }
+  
+  /**
+   * This method simply reads a URL and returns the data
+   * @package Framsie
+   * @subpackage FramsieHttp
+   * @access public
+   * @param string $sUrl
+   * @param boolean $bDecode [false]
+   * @param integer $iDataType [FramsieHttp::DATA_TYPE_JSON]
+   * @throws Exception
+   * @return array|string
+   */
+  public function readUrl($sUrl, $bDecode = false, $iDataType = self::DATA_TYPE_JSON) {
+    // Validate the URL
+    if (filter_var($sUrl, FILTER_VALIDATE_URL) === false) {
+      // Throw an exception
+      throw new Exception("The URI '{$sUrl}' is not valid.  Cannot read.");
+    }
+    // Grab the URL contents
+    $sResponse = file_get_contents($sUrl);
+    // Check for a response
+    if ($sResponse === false) {
+      // Throw an exception
+      throw new Exception("Cannot read URL '{$sUrl}'.");
+    }
+    // Check to see if we need to decode the data
+    if ($bDecode === true) {
+      // Determine the decode method
+      switch ($iDataType) {
+        // JSON
+        case self::DATA_TYPE_JSON : return json_decode($sResponse, true); break;
+        // Everything Else
+        default                   : return $sResponse;                    break;
+      }
+    }
+    // Return the response
+    return $sResponse;
   }
 
   /**
