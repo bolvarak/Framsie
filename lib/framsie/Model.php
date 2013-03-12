@@ -43,7 +43,7 @@ class FramsieModel {
 		// Set the class
 		$sClass    = get_called_class();
 		// Create an instance
-		$oInstance = new $sClasS();
+		$oInstance = new $sClass();
 		// Check for an instance or a reset notification
 		if (empty(self::$mInstance) || ($bReset === true) || !(self::$mInstance instanceof $oInstance)) {
 			// Set the new instance
