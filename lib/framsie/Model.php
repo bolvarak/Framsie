@@ -40,10 +40,10 @@ class FramsieModel {
 	 * @return FramsieModel self::$mInstance
 	 */
 	public static function getInstance($bReset = false) {
+		// Set the class
+		$sClass = get_called_class();
 		// Check for an instance or a reset notification
-		if (empty(self::$mInstance) || ($bReset === true)) {
-			// Load the called class
-			$sClass = get_called_class();
+		if (empty(self::$mInstance) || ($bReset === true) || !(self::$mInstance instanceof $sClass)) {
 			// Set the new instance
 			self::$mInstance = new $sClass();
 		}
