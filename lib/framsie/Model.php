@@ -37,22 +37,18 @@ class FramsieModel {
 	 * @subpackage FramsieModel
 	 * @access public
 	 * @static
-	 * @return FramsieModel self::$mInstance
+	 * @return Framsie::Singleton
 	 */
 	public static function getInstance($bReset = false) {
 		// Set the class
 		$sClass    = get_called_class();
-		// Create an instance
-		$oInstance = new $sClass();
-		// Check for an instance or a reset notification
-		if (empty(self::$mInstance) || ($bReset === true) || !(self::$mInstance instanceof $oInstance)) {
-			// Set the new instance
-			self::$mInstance = new $sClass();
+		// Check for a reset notification
+		if ($bReset === true) {
+			// Return the new singleton
+			return Framsie::SingletonReset($sClass);
 		}
-		// Delete the instance
-		unset($oInstance);
-		// Return the instance
-		return self::$mInstance;
+		// Return the framsie singleton
+		return Framsie::Singleton($sClass);
 	}
 	
 	/**
