@@ -643,6 +643,11 @@ class FramsieDatabaseInterface {
 			}
 			// Add the field
 			$sFields .= (string) (($sColumn === '*') ? "*" : "{$this->quoteTableColumnName($sColumn)}");
+			// Check for a field alias
+			if (empty($aData['sAlias']) === false) {
+				// Set the column alias
+				$sFields .= (string) " AS {$this->quoteTableColumnName($aData['sAlias'])}";
+			}
 			// Check the iterator
 			if (($iIterator + 1) === count($this->mFields)) {
 				// Reset the iterator
@@ -832,11 +837,12 @@ class FramsieDatabaseInterface {
 	 * @param string [$sTable]
 	 * @return FramsieDatabaseInterface $this
 	 */
-	public function addField($sName, $sValue = null, $sTable = null) {
+	public function addField($sName, $sValue = null, $sTable = null, $sAlias = null) {
 		// Add the field to the list
 		$this->mFields[(string) $sName] = array(
+			'sAlias' => (string) $sAlias,
 			'sTable' => (string) $sTable,
-			'sValue' => $sValue
+			'sValue' => $sValue,
 		);
 		// Return the instance
 		return $this;
