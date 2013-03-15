@@ -247,19 +247,7 @@ class FramsieTableMapper {
 			// Determine if the default value should be anything special
 			switch ($oColumn->Default) {
 				// Timestamp
-				case 'CURRENT_TIMESTAMP' : 
-					// Check for a set timezone
-					if (ini_get('date.timezone')) {
-						// Create the datetime object
-						$oDate = new DateTime('now', new DateTimeZone(ini_get('date.timezone')));
-						// Set the default value
-						$sDefaultValue = $oDate->format('Y-m-d H:i:s');
-					} else {
-						// Use the system default
-						$sDefaultValue = date('Y-m-d H:i:s');
-					}
-				// We're done
-				break;
+				case 'CURRENT_TIMESTAMP' : $sDefaultValue = date('Y-m-d H:i:s'); break;
 				// Everything else
 				default                  : $sDefaultValue = $oColumn->Default;   break;
 			}
@@ -310,21 +298,6 @@ class FramsieTableMapper {
 			return (integer) $mValue;
 		}
 		if (preg_match(self::PATTERN_STRING,  $this->mColumns[$sColumn]->Type)) { // String
-			// Check to see if this is a DateTime object
-			try {
-				// Set the date
-				$oDate = new DateTime($mValue);
-				// Check for a timezone
-				if (ini_get('date.timezone')) {
-					// Set the timezone
-					$oDate->setTimezone(new DateTimezone(ini_get('date.timezone')));
-				}
-				// Return the date value
-				return (string) $oDate->format('Y-m-d H:i:s');
-			} catch (Exception $oException) {
-				// Return the value
-				return (string)  $mValue;	
-			}
 			// Return the value
 			return (string)  $mValue;
 		}
