@@ -315,7 +315,7 @@ class FramsieTableMapper {
 				// Check for a timezone
 				if (ini_get('date.timezone')) {
 					// Set the timezone
-					$oDate->setTimezone(ini_get('date.timezone'));
+					$oDate->setTimezone(new DateTimezone(ini_get('date.timezone')));
 				}
 				// Return the date value
 				return (string) $oDate->format('Y-m-d H:i:s');
