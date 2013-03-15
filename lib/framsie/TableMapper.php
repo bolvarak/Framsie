@@ -313,7 +313,7 @@ class FramsieTableMapper {
 			// Check to see if this is a DateTime object
 			try {
 				// Set the date
-				$oDate = new DateTime($mValue))
+				$oDate = new DateTime($mValue);
 				// Check for a timezone
 				if (ini_get('date.timezone')) {
 					// Set the timezone
