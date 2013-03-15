@@ -311,7 +311,9 @@ class FramsieTableMapper {
 		}
 		if (preg_match(self::PATTERN_STRING,  $this->mColumns[$sColumn]->Type)) { // String
 			// Check to see if this is a DateTime object
-			if ($oDate = new DateTime($mValue)) {
+			try {
+				// Set the date
+				$oDate = new DateTime($mValue))
 				// Check for a timezone
 				if (ini_get('date.timezone')) {
 					// Set the timezone
@@ -319,6 +321,9 @@ class FramsieTableMapper {
 				}
 				// Return the date value
 				return (string) $oDate->format('Y-m-d H:i:s');
+			} catch (Exception $oException) {
+				// Return the value
+				return (string)  $mValue;	
 			}
 			// Return the value
 			return (string)  $mValue;
