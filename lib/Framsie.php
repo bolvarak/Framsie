@@ -547,6 +547,7 @@ class Framsie {
 				'Framsie',
 				'HttpResponseMapper',
 				'Mapper',
+				'String',
 				'TableMapper'
 		);
 		// Check for a Framsie package class
