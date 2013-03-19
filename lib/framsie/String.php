@@ -67,7 +67,15 @@ class FramsieString {
 	 * @return string
 	 */
 	public static function Cleanse($sString) {
-		// Return the cleansed string
+		if (get_magic_quotes_gpc()) {
+			$sString = stripslashes($sString);
+		}
+		// Loop through the characters
+		foreach (self::$mSpecialCharacters as $sSearch => $sReplace) {
+			// Decode the string
+			$sString = str_replace($sSearch, $sReplace, $sString);
+		}
+		// Finalize the string cleansing
 		return strtr($sString, self::$mSpecialCharacters);
 	}
 }
