@@ -355,10 +355,10 @@ class FramsieTableMapper {
 		// Loop through the columns and add the fields
 		foreach ($this->mColumns as $sColumn => $oColumn) {
 			// Make sure this column isnt't the primary key
-			if ($sColumn !== $this->mPrimaryKey) {
+			// if ($sColumn !== $this->mPrimaryKey) {
 				// Add the field
 				FramsieDatabaseInterface::getInstance()->addField($sColumn);
-			}
+			// }
 		}
 		// Return the instance
 		return $this;
