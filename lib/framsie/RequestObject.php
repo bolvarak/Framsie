@@ -732,9 +732,9 @@ class FramsieRequestObject {
 	 * @param boolean [$bDelete]
 	 * @return FramsieRequestObject $this
 	 */
-	public function setCookie($sName, $sValue, $iExpire = FramsieCache::EXPIRE_1_HOUR, $bDelete = false) {
+	public function setCookie($sName, $sValue, $iExpire = FramsieCache::EXPIRE_1_HOUR, $bDelete = false, $sPath = '/') {
 		// Set the cookie
-		setcookie($sName, $sValue, (($bDelete === true)) ? (time() - $iExpire) : (time() + $iExpire), '/', $this->mServer->mHttpHost, (($this->mServer->mHttps == 'on') ? true : false));
+		setcookie($sName, $sValue, (($bDelete === true)) ? (time() - $iExpire) : (time() + $iExpire), $sPath, $this->mServer->mHttpHost, (($this->mServer->mHttps == 'on') ? true : false));
 		// Set the cookie into the instance
 		$this->mCookies->{$sName} = $sValue;
 		// Return the instance
