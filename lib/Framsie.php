@@ -658,7 +658,7 @@ class Framsie {
 		// Execute the pre-dispatch hooks
 		$this->onBeforeDispatch();
 		// Process the request
-		FramsieRequestObject::getInstance()->process($this->matchRedirects($_SERVER['REQUEST_URI']), $sStaticBase);
+		FramsieRequestObject::getInstance(true)->process($this->matchRedirects($_SERVER['REQUEST_URI']), $sStaticBase);
 		// Process the layout
 		$this->dispatchLayout();
 		// Return the instance
