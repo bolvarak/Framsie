@@ -735,6 +735,7 @@ class FramsieRequestObject {
 	public function setCookie($sName, $sValue, $iExpire = FramsieCache::EXPIRE_1_HOUR, $bDelete = false) {
 		// Set the cookie
 		setcookie($sName, $sValue, (($bDelete === true)) ? (time() - $iExpire) : (time() + $iExpire));
+		var_dump($_COOKIE); exit;
 		// Set the cookie into the instance
 		$this->mCookies->{$sName} = $sValue;
 		// Return the instance
