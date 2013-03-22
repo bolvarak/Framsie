@@ -652,6 +652,32 @@ class FramsieConverter {
 		// Return the converted value
 		return round(($iMinutes / self::MINUTES_IN_HOUR), $iDecimals);
 	}
+	
+	/**
+	 * This method converts minutes to a formatted hour/minute string
+	 * @package Framsie
+	 * @subpackage FramsieConverter
+	 * @access public
+	 * @static
+	 * @param integer $iMinutes
+	 * @param string $sFormat [%d Hours %d Minutes]
+	 * @return string
+	 */
+	public static function MinutesToHoursAndMinutes($iMinutes, $sFormat = '%d Hours %d Minutes') {
+		// Set the variable type of the minutes
+		settype($iMinutes, 'integer');
+		// Make sure we have more than one minute
+		if ($iMinutes < 1) {
+			// We're done
+			return 0;
+		}
+		// Determine the hours
+		$iHours   = floor($iMinutes / self::MINUTES_IN_HOUR);
+		// Determine the leftover minutes
+		$iMinutes = ($iMinutes % self::MINUTES_IN_HOUR);
+		// Return the string
+		return sprintf($sFormat, $iHours, $iMinutes);
+	}
 
 	/**
 	 * This method converts ounces to cups
