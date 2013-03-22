@@ -190,7 +190,7 @@ class FramsieAssets {
 			$sMinified = (string) str_replace(array('[:::', ':::]'), array("\n\n/* ", " */\n"), $sMinified);
 		} else {
 			// Remove Multi-Line Comments
-			$sMinified = (string) preg_replace('#/\*.*?\*/#s', null, $sMinified);
+			// $sMinified = (string) preg_replace('#/\*.*?\*/#s', null, $sMinified);
 			// Remove multiple new lines
 			// $sMinified = (string) preg_replace('/\n(\s*\n)+/', "\n", $sMinified);
 			// Replace tabs with spaces
@@ -198,7 +198,7 @@ class FramsieAssets {
 			// Replace double spaces with single spaces
 			// $sMinified = (string) preg_replace('/\s\s+/',      ' ',  $sMinified);
 			// Add the name of the file to the cache file
-			$sMinified = '/** '.$sName.' **/'.$sMinified;
+			// $sMinified = '/** '.$sName.' **/'.$sMinified;
 		}
 		// Cache the minified source
 		FramsieCache::getInstance()->saveToCache($sName, $sMinified);
