@@ -197,6 +197,8 @@ class FramsieAssets {
 			// $sMinified = (string) preg_replace('/\t+/',        ' ',  $sMinified);
 			// Replace double spaces with single spaces
 			// $sMinified = (string) preg_replace('/\s\s+/',      ' ',  $sMinified);
+			// Add the name of the file to the cache file
+			$sMinified = '/** '.$sName.' **/'.$sMinified;
 		}
 		// Cache the minified source
 		FramsieCache::getInstance()->saveToCache($sName, $sMinified);
