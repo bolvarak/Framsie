@@ -383,6 +383,27 @@ class FramsieDatabaseInterface {
 			);
 			// Set the database name
 			$this->mDatabase = (string) FramsieConfiguration::Load('database.dbname');
+			// Determine the interface, first check for Microsoft SQL Server
+			if (strpos(FramsieConfiguration::Load('database.dsn'), 'sqlsrv:') !== false) {
+				// Set the interface to Microsoft SQL Server
+				$this->mInterface = self::INTERFACE_MSSQL;
+			}
+			// MySQL
+			if (strpos(FramsieConfiguration::Load('database.dsn'), 'mysql:') !== false) {
+				// Set the interface to MySQL
+				$this->mInterface = self::INTERFACE_MYSQL;
+			}
+			// Oracle
+			if (strpos(FramsieConfiguration::Load('database.dsn'), 'oci:') !== false) {
+				// Set the interface to Oracle
+				$this->mInterface = self::INTERFACE_OCI;
+			}
+			// PostgreSQL
+			if (strpos(FramsieConfiguration::Load('database.dsn'), 'pgsql:') !== false) {
+				// Set the interface to PostgreSQL
+				$this->mInterface = self::INTERFACE_PGSQL;
+			}
+			
 		} catch (PDOException $oException) {
 			// Do something with the exception
 		}
