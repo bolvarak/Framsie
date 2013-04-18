@@ -165,7 +165,7 @@ abstract class FramsieForm extends FramsieModel {
 	/////////////////////////////////////////////////////////////////////////
 	
 	/**
-	 * This method adds an attribute to the form tag
+	 * This method adds an attribute to the form tag, such as autocomplete=off
 	 * @package Framsie
 	 * @subpackage FramsieForm
 	 * @param string $sName
