@@ -163,6 +163,21 @@ abstract class FramsieForm extends FramsieModel {
 	///////////////////////////////////////////////////////////////////////////
 	/// Public Methods ///////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * This method adds an attribute to the form tag
+	 * @package Framsie
+	 * @subpackage FramsieForm
+	 * @param string $sName
+	 * @param string $sValue
+	 * @return FramsieForm $this
+	 */
+	public function addAttribute($sName, $sValue) {
+		// Add the attribute to the system
+		$this->mAttributes[$sName] = (string) $sValue;
+		// Return the instance
+		return $this;
+	}
 
 	/**
 	 * This method adds a field to the form
