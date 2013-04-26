@@ -915,6 +915,21 @@ abstract class FramsieController extends FramsieModel {
 		// Return the instance
 		return $this;
 	}
+	
+	/**
+	 * This method sets the content-length header
+	 * @package Framsie
+	 * @subpackage FramsieController
+	 * @access public
+	 * @param integer $iLength
+	 * @return FramsieController $this
+	 */
+	public function setHeaderContentLength($iLength) {
+		// Set the header content-length
+		header("Content-Length:  {$iLength}");
+		// Return the instance
+		return $this;
+	}
 
 	/**
 	 * This method sets the header content type for when we are not simply
