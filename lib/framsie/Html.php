@@ -356,7 +356,7 @@ class FramsieHtml {
 				// Check to see if this value should be selected
 				if ($sSelected == $sValue) {
 					// Make this option selected
-					$sOption .= (string) "selected=\"selected\" ";
+					$sOption .= (string) "selected";
 				}
 				// Finish the option tag
 				$sOption .= (string) ">{$sLabel}</option>";
