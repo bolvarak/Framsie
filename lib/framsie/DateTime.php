@@ -163,6 +163,30 @@ class FramsieDateTime {
 		// Return the dates
 		return $aDates;
 	}
+	
+	/**
+	 * This method calculates the days between dates
+	 * @package Framsie
+	 * @subpackage FramsieDateTime
+	 * @access public
+	 * @static
+	 * @param integer $iStartTimeStamp
+	 * @param integer $iEndTimeStamp
+	 * @return array
+	 */
+	public function CalculateDaysBetweenDates($iStartTimeStamp, $iEndTimeStamp) {
+		// Create a dates placeholder
+		$aDates = array($iStartTimeStamp);
+		// Check to see if the timestamps are the same
+		while ($iStartTimeStamp <= $iEndTimeStamp) {
+			// Add the date
+			array_push($aDates, $iStartTimeStamp);
+			// Update the starting timestamp
+			$iStartTimeStamp = strtotime('+1 day', $iStartTimeStamp);
+		}
+		// Return the dates
+		return $aDates;
+	}
 
 	/**
 	 * This method returns a MySQL DATE
