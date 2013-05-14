@@ -176,7 +176,7 @@ class FramsieDateTime {
 	 */
 	public function CalculateDaysBetweenDates($iStartTimeStamp, $iEndTimeStamp) {
 		// Create a dates placeholder
-		$aDates = array($iStartTimeStamp);
+		$aDates = array();
 		// Check to see if the timestamps are the same
 		while ($iStartTimeStamp <= $iEndTimeStamp) {
 			// Add the date
