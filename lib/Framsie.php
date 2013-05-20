@@ -780,7 +780,7 @@ class Framsie {
 			// Display errors
 			ini_set('display_errors',  true);
 			// Error reporting
-			ini_set('error_reporting', E_ALL);
+			ini_set('error_reporting', E_ALL ^ E_STRICT);
 			// HTML errors
 			ini_set('html_errors',     true);
 		} else {                // We turn them off
