@@ -1,0 +1,27 @@
+<DOCUMENT html>
+	<html>
+		<head>
+			<title>
+
+				<!-- Load the page title -->
+				<?php echo $this->getPageTitle() ?>
+			</title>
+
+			<!-- Dynamic Meta Tags -->
+			<?php echo $this->getMetaTags() ?>
+
+			<!-- Dynamic Stylesheets -->
+			<?php echo $this->getStyles() ?>
+
+			<!-- Dynamic Header JavaScript -->
+			<?php echo $this->getScripts(true, true) ?>
+		</head>
+		<body class="<?php echo $this->getBodyClass() ?>" onload="<?php echo $this->getBodyOnload() ?>">
+
+			<!-- Load the view content -->
+			<?php echo $this->getView()->getContent() ?>
+
+			<!-- Dynamic Non-Header JavaScript -->
+			<?php echo $this->getScripts(true, false) ?>
+		</body>
+	</html>

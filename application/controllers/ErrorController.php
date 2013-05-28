@@ -23,7 +23,7 @@ class ErrorController extends FramsieController {
 	 */
 	public function __construct() {
 		// Set the layout in the parent constructor
-		parent::__construct('templates'.DIRECTORY_SEPARATOR.'efs-layout.phtml');
+		parent::__construct('templates'.DIRECTORY_SEPARATOR.'layout.phtml');
 		// Return the instance
 		return $this;
 	}
