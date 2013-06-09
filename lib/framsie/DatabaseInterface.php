@@ -837,7 +837,7 @@ class FramsieDatabaseInterface {
 	 */
 	protected function quoteTrueFieldValue($sValue) {
 		// Check for SQL functions
-		if (preg_match('/^([a-zA-Z]+\([a-zA-Z0-9_-`"\.]+\))$/', $sValue)) { // A SQL function exists
+		if (preg_match('/^([a-zA-Z]+\([a-zA-Z0-9_-`"\'\.]+\))$/', $sValue)) { // A SQL function exists
 			// Simply return the value as is
 			return $sValue;
 		}
