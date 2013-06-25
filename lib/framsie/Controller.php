@@ -587,7 +587,7 @@ abstract class FramsieController extends FramsieModel {
 					));
 				} else {
 					// Generate the meta tag
-					$sMetaTags .- (string) FramsieHtml::getInstance()->getMetaTag($oMetaTag->sName, $oMetaTag->sContent);
+					$sMetaTags .= (string) FramsieHtml::getInstance()->getMetaTag($oMetaTag->sName, $oMetaTag->sContent);
 				}
 			}
 			// Return the meta tags
