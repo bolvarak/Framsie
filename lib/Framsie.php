@@ -539,6 +539,11 @@ class Framsie {
 	 * @return void
 	 */
 	public function autoLoader($sClassName) {
+		// Check to see if the class already exists
+		if (class_exists($sClassName)) {
+			// We're done
+			return;
+		}
 		// Create an array of reserved class names
 		$aReservedClassNames = array(
 				'DatabaseMapper',
